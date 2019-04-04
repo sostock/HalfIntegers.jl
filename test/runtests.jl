@@ -104,7 +104,7 @@ end
             @eval @test BigInt($T(3)) == BigInt(3)
             # Rational{T}
             @eval @test Rational{Int32}($T(11/2)) === Int32(11)//Int32(2)
-            @eval @test Rational{Int64}($T(5)) === 5//1
+            @eval @test Rational{Int64}($T(5)) === Int64(5)//Int64(1)
             @eval @test Rational{UInt8}($T(7/2)) === UInt8(7)//UInt8(2)
             # Complex{T}
             @eval @test Complex{Int}($T(5)) === Complex(5)
@@ -133,7 +133,7 @@ end
             @eval @test BigInt($T(-3)) == BigInt(-3)
             # Rational{T}
             @eval @test Rational{Int32}($T(-11/2)) === Int32(-11)//Int32(2)
-            @eval @test Rational{Int64}($T(-5)) === -5//1
+            @eval @test Rational{Int64}($T(-5)) === Int64(-5)//Int64(1)
             @eval @test_throws InexactError Rational{UInt64}($T(-5))
             # Complex{T}
             @eval @test Complex{HalfInt}($T(-3/2)) === Complex(HalfInt(-3/2))
