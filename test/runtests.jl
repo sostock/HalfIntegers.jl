@@ -1954,15 +1954,24 @@ end
             @eval @test_broken ($T(5/2):$T(3/2):$T(7)) ∩ ($T(1):$T(8)) == $T(4):$T(3):$T(7)
             @eval @test_broken ($T(1):$T(8)) ∩ ($T(5/2):$T(3/2):$T(7)) == $T(4):$T(3):$T(7)
         end
-        for T in (:HalfUInt8, :HalfUInt16, :HalfUInt32)
+        for T in (:HalfUInt8, :HalfUInt16)
             @eval @test isempty((1:3:7) ∩ ($T(3/2):$T(5)))
             @eval @test isempty(($T(3/2):$T(5)) ∩ (1:3:7))
             @eval @test (1:3:7) ∩ ($T(3):$T(5)) == 4:3:4
             @eval @test ($T(3):$T(5)) ∩ (1:3:7) == 4:3:4
         end
+        @static if Sys.WORD_SIZE == 64
+            @test isempty((1:3:7) ∩ (HalfUInt32(3/2):HalfUInt32(5)))
+            @test isempty((HalfUInt32(3/2):HalfUInt32(5)) ∩ (1:3:7))
+            @test (1:3:7) ∩ (HalfUInt32(3):HalfUInt32(5)) == 4:3:4
+            @test (HalfUInt32(3):HalfUInt32(5)) ∩ (1:3:7) == 4:3:4
+        else
+            @test_broken isempty((1:3:7) ∩ (HalfUInt32(3/2):HalfUInt32(5)))
+            @test_broken isempty((HalfUInt32(3/2):HalfUInt32(5)) ∩ (1:3:7))
+            @test_broken (1:3:7) ∩ (HalfUInt32(3):HalfUInt32(5)) == 4:3:4
+            @test_broken (HalfUInt32(3):HalfUInt32(5)) ∩ (1:3:7) == 4:3:4
+        end
         for T in (:HalfUInt64, :HalfUInt128)
-            @eval @test_broken ($T(5/2):$T(3/2):$T(7)) ∩ ($T(1):$T(8)) == $T(4):$T(3):$T(7)
-            @eval @test_broken ($T(1):$T(8)) ∩ ($T(5/2):$T(3/2):$T(7)) == $T(4):$T(3):$T(7)
             @eval @test_broken isempty((1:3:7) ∩ ($T(3/2):$T(5)))
             @eval @test_broken isempty(($T(3/2):$T(5)) ∩ (1:3:7))
             @eval @test_broken (1:3:7) ∩ ($T(3):$T(5)) == 4:3:4
