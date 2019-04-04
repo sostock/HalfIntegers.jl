@@ -20,6 +20,9 @@ halfuinttypes = (:HalfUInt, :HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :
         @eval @test_throws InexactError $T(nextfloat(2.5))
         @eval @test_throws InexactError $T(7//3)
         @eval @test_throws InexactError $T(2im)
+        @eval @test_throws InexactError $T(2.0im)
+        @eval @test_throws InexactError $T(big(2im))
+        @eval @test_throws InexactError $T(big(2.0im))
         @eval @test_throws InexactError $T(π)
         @eval @test HalfInteger($T(5/2)) isa $T
         @eval @test HalfInteger($T(5/2)) == $T(5/2)
@@ -32,6 +35,15 @@ halfuinttypes = (:HalfUInt, :HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :
         @eval @test_throws InexactError $T(-1+0im)
         @eval @test_throws InexactError $T(HalfInt(-2))
     end
+    @test HalfInteger(2.5) isa HalfInteger
+    @test HalfInteger(3) isa HalfInteger
+    @test HalfInteger(31//2) isa HalfInteger
+    @test HalfInteger(1.5 + 0.0im) isa HalfInteger
+    @test HalfInteger(2 + 0im) isa HalfInteger
+    @test_throws InexactError HalfInteger(2im)
+    @test_throws InexactError HalfInteger(2.0im)
+    @test_throws InexactError HalfInteger(big(2im))
+    @test_throws InexactError HalfInteger(big(2.0im))
     @test HalfInteger(big(2.5)) isa BigHalfInt
     @test HalfInteger(big(3)) isa BigHalfInt
     @test HalfInteger(big(31//2)) isa BigHalfInt
@@ -601,6 +613,10 @@ end
         @test ishalfinteger(2.0)
         @test ishalfinteger(-7.5)
         @test !ishalfinteger(2.3)
+        @test !ishalfinteger(π)
+        @test !ishalfinteger(ℯ)
+        @test !ishalfinteger(im)
+        @test ishalfinteger(missing) === missing
     end
 
     @testset "isinteger" begin
@@ -1260,71 +1276,158 @@ end
     @testset "gcd/lcm" begin
         @testset "lcm" begin
             for T in (halfinttypes..., halfuinttypes...)
+                @eval @test lcm($T(3/2)) === $T(3/2)
                 @eval @test lcm($T(1), $T(1/2)) === $T(1)
                 @eval @test lcm($T(1), $T(3/2)) === $T(3)
                 @eval @test lcm($T(2), $T(3/2)) === $T(6)
                 @eval @test lcm($T(3/2), $T(3/2)) === $T(3/2)
                 @eval @test lcm($T(5/2), $T(3/2)) === $T(15/2)
+                @eval @test lcm($T(2), $T(3/2), $T(2)) === $T(6)
+                @eval @test lcm($T(2), $T(3/2), $T(3/2)) === $T(6)
+                @eval @test lcm($T(2), $T(3/2), $T(3)) === $T(6)
+                @eval @test lcm($T(2), $T(3/2), $T(6)) === $T(6)
+                @eval @test lcm($T(2), $T(3/2), $T(2), $T(3)) === $T(6)
+                @eval @test lcm($T(2), $T(3/2), $T(6), $T(3/2)) === $T(6)
                 @eval @test lcm(1, $T(1/2)) == 1
                 @eval @test lcm(1, $T(3/2)) == 3
                 @eval @test lcm(2, $T(3/2)) == 6
                 @eval @test lcm($T(1/2), 1) == 1
                 @eval @test lcm($T(3/2), 1) == 3
                 @eval @test lcm($T(3/2), 2) == 6
+                @eval @test lcm($T(3/2), 2, $T(3)) == 6
+                @eval @test lcm($T(3/2), 2, 3) == 6
+                @eval @test lcm($T(3/2), 2, 3, $T(1/2)) == 6
+                @eval @test lcm(2, $T(3/2), $T(3)) == 6
+                @eval @test lcm(2, $T(3/2), 3) == 6
+                @eval @test lcm(2, 3, $T(3/2)) == 6
+                @eval @test lcm(2, 3, $T(6), $T(1/2)) == 6
+                @eval @test lcm(2, 3, 6, $T(1/2)) == 6
+                @eval @test @inferred(lcm($T(3/2), BigHalfInt(2))) isa BigHalfInt
+                @eval @test @inferred(lcm($T(3/2), $T(3/2), BigHalfInt(2))) isa BigHalfInt
+                @eval @test @inferred(lcm($T(3/2), $T(3/2), $T(2), BigHalfInt(2))) isa BigHalfInt
+                @eval @test @inferred(lcm(BigHalfInt(3/2), $T(2))) isa BigHalfInt
+                @eval @test @inferred(lcm(BigHalfInt(3/2), $T(2), $T(2))) isa BigHalfInt
+                @eval @test @inferred(lcm(BigHalfInt(3/2), $T(3/2), $T(2), $T(2))) isa BigHalfInt
+                @eval @test lcm($T(1/2), BigHalfInt(1)) == 1
+                @eval @test lcm($T(3/2), BigHalfInt(1)) == 3
+                @eval @test lcm($T(3/2), BigHalfInt(2)) == 6
+                @eval @test lcm($T(3/2), $T(3), BigHalfInt(2)) == 6
+                @eval @test lcm($T(3/2), $T(3), $T(1/2), BigHalfInt(2)) == 6
+                @eval @test lcm(BigHalfInt(1/2), $T(1)) == 1
+                @eval @test lcm(BigHalfInt(3/2), $T(1)) == 3
+                @eval @test lcm(BigHalfInt(3/2), $T(2)) == 6
+                @eval @test lcm(BigHalfInt(3/2), $T(2), $T(3)) == 6
+                @eval @test lcm(BigHalfInt(3/2), $T(2), $T(3), $T(1/2)) == 6
             end
+            @test @inferred(lcm(BigHalfInt(1/2))) isa BigHalfInt
             @test @inferred(lcm(BigHalfInt(1), BigHalfInt(1/2))) isa BigHalfInt
+            @test @inferred(lcm(BigHalfInt(1), BigHalfInt(1/2), BigHalfInt(3/2))) isa BigHalfInt
+            @test @inferred(lcm(BigHalfInt(1), BigHalfInt(1/2), BigHalfInt(3/2), BigHalfInt(3))) isa BigHalfInt
             @test @inferred(lcm(1, BigHalfInt(1/2))) isa BigHalfInt
+            @test @inferred(lcm(1, 3, BigHalfInt(1/2))) isa BigHalfInt
+            @test @inferred(lcm(1, 3, 2, BigHalfInt(1/2))) isa BigHalfInt
             @test @inferred(lcm(BigHalfInt(1/2), 1)) isa BigHalfInt
+            @test @inferred(lcm(BigHalfInt(1/2), 1, 2)) isa BigHalfInt
+            @test @inferred(lcm(BigHalfInt(1/2), 1, 2, 3)) isa BigHalfInt
+            @test lcm(BigHalfInt(7/2)) == 7/2
             @test lcm(BigHalfInt(1), BigHalfInt(1/2)) == 1
             @test lcm(BigHalfInt(1), BigHalfInt(3/2)) == 3
             @test lcm(BigHalfInt(2), BigHalfInt(3/2)) == 6
             @test lcm(BigHalfInt(3/2), BigHalfInt(3/2)) == 3/2
             @test lcm(BigHalfInt(5/2), BigHalfInt(3/2)) == 15/2
+            @test lcm(BigHalfInt(5/2), BigHalfInt(3/2), BigHalfInt(1)) == 15
+            @test lcm(BigHalfInt(5/2), BigHalfInt(3/2), BigHalfInt(1), BigHalfInt(15/2)) == 15
             @test lcm(1, BigHalfInt(1/2)) == 1
             @test lcm(1, BigHalfInt(3/2)) == 3
             @test lcm(2, BigHalfInt(3/2)) == 6
+            @test lcm(2, 3, BigHalfInt(3/2)) == 6
+            @test lcm(2, 3, 6, BigHalfInt(3/2)) == 6
             @test lcm(BigHalfInt(1/2), 1) == 1
             @test lcm(BigHalfInt(3/2), 1) == 3
             @test lcm(BigHalfInt(3/2), 2) == 6
+            @test lcm(BigHalfInt(3/2), 2, 3) == 6
+            @test lcm(BigHalfInt(3/2), 2, 3, 6) == 6
         end
 
         @testset "gcd" begin
             for T in (halfinttypes..., halfuinttypes...)
                 # gcd
+                @eval @test gcd($T(5/2)) === $T(5/2)
                 @eval @test gcd($T(1), $T(3/2)) === $T(1/2)
                 @eval @test gcd($T(2), $T(3/2)) === $T(1/2)
                 @eval @test gcd($T(3), $T(3/2)) === $T(3/2)
                 @eval @test gcd($T(3), $T(9/2)) === $T(3/2)
                 @eval @test gcd($T(3/2), $T(3/2)) === $T(3/2)
+                @eval @test gcd($T(3), $T(9/2), $T(1)) === $T(1/2)
+                @eval @test gcd($T(3), $T(9/2), $T(3), $T(9/2)) === $T(3/2)
                 @eval @test gcd(1, $T(3/2)) == 1/2
                 @eval @test gcd(2, $T(3/2)) == 1/2
                 @eval @test gcd(3, $T(3/2)) == 3/2
                 @eval @test gcd(3, $T(9/2)) == 3/2
+                @eval @test gcd(3, 6, $T(9/2)) == 3/2
+                @eval @test gcd(3, 6, $T(3/2), $T(9/2)) == 3/2
+                @eval @test gcd(3, 6, 2, $T(9/2)) == 1/2
                 @eval @test gcd($T(3/2), 1) == 1/2
                 @eval @test gcd($T(3/2), 2) == 1/2
                 @eval @test gcd($T(3/2), 3) == 3/2
                 @eval @test gcd($T(9/2), 3) == 3/2
+                @eval @test gcd($T(9/2), 3) == 3/2
+                @eval @test gcd($T(9/2), 3, $T(3/2)) == 3/2
+                @eval @test gcd($T(9/2), 3, $T(3/2), $T(4)) == 1/2
+                @eval @test @inferred(gcd($T(9/2), BigHalfInt(3))) isa BigHalfInt
+                @eval @test @inferred(gcd($T(9/2), $T(6), BigHalfInt(3))) isa BigHalfInt
+                @eval @test @inferred(gcd($T(9/2), $T(6), $T(5), BigHalfInt(3))) isa BigHalfInt
+                @eval @test @inferred(gcd(BigHalfInt(9/2), $T(3))) isa BigHalfInt
+                @eval @test @inferred(gcd(BigHalfInt(9/2), $T(3), $T(3/2))) isa BigHalfInt
+                @eval @test @inferred(gcd(BigHalfInt(9/2), $T(3), $T(3/2), $T(2))) isa BigHalfInt
+                @eval @test gcd($T(3/2), BigHalfInt(1)) == 1/2
+                @eval @test gcd($T(3/2), BigHalfInt(2)) == 1/2
+                @eval @test gcd($T(3/2), BigHalfInt(3)) == 3/2
+                @eval @test gcd($T(9/2), BigHalfInt(3)) == 3/2
+                @eval @test gcd($T(9/2), $T(6), BigHalfInt(3)) == 3/2
+                @eval @test gcd($T(9/2), $T(6), $T(5), BigHalfInt(3)) == 1/2
+                @eval @test gcd($T(8), $T(6), $T(5), BigHalfInt(3)) == 1
+                @eval @test gcd(BigHalfInt(3/2), $T(1)) == 1/2
+                @eval @test gcd(BigHalfInt(3/2), $T(2)) == 1/2
+                @eval @test gcd(BigHalfInt(3/2), $T(3)) == 3/2
+                @eval @test gcd(BigHalfInt(9/2), $T(3)) == 3/2
+                @eval @test gcd(BigHalfInt(9/2), $T(3), $T(3/2)) == 3/2
+                @eval @test gcd(BigHalfInt(9/2), $T(3), $T(3/2), $T(9)) == 3/2
             end
             for T in halfinttypes
                 @eval @test gcd($T(-5/2), $T(3/2)) === $T(1/2)
             end
+            @test @inferred(gcd(BigHalfInt(1))) isa BigHalfInt
             @test @inferred(gcd(BigHalfInt(1), BigHalfInt(3/2))) isa BigHalfInt
+            @test @inferred(gcd(BigHalfInt(1), BigHalfInt(3/2), BigHalfInt(3))) isa BigHalfInt
+            @test @inferred(gcd(BigHalfInt(1), BigHalfInt(3/2), BigHalfInt(3), BigHalfInt(1/2))) isa BigHalfInt
             @test @inferred(gcd(1, BigHalfInt(3/2))) isa BigHalfInt
+            @test @inferred(gcd(1, 2, BigHalfInt(3/2))) isa BigHalfInt
+            @test @inferred(gcd(1, 2, 3, BigHalfInt(3/2))) isa BigHalfInt
             @test @inferred(gcd(BigHalfInt(3/2), 1)) isa BigHalfInt
+            @test @inferred(gcd(BigHalfInt(3/2), 1, 2)) isa BigHalfInt
+            @test @inferred(gcd(BigHalfInt(3/2), 1, 2, 3)) isa BigHalfInt
+            @test gcd(BigHalfInt(5/2)) == 5/2
             @test gcd(BigHalfInt(1), BigHalfInt(3/2)) == 1/2
             @test gcd(BigHalfInt(2), BigHalfInt(3/2)) == 1/2
             @test gcd(BigHalfInt(3), BigHalfInt(3/2)) == 3/2
             @test gcd(BigHalfInt(3), BigHalfInt(9/2)) == 3/2
             @test gcd(BigHalfInt(3/2), BigHalfInt(3/2)) == 3/2
             @test gcd(BigHalfInt(-5/2), BigHalfInt(3/2)) == 1/2
+            @test gcd(BigHalfInt(3), BigHalfInt(9/2), BigHalfInt(6)) == 3/2
+            @test gcd(BigHalfInt(3), BigHalfInt(9/2), BigHalfInt(6), BigHalfInt(3/2)) == 3/2
             @test gcd(1, BigHalfInt(3/2)) == 1/2
             @test gcd(2, BigHalfInt(3/2)) == 1/2
             @test gcd(3, BigHalfInt(3/2)) == 3/2
             @test gcd(3, BigHalfInt(9/2)) == 3/2
+            @test gcd(3, 2, BigHalfInt(9/2)) == 1/2
+            @test gcd(3, 6, 9, BigHalfInt(9/2)) == 3/2
             @test gcd(BigHalfInt(3/2), 1) == 1/2
             @test gcd(BigHalfInt(3/2), 2) == 1/2
             @test gcd(BigHalfInt(3/2), 3) == 3/2
             @test gcd(BigHalfInt(9/2), 3) == 3/2
+            @test gcd(BigHalfInt(9/2), 3, 4) == 1/2
+            @test gcd(BigHalfInt(100), 3, 4, 6) == 1
         end
 
         @testset "gcdx" begin
