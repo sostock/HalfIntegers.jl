@@ -23,7 +23,6 @@ export
     # Functions
     half,
     ishalfinteger,
-    isonehalf,
     onehalf,
     twice
 
@@ -275,23 +274,6 @@ onehalf(T::Type{<:HalfInteger})     = half(T, 1)
 onehalf(T::Type{<:AbstractFloat})   = T(0.5)
 onehalf(T::Type{<:Rational})        = T(1//2)
 onehalf(::Type{Complex{T}}) where T = Complex(onehalf(T), zero(T))
-
-"""
-    isonehalf(x)
-
-Return `true` if `x == onehalf(x)`.
-
-# Examples
-
-julia> isonehalf(0.5)
-true
-
-julia> isonehalf(1)
-false
-"""
-isonehalf(x) = x == onehalf(x)
-isonehalf(x::Integer) = false
-isonehalf(x::HalfInteger) = isone(twice(x))
 
 """
     ishalfinteger(x)

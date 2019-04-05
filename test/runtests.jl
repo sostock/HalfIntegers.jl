@@ -556,42 +556,6 @@ end
     @test onehalf(Complex{Float64}) === Complex(Float64(0.5), Float64(0.0))
 end
 
-@testset "isonehalf" begin
-    for T in (halfinttypes..., :BigHalfInt)
-        @eval @test isonehalf($T(1/2))
-        @eval @test !isonehalf($T(1))
-        @eval @test !isonehalf($T(-1))
-        @eval @test !isonehalf($T(0))
-        @eval @test !isonehalf($T(-1/2))
-        @eval @test isonehalf(Complex($T(1/2), $T(0)))
-        @eval @test !isonehalf(Complex($T(1/2), $T(1/2)))
-        @eval @test !isonehalf(Complex($T(0), $T(1/2)))
-    end
-    for T in halfuinttypes
-        @eval @test isonehalf($T(1/2))
-        @eval @test !isonehalf($T(1))
-        @eval @test !isonehalf($T(0))
-        @eval @test isonehalf(Complex($T(1/2), $T(0)))
-        @eval @test !isonehalf(Complex($T(1/2), $T(1/2)))
-        @eval @test !isonehalf(Complex($T(0), $T(1/2)))
-    end
-    @test !isonehalf(1)
-    @test isonehalf(1//2)
-    @test !isonehalf(-1//2)
-    @test !isonehalf(-1//1)
-    @test isonehalf(0.5)
-    @test !isonehalf(-0.5)
-    @test !isonehalf(1.0)
-    @test isonehalf(big(0.5))
-    @test !isonehalf(big(-0.5))
-    @test !isonehalf(big(1.0))
-    @test isonehalf(1//2 + (0//1)*im)
-    @test !isonehalf(0//1 + (1//2)*im)
-    @test isonehalf(0.5 + 0.0im)
-    @test !isonehalf(0.5 + 0.5im)
-    @test !isonehalf(0.0 + 0.5im)
-end
-
 @testset "Properties" begin
     @testset "isfinite" begin
         for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
@@ -639,7 +603,7 @@ end
         end
     end
 
-    @testset "one/zero/isone/iszero/isonehalf" begin
+    @testset "one/zero/isone/iszero" begin
         for T in halfinttypes
             @eval @test one($T) === $T(1)
             @eval @test zero($T) === $T(0)
@@ -653,11 +617,6 @@ end
             @eval @test !isone($T(0))
             @eval @test !isone($T(1/2))
             @eval @test !isone($T(-1/2))
-            @eval @test isonehalf($T(1/2))
-            @eval @test !isonehalf($T(1))
-            @eval @test !isonehalf($T(-1))
-            @eval @test !isonehalf($T(0))
-            @eval @test !isonehalf($T(-1/2))
         end
         for T in halfuinttypes
             @eval @test one($T) === $T(1)
