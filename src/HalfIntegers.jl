@@ -171,20 +171,64 @@ Base.any(::typeof(!isinteger), r::AbstractUnitRange{<:HalfInteger}) =
 For an integer value `x`, return `x/2` as a half-integer of type `T`. If `T` is not given,
 return an appropriate `HalfInteger` type. Throw an `InexactError` if `x` is not an integer.
 
-TODO T can also be <:Complex{<:HalfInteger}
+# Examples
+
+```jldoctest
+julia> half(3)
+3/2
+
+julia> half(-5.0)
+-5/2
+
+julia> half(HalfInt16, 8)
+4
+```
 """
 half(x::Real) = half(HalfInteger, x)
-half(x::Complex) = half(Complex, x)
 half(T::Type{<:HalfInteger}, x) = error("Please implement half(::Type{$T}, x).")
 half(::Type{HalfInteger}, x) = half(HalfInteger, Integer(x))
 half(::Type{HalfInteger}, x::Integer) = half(Half{typeof(x)}, x)
+
+"""
+    half([T<:Complex{<:HalfInteger},] x)
+
+For a complex value `x` with integer real and imaginary parts, return `x/2` as a complex
+number of type `T`. If `T` is not given, return an appropriate complex number type with
+half-integer parts. Throw an `InexactError` if the real or the imaginary part of `x` are not
+integer.
+
+# Examples
+
+```jldoctest
+julia> half(3 + 2im)
+3/2 + 1*im
+
+julia> half(Complex{HalfInt32}, 1.0 + 5.0im)
+1/2 + 5/2*im
+```
+"""
+half(x::Complex) = half(Complex, x)
 half(::Type{Complex{T}}, x) where T<:HalfInteger = Complex(half(T,real(x)), half(T,imag(x)))
 half(::Type{Complex}, x) = Complex(half(real(x)), half(imag(x)))
 
 """
     twice(x)
 
-Return `2x`. If `x` is a `HalfInteger`, this returns an appropriate integer type.
+Return `2x`. If `x` is a `HalfInteger`, return an appropriate integer type.
+
+```jldoctest
+julia> twice(2)
+4
+
+julia> twice(1.5)
+3.0
+
+julia> twice(HalfInt8(3/2))  # returns an Int8
+3
+
+julia> twice(HalfInt32(3.0) + HalfInt32(2.5)*im)  # returns a Complex{Int32}
+6 + 5im
+```
 """
 twice(x) = x + x
 twice(x::HalfInteger) = error("Please implement twice(x::$(typeof(x))).")
@@ -192,19 +236,38 @@ twice(x::Complex) = Complex(twice(real(x)), twice(imag(x)))
 
 """
     twice(T<:Integer, x)
+    twice(T<:Complex{<:Integer}, x)
 
-Return `2x` as an integer of type `T`.
+Return `2x` as a number of type `T`.
 
-TODO document T<:Complex
+# Examples
+
+```jldoctest
+julia> twice(Int16, HalfInt(5/2))
+5
+
+julia> twice(Complex{BigInt}, HalfInt(5/2) + HalfInt(3)*im)
+5 + 6im
+```
 """
 twice(T::Type{<:Integer}, x) = T(twice(x))
-twice(T::Type{<:Integer}, x::Integer) = twice(T(x))
+twice(T::Type{<:Integer}, x::Integer) = twice(T(x)) # convert to T first to reduce probability of overflow
 twice(::Type{Complex{T}}, x) where T<:Integer = Complex(twice(T,real(x)), twice(T,imag(x)))
 
 """
     onehalf(x)
 
 Return the value 1/2 in the type of `x` (`x` can also specify the type itself).
+
+# Examples
+
+```jldoctest
+julia> onehalf(7//3)
+1//2
+
+julia> onehalf(HalfInt)
+1/2
+```
 """
 onehalf(x::Number) = onehalf(typeof(x))
 
@@ -217,6 +280,14 @@ onehalf(::Type{Complex{T}}) where T = Complex(onehalf(T), zero(T))
     isonehalf(x)
 
 Return `true` if `x == onehalf(x)`.
+
+# Examples
+
+julia> isonehalf(0.5)
+true
+
+julia> isonehalf(1)
+false
 """
 isonehalf(x) = x == onehalf(x)
 isonehalf(x::Integer) = false
@@ -226,10 +297,20 @@ isonehalf(x::HalfInteger) = isone(twice(x))
     ishalfinteger(x)
 
 Test whether `x` is numerically equal to some half-integer.
+
+# Examples
+
+```jldoctest
+julia> ishalfinteger(3.5)
+true
+
+julia> ishalfinteger(2)
+true
+```
 """
 ishalfinteger(x) = isinteger(twice(x))
-ishalfinteger(x::HalfIntegerOrInteger) = true
-ishalfinteger(x::Rational) = (d=denominator(x); (d==oftype(d,1)) | (d==oftype(d,2)))
+ishalfinteger(x::Rational) = (denominator(x) == 1) | (denominator(x) == 2)
+ishalfinteger(::HalfIntegerOrInteger) = true
 ishalfinteger(::AbstractIrrational) = false
 ishalfinteger(::Missing) = missing
 
@@ -261,6 +342,10 @@ Base.intersect(r::Union{AbstractUnitRange{<:Integer}, StepRange{<:Integer}},
     Half{T<:Integer} <: HalfInteger
 
 Type for half-integers `n/2` where `n` is of type `T`.
+
+Aliases are defined for all standard `Signed` and `Unsigned` integer types, e.g.,
+`HalfInt64` for `Half{Int64}`, `HalfUInt8` for `Half{UInt8}`, and `BigHalfInt` for
+`Half{BigInt}`.
 """
 struct Half{T<:Integer} <: HalfInteger
     twice::T
