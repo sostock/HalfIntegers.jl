@@ -5,9 +5,9 @@
 [![codecov](https://codecov.io/gh/sostock/HalfIntegers.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/sostock/HalfIntegers.jl)
 [![Coverage Status](https://coveralls.io/repos/github/sostock/HalfIntegers.jl/badge.svg?branch=master)](https://coveralls.io/github/sostock/HalfIntegers.jl?branch=master)
 
-This package provides data types for half-integers. For example, `HalfInt` can represent
-numbers *n*/2 where *n* is an `Int`. Likewise, there exist half-integer types for all
-of Julia’s signed and unsigned integer types, e.g., `HalfInt8`, `HalfUInt128`, and
+This package provides data types for half-integer numbers. For example, `HalfInt` can
+represent numbers *n*/2 where *n* is an `Int`. Likewise, there exist half-integer types for
+all of Julia’s signed and unsigned integer types, e.g., `HalfInt8`, `HalfUInt128`, and
 `BigHalfInt` for arbitrarily large half-integers. All half-integer types are subtypes of the
 abstract type `HalfInteger`.
 
