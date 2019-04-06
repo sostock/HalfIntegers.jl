@@ -61,9 +61,9 @@ julia> typeof(HalfInt64(1/2))
 Half{Int64}
 ```
 
-The parametric type `Half{T}` accepts arbitrary `<:Integer` types as parameter. It be used
-to define half-integers based on other (non-standard) integers. For example, since `HalfInt`
-etc. are based on standard integer arithmetic, they are subject to
+The parametric type `Half{T}` accepts arbitrary `<:Integer` types as parameter. It can be
+used to define half-integers based on other (non-standard) integers. For example, since
+`HalfInt` etc. are based on standard integer arithmetic, they are subject to
 [overflow/underflow](https://docs.julialang.org/en/v1/manual/integers-and-floating-point-numbers/#Overflow-behavior-1).
 If you prefer checked arithmetic, you can use the
 [`SaferIntegers`](https://github.com/JeffreySarnoff/SaferIntegers.jl) package and use
