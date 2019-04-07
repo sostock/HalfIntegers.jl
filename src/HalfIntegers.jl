@@ -51,18 +51,16 @@ for op in (:<, :≤, :(==))
     @eval Base.$op(x::Rational, y::HalfInteger) = $op(x, Rational(y))
 end
 
-Base.:+(x::HalfInteger, y::HalfInteger) = half(twice(x)+twice(y))
+Base.:+(x::T, y::T) where T<:HalfInteger = half(twice(x)+twice(y))
 Base.:+(x::HalfInteger) = half(+twice(x))
-Base.:-(x::HalfInteger, y::HalfInteger) = half(twice(x)-twice(y))
+Base.:-(x::T, y::T) where T<:HalfInteger = half(twice(x)-twice(y))
 Base.:-(x::HalfInteger) = half(-twice(x))
 
-Base.:*(x::HalfInteger, y::HalfInteger) = twice(x)*twice(y)/4
+Base.:*(x::T, y::T) where T<:HalfInteger = twice(x)*twice(y)/4
 Base.:*(x::HalfInteger, y::Integer) = half(twice(x)*y)
 Base.:*(x::Integer, y::HalfInteger) = y*x
 
-Base.:/(x::HalfInteger, y::HalfInteger) = twice(x)/twice(y)
-Base.:/(x::HalfInteger, y::Number) = twice(x)/2y
-Base.:/(x::Number, y::HalfInteger) = 2x/twice(y)
+Base.:/(x::T, y::T) where T<:HalfInteger = twice(x)/twice(y)
 
 Base.://(x::HalfInteger, y::HalfInteger) = twice(x)//twice(y)
 Base.://(x::HalfInteger, y) = twice(x)//twice(y)
@@ -72,13 +70,13 @@ Base.:^(x::Real, y::HalfInteger) = x^float(y)
 
 const HalfIntegerOrInteger = Union{HalfInteger, Integer}
 
-Base.div(x::HalfInteger, y::HalfInteger) = div(twice(x), twice(y))
-Base.fld(x::HalfInteger, y::HalfInteger) = fld(twice(x), twice(y))
-Base.cld(x::HalfInteger, y::HalfInteger) = cld(twice(x), twice(y))
-Base.rem(x::HalfInteger, y::HalfInteger) = half(rem(twice(x), twice(y)))
-Base.mod(x::HalfInteger, y::HalfInteger) = half(mod(twice(x), twice(y)))
+Base.div(x::T, y::T) where T<:HalfInteger = div(twice(x), twice(y))
+Base.fld(x::T, y::T) where T<:HalfInteger = fld(twice(x), twice(y))
+Base.cld(x::T, y::T) where T<:HalfInteger = cld(twice(x), twice(y))
+Base.rem(x::T, y::T) where T<:HalfInteger = half(rem(twice(x), twice(y)))
+Base.mod(x::T, y::T) where T<:HalfInteger = half(mod(twice(x), twice(y)))
 
-Base.fld1(x::HalfInteger, y::HalfInteger) = fld1(twice(x), twice(y))
+Base.fld1(x::T, y::T) where T<:HalfInteger = fld1(twice(x), twice(y))
 
 Base.gcd(x::HalfInteger) = x
 Base.gcd(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger) = half(gcd(twice(x), twice(y)))

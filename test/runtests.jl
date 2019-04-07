@@ -50,6 +50,8 @@ halfuinttypes = (:HalfUInt, :HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :
     @test HalfInteger(big(1.5 + 0.0im)) isa BigHalfInt
     @test HalfInteger(big(2 + 0im)) isa BigHalfInt
     @test_throws MethodError Half(2)
+    @test HalfInt32(HalfInt64(-11/2)) === HalfInt32(-11/2)
+    @test HalfUInt8(BigHalfInt(3/2)) === HalfUInt8(3/2)
 end
 
 @testset "Conversion" begin
@@ -785,6 +787,8 @@ end
             @eval @test (3/2) + $T(1) == 5/2
             @eval @test (3/2) - $T(1) == 1/2
         end
+        @test HalfInt8(3/2) + HalfInt64(1/2) === HalfInt64(2)
+        @test HalfInt8(3/2) - HalfInt64(1/2) === HalfInt64(1)
         @test HalfInt32(5/2) + 3 === HalfInt(11/2)
         @test 2.5 + HalfInt16(3) === 5.5
         @test +BigHalfInt(5/2) isa BigHalfInt
@@ -836,6 +840,7 @@ end
             @eval @test (big(5)//big(2)) * $T(3/2) isa Rational{BigInt}
             @eval @test (big(5)//big(2)) * $T(3/2) == 15//4
         end
+        @test HalfInt16(3/2) * HalfUInt128(5/2) == 3.75
         @test @inferred(BigHalfInt(3/2) * BigHalfInt(5/2)) isa BigFloat
         @test @inferred(BigHalfInt(3/2) * 2) isa BigHalfInt
         @test @inferred(BigHalfInt(3/2) * BigInt(2)) isa BigHalfInt
@@ -894,6 +899,7 @@ end
                 @eval @test (2//3) / $T(5/2) isa Rational
                 @eval @test (2//3) / $T(5/2) == 4//15
             end
+            @test HalfInt128(3/2) / HalfInt16(3/2) == 1.0
             @test BigHalfInt(3/2) / BigHalfInt(3/2) isa BigFloat
             @test BigHalfInt(3/2) / 2 isa BigFloat
             @test BigHalfInt(3/2) / BigInt(2) isa BigFloat
@@ -943,6 +949,7 @@ end
                 @eval @test (2//3) // $T(3/2) isa Rational
                 @eval @test (2//3) // $T(3/2) == 4//9
             end
+            @test HalfInt128(3/2) // HalfInt16(3/2) == 1//1
             @test BigHalfInt(3/2) // BigHalfInt(3/2) isa Rational{BigInt}
             @test BigHalfInt(3/2) // 2 isa Rational{BigInt}
             @test BigHalfInt(3/2) // BigInt(2) isa Rational{BigInt}
@@ -1010,6 +1017,55 @@ end
                 @eval @test fld1(big(-7), $T(5/2)) == -2
                 @eval @test mod1(big(-7), $T(5/2)) == 1/2
             end
+            # 7/2, 3/2
+            @test div(HalfInt32(7/2), HalfInt128(3/2)) == 2
+            @test fld(HalfInt32(7/2), HalfInt128(3/2)) == 2
+            @test cld(HalfInt32(7/2), HalfInt128(3/2)) == 3
+            @test rem(HalfInt32(7/2), HalfInt128(3/2)) == 1/2
+            @test mod(HalfInt32(7/2), HalfInt128(3/2)) == 1/2
+            @test fld1(HalfInt32(7/2), HalfInt128(3/2)) == 3
+            @test mod1(HalfInt32(7/2), HalfInt128(3/2)) == 1/2
+            # 7/2, 1/2
+            @test div(HalfInt8(7/2), HalfInt64(1/2)) == 7
+            @test fld(HalfInt8(7/2), HalfInt64(1/2)) == 7
+            @test cld(HalfInt8(7/2), HalfInt64(1/2)) == 7
+            @test rem(HalfInt8(7/2), HalfInt64(1/2)) == 0
+            @test mod(HalfInt8(7/2), HalfInt64(1/2)) == 0
+            @test fld1(HalfInt8(7/2), HalfInt64(1/2)) == 7
+            @test mod1(HalfInt8(7/2), HalfInt64(1/2)) == 1/2
+            # 9/2, 3
+            @test div(HalfInt16(9/2), HalfInt32(3)) == 1
+            @test fld(HalfInt16(9/2), HalfInt32(3)) == 1
+            @test cld(HalfInt16(9/2), HalfInt32(3)) == 2
+            @test rem(HalfInt16(9/2), HalfInt32(3)) == 3/2
+            @test mod(HalfInt16(9/2), HalfInt32(3)) == 3/2
+            @test fld1(HalfInt16(9/2), HalfInt32(3)) == 2
+            @test mod1(HalfInt16(9/2), HalfInt32(3)) == 3/2
+            # 7/2, -2
+            @test div(HalfInt64(7/2), HalfInt128(-2)) == -1
+            @test fld(HalfInt64(7/2), HalfInt128(-2)) == -2
+            @test cld(HalfInt64(7/2), HalfInt128(-2)) == -1
+            @test rem(HalfInt64(7/2), HalfInt128(-2)) == 3/2
+            @test mod(HalfInt64(7/2), HalfInt128(-2)) == -1/2
+            @test fld1(HalfInt64(7/2), HalfInt128(-2)) == -1
+            @test mod1(HalfInt64(7/2), HalfInt128(-2)) == -1/2
+            # 4, 3/2
+            @test div(HalfInt16(4), HalfInt8(3/2)) == 2
+            @test fld(HalfInt16(4), HalfInt8(3/2)) == 2
+            @test cld(HalfInt16(4), HalfInt8(3/2)) == 3
+            @test rem(HalfInt16(4), HalfInt8(3/2)) == 1
+            @test mod(HalfInt16(4), HalfInt8(3/2)) == 1
+            @test fld1(HalfInt16(4), HalfInt8(3/2)) == 3
+            @test mod1(HalfInt16(4), HalfInt8(3/2)) == 1
+            # -7, 5/2
+            @test div(HalfInt64(-7), HalfInt32(5/2)) == -2
+            @test fld(HalfInt64(-7), HalfInt32(5/2)) == -3
+            @test cld(HalfInt64(-7), HalfInt32(5/2)) == -2
+            @test rem(HalfInt64(-7), HalfInt32(5/2)) == -2
+            @test mod(HalfInt64(-7), HalfInt32(5/2)) == 1/2
+            @test fld1(HalfInt64(-7), HalfInt32(5/2)) == -2
+            @test mod1(HalfInt64(-7), HalfInt32(5/2)) == 1/2
+            # BigHalfInt
             @test @inferred(div(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigInt
             @test @inferred(fld(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigInt
             @test @inferred(cld(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigInt
