@@ -68,8 +68,6 @@ Base.://(x, y::HalfInteger) = twice(x)//twice(y)
 
 Base.:^(x::Real, y::HalfInteger) = x^float(y)
 
-const HalfIntegerOrInteger = Union{HalfInteger, Integer}
-
 Base.div(x::T, y::T) where T<:HalfInteger = div(twice(x), twice(y))
 Base.fld(x::T, y::T) where T<:HalfInteger = fld(twice(x), twice(y))
 Base.cld(x::T, y::T) where T<:HalfInteger = cld(twice(x), twice(y))
@@ -77,19 +75,6 @@ Base.rem(x::T, y::T) where T<:HalfInteger = half(rem(twice(x), twice(y)))
 Base.mod(x::T, y::T) where T<:HalfInteger = half(mod(twice(x), twice(y)))
 
 Base.fld1(x::T, y::T) where T<:HalfInteger = fld1(twice(x), twice(y))
-
-Base.gcd(x::HalfInteger) = x
-Base.gcd(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger) = half(gcd(twice(x), twice(y)))
-Base.gcd(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger...) = gcd(x, gcd(y...))
-
-Base.lcm(x::HalfInteger) = x
-Base.lcm(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger) = half(lcm(twice(x), twice(y)))
-Base.lcm(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger...) = lcm(x, lcm(y...))
-
-function Base.gcdx(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger)
-    d, u, v = gcdx(twice(x), twice(y))
-    half(d), u, v
-end
 
 Base.ceil(T::Type{<:Integer}, x::HalfInteger)  = round(T, x, RoundUp)
 Base.floor(T::Type{<:Integer}, x::HalfInteger) = round(T, x, RoundDown)
@@ -272,6 +257,8 @@ onehalf(T::Type{<:HalfInteger})     = half(T, 1)
 onehalf(T::Type{<:AbstractFloat})   = T(0.5)
 onehalf(T::Type{<:Rational})        = T(1//2)
 onehalf(::Type{Complex{T}}) where T = Complex(onehalf(T), zero(T))
+
+const HalfIntegerOrInteger = Union{HalfInteger, Integer}
 
 """
     ishalfinteger(x)
