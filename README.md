@@ -6,8 +6,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/sostock/HalfIntegers.jl/badge.svg?branch=master)](https://coveralls.io/github/sostock/HalfIntegers.jl?branch=master)
 
 This package provides data types for half-integer numbers. In the context of this package,
-any number *n*/2 where *n* is an integer is considered a half-integer -- contrary to the
-common definition, ``n`` does not have to be odd, i.e., the integers are a subset of the
+any number *n*/2 where *n* is an integer is considered a half-integer – contrary to the
+common definition, *n* does not have to be odd, i.e., the integers are a subset of the
 half-integers.
 
 For example, the `HalfInt` type provided by this package can be used to represent numbers
