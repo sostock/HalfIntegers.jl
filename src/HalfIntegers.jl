@@ -29,7 +29,8 @@ export
 """
     HalfInteger <: Real
 
-Abstract supertype for half-integers.
+Abstract supertype for half-integers. Here, every number ``n/2`` where ``n\\in\\mathbb{Z}``
+is considered a half-integer, regardless of whether ``n`` is even or odd.
 """
 abstract type HalfInteger <: Real end
 
@@ -308,7 +309,7 @@ Base.intersect(r::Union{AbstractUnitRange{<:Integer}, StepRange{<:Integer}},
 """
     Half{T<:Integer} <: HalfInteger
 
-Type for half-integers `n/2` where `n` is of type `T`.
+Type for half-integers ``n/2`` where ``n`` is of type `T`.
 
 Aliases are defined for all standard `Signed` and `Unsigned` integer types, e.g.,
 `HalfInt64` for `Half{Int64}`, `HalfUInt8` for `Half{UInt8}`, and `BigHalfInt` for

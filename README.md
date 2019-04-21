@@ -5,11 +5,16 @@
 [![codecov](https://codecov.io/gh/sostock/HalfIntegers.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/sostock/HalfIntegers.jl)
 [![Coverage Status](https://coveralls.io/repos/github/sostock/HalfIntegers.jl/badge.svg?branch=master)](https://coveralls.io/github/sostock/HalfIntegers.jl?branch=master)
 
-This package provides data types for half-integer numbers. For example, `HalfInt` can
-represent numbers *n*/2 where *n* is an `Int`. Likewise, there exist half-integer types for
-all of Julia’s signed and unsigned integer types, e.g., `HalfInt8`, `HalfUInt128`, and
-`BigHalfInt` for arbitrarily large half-integers. All half-integer types are subtypes of the
-abstract type `HalfInteger`.
+This package provides data types for half-integer numbers. In the context of this package,
+any number *n*/2 where *n* is an integer is considered a half-integer -- contrary to the
+common definition, ``n`` does not have to be odd, i.e., the integers are a subset of the
+half-integers.
+
+For example, the `HalfInt` type provided by this package can be used to represent numbers
+*n*/2 where *n* is an `Int`. Likewise, there exist half-integer types for all of Julia’s
+signed and unsigned integer types, e.g., `HalfInt8`, `HalfUInt128`, and `BigHalfInt` for
+arbitrarily large half-integers. All half-integer types are subtypes of the abstract type
+`HalfInteger`.
 
 ## Basic usage
 
@@ -64,7 +69,7 @@ Half{Int64}
 The parametric type `Half{T}` accepts arbitrary `<:Integer` types as parameter. It can be
 used to define half-integers based on other (non-standard) integers. For example, since
 `HalfInt` etc. are based on standard integer arithmetic, they are subject to
-[overflow/underflow](https://docs.julialang.org/en/v1/manual/integers-and-floating-point-numbers/#Overflow-behavior-1).
+[integer overflow](https://docs.julialang.org/en/v1/manual/integers-and-floating-point-numbers/#Overflow-behavior-1).
 If you prefer checked arithmetic, you can use the
 [`SaferIntegers`](https://github.com/JeffreySarnoff/SaferIntegers.jl) package and use
 `Half{SafeInt}` instead of `HalfInt`.
