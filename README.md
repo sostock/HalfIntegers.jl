@@ -5,6 +5,8 @@
 [![codecov](https://codecov.io/gh/sostock/HalfIntegers.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/sostock/HalfIntegers.jl)
 [![Coverage Status](https://coveralls.io/repos/github/sostock/HalfIntegers.jl/badge.svg?branch=master)](https://coveralls.io/github/sostock/HalfIntegers.jl?branch=master)
 
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://sostock.github.io/HalfIntegers.jl/dev)
+
 This package provides data types for half-integer numbers. Here, any number *n*/2 where *n*
 is an integer is considered a half-integer – contrary to the
 [common definition](https://en.wikipedia.org/wiki/Half-integer),
