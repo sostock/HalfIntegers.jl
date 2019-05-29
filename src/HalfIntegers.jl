@@ -168,7 +168,6 @@ julia> half(HalfInt16, 8)
 ```
 """
 half(x::Real) = half(HalfInteger, x)
-half(T::Type{<:HalfInteger}, x) = error("Please implement half(::Type{$T}, x).")
 half(::Type{HalfInteger}, x) = half(HalfInteger, Integer(x))
 half(::Type{HalfInteger}, x::Integer) = half(Half{typeof(x)}, x)
 
@@ -214,7 +213,6 @@ julia> twice(HalfInt32(3.0) + HalfInt32(2.5)*im)  # returns a Complex{Int32}
 ```
 """
 twice(x) = x + x
-twice(x::HalfInteger) = error("Please implement twice(x::$(typeof(x))).")
 twice(x::Complex) = Complex(twice(real(x)), twice(imag(x)))
 
 """
@@ -274,6 +272,9 @@ true
 
 julia> ishalfinteger(2)
 true
+
+julia> ishalfinteger(1//3)
+false
 ```
 """
 ishalfinteger(x) = isinteger(twice(x))
@@ -311,9 +312,24 @@ Base.intersect(r::Union{AbstractUnitRange{<:Integer}, StepRange{<:Integer}},
 
 Type for half-integers ``n/2`` where ``n`` is of type `T`.
 
-Aliases are defined for all standard `Signed` and `Unsigned` integer types, e.g.,
-`HalfInt64` for `Half{Int64}`, `HalfUInt8` for `Half{UInt8}`, and `BigHalfInt` for
-`Half{BigInt}`.
+Aliases for `Half{T}` are defined for all standard `Signed` and `Unsigned` integer types, so
+that, e.g., `HalfInt` can be used instead of `Half{Int}`:
+
+| `T`       | Alias for `Half{T}`                |
+| :-------- | :--------------------------------- |
+| `Int`     | `HalfInt`                          |
+| `Int8`    | `HalfInt8`                         |
+| `Int16`   | `HalfInt16`                        |
+| `Int32`   | `HalfInt32`                        |
+| `Int64`   | `HalfInt64`                        |
+| `Int128`  | `HalfInt128`                       |
+| `BigInt`  | `BigHalfInt` (*not* `HalfBigInt`!) |
+| `UInt`    | `HalfUInt`                         |
+| `UInt8`   | `HalfUInt8`                        |
+| `UInt16`  | `HalfUInt16`                       |
+| `UInt32`  | `HalfUInt32`                       |
+| `UInt64`  | `HalfUInt64`                       |
+| `UInt128` | `HalfUInt128`                      |
 """
 struct Half{T<:Integer} <: HalfInteger
     twice::T

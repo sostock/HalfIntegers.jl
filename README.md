@@ -71,5 +71,5 @@ define half-integers based on other (non-standard) integers. For example, since 
 etc. are based on standard integer arithmetic, they are subject to
 [integer overflow](https://docs.julialang.org/en/v1/manual/integers-and-floating-point-numbers/#Overflow-behavior-1).
 If you prefer checked arithmetic, you can use the
-[`SaferIntegers`](https://github.com/JeffreySarnoff/SaferIntegers.jl)
+[SaferIntegers](https://github.com/JeffreySarnoff/SaferIntegers.jl)
 package and use `Half{SafeInt}` instead of `HalfInt`.
