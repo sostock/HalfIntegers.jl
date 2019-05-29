@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Manual · HalfIntegers.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>HalfIntegers.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li class="current"><a class="toctext" href>Manual</a><ul class="internal"><li><a class="toctext" href="#Half-integer-types-1">Half-integer types</a></li><li><a class="toctext" href="#Construction-of-HalfIntegers-1">Construction of <code>HalfInteger</code>s</a></li><li><a class="toctext" href="#Arithmetic-operations-1">Arithmetic operations</a></li><li><a class="toctext" href="#Auxiliary-functions-1">Auxiliary functions</a></li><li><a class="toctext" href="#Wraparound-behavior-1">Wraparound behavior</a></li></ul></li><li><a class="toctext" href="../api/">API documentation</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Manual</a></li></ul><a class="edit-page" href="https://github.com/sostock/HalfIntegers.jl/blob/master/docs/src/manual.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Manual</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Manual-1" href="#Manual-1">Manual</a></h1><h2><a class="nav-anchor" id="Half-integer-types-1" href="#Half-integer-types-1">Half-integer types</a></h2><div></div><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>In this package, any number <span>$\frac{n}{2}$</span> where <span>$n\in\mathbb{Z}$</span> is considered a half-integer – contrary to the common definition, <span>$n$</span> does not have to be odd, i.e., the integers are a subset of the half-integers.</p></div></div><p>The abstract type <code>HalfInteger &lt;: Real</code> is provided as a supertype for all half-integer types. Concrete half-integer types are provided in the form of the parametric type <code>Half{T} &lt;: HalfInteger</code> where <code>T</code> can be any <code>Integer</code> type. The type <code>Half{T}</code> can represent any number <code>n/2</code> where <code>n</code> is of type <code>T</code>.</p><pre><code class="language-julia-repl">julia&gt; Half{Int}(5//2)
+5/2
+
+julia&gt; Half{Int8}(3)
+3
+
+julia&gt; ans isa HalfInteger
+true
+
+julia&gt; typemin(Half{Int8}), typemax(Half{Int8})
+(-64, 127/2)</code></pre><p>For convenient use, aliases for <code>Half{T}</code> exist for all standard integer types <code>T</code> defined in Julia (except for <code>Bool</code>). For example, <code>HalfInt</code> can be used instead of <code>Half{Int}</code>:</p><pre><code class="language-julia-repl">julia&gt; HalfInt(3.5)
+7/2
+
+julia&gt; typeof(ans) # Half{Int32} or Half{Int64} depending on on system word size
+Half{Int64}</code></pre><p>The following aliases are defined:</p><table><tr><th style="text-align: left"><code>T</code></th><th style="text-align: left">Alias for <code>Half{T}</code></th></tr><tr><td style="text-align: left"><code>Int</code></td><td style="text-align: left"><code>HalfInt</code></td></tr><tr><td style="text-align: left"><code>Int8</code></td><td style="text-align: left"><code>HalfInt8</code></td></tr><tr><td style="text-align: left"><code>Int16</code></td><td style="text-align: left"><code>HalfInt16</code></td></tr><tr><td style="text-align: left"><code>Int32</code></td><td style="text-align: left"><code>HalfInt32</code></td></tr><tr><td style="text-align: left"><code>Int64</code></td><td style="text-align: left"><code>HalfInt64</code></td></tr><tr><td style="text-align: left"><code>Int128</code></td><td style="text-align: left"><code>HalfInt128</code></td></tr><tr><td style="text-align: left"><code>BigInt</code></td><td style="text-align: left"><code>BigHalfInt</code> (<em>not</em> <code>HalfBigInt</code>!)</td></tr><tr><td style="text-align: left"><code>UInt</code></td><td style="text-align: left"><code>HalfUInt</code></td></tr><tr><td style="text-align: left"><code>UInt8</code></td><td style="text-align: left"><code>HalfUInt8</code></td></tr><tr><td style="text-align: left"><code>UInt16</code></td><td style="text-align: left"><code>HalfUInt16</code></td></tr><tr><td style="text-align: left"><code>UInt32</code></td><td style="text-align: left"><code>HalfUInt32</code></td></tr><tr><td style="text-align: left"><code>UInt64</code></td><td style="text-align: left"><code>HalfUInt64</code></td></tr><tr><td style="text-align: left"><code>UInt128</code></td><td style="text-align: left"><code>HalfUInt128</code></td></tr></table><h2><a class="nav-anchor" id="Construction-of-HalfIntegers-1" href="#Construction-of-HalfIntegers-1">Construction of <code>HalfInteger</code>s</a></h2><p><code>HalfInteger</code>s can be created from any other number type using constructors or <code>convert</code>:</p><pre><code class="language-julia-repl">julia&gt; HalfUInt(5.5)
+11/2
+
+julia&gt; convert(BigHalfInt, 3//2)
+3/2
+
+julia&gt; convert(Complex{HalfInt}, 2.5 + 3.5im)
+5/2 + 7/2*im</code></pre><p>Alternatively, one can use the <code>half</code> function, which halves its argument and returns an appropriate <code>HalfInteger</code> or <code>Complex{&lt;:HalfInteger}</code> type:</p><pre><code class="language-julia-repl">julia&gt; half(3)
+3/2
+
+julia&gt; half(4.0)
+2
+
+julia&gt; half(3 - 4im)
+3/2 - 2*im</code></pre><p>Note that the argument must be an integer value (or a complex value with integer real and imaginary parts), but does not need to be of an <code>Integer</code> or <code>Complex{&lt;:Integer}</code> type. An optional argument can be used to specify the return type, which must be <code>&lt;:HalfInteger</code> or <code>&lt;:Complex{&lt;:HalfInteger}</code>:</p><pre><code class="language-julia-repl">julia&gt; half(BigHalfInt, -11)
+-11/2
+
+julia&gt; half(Complex{HalfInt}, 4+1im)
+2 + 1/2*im</code></pre><p>Calling the <code>Half</code> constructor without type parameter is disallowed to avoid confusion with the <code>half</code> function.</p><h2><a class="nav-anchor" id="Arithmetic-operations-1" href="#Arithmetic-operations-1">Arithmetic operations</a></h2><p>The provided half-integer types support all common arithmetic operations. For operations between different types, the values are promoted to an appropriate type:</p><pre><code class="language-julia-repl">julia&gt; HalfInt(1/2) + HalfInt(5)
+11/2
+
+julia&gt; HalfInt(1/2) + 5
+11/2
+
+julia&gt; HalfInt(1/2) + 5.0
+5.5
+
+julia&gt; complex(HalfInt(1/2)) + 5//1
+11//2 + 0//1*im</code></pre><p>Since the product of two half-integers is not a half-integer (unless one of them is actually an integer), multiplication of two <code>HalfInteger</code>s result in a floating-point number. Multiplication of a <code>HalfInteger</code> and an <code>Integer</code> yields another <code>HalfInteger</code>:</p><pre><code class="language-julia-repl">julia&gt; HalfInt(1/2) * HalfInt(7/2)
+1.75
+
+julia&gt; HalfInt(1/2) * HalfInt(5)
+2.5
+
+julia&gt; HalfInt(1/2) * 5
+5/2</code></pre><p>Dividing two half-integers result in a floating-point number as well, but rational and Euclidean division are defined as well:</p><pre><code class="language-julia-repl">julia&gt; HalfInt(7/2) / HalfInt(3/2)
+2.3333333333333335
+
+julia&gt; HalfInt(7/2) // HalfInt(3/2)
+7//3
+
+julia&gt; HalfInt(7/2) ÷ HalfInt(3/2)
+2</code></pre><h2><a class="nav-anchor" id="Auxiliary-functions-1" href="#Auxiliary-functions-1">Auxiliary functions</a></h2><h3><a class="nav-anchor" id="twice-1" href="#twice-1"><code>twice</code></a></h3><p>The <code>twice</code> function can be regarded as the inverse of the <code>half</code> function: it doubles its argument. However, in contrast to <code>half</code>, which always returns a <code>HalfInteger</code> or <code>Complex{&lt;:HalfInteger}</code>, <code>twice</code> only returns an <code>Integer</code> when the argument is a <code>HalfInteger</code> or an <code>Integer</code>. Alternatively, the return type of <code>twice</code> can be specified with an optional first argument:</p><pre><code class="language-julia-repl">julia&gt; twice(HalfInt32(5/2)) # returns an Int32
+5
+
+julia&gt; twice(3.5)            # returns a Float64
+7.0
+
+julia&gt; twice(Integer, 3.5)   # returns an Int
+7</code></pre><p>Furthermore, while <code>half</code> only accepts integer values (or complex values with integer components), the argument of <code>twice</code> may have any numeric value:</p><pre><code class="language-julia-repl">julia&gt; twice(3//8)
+3//4
+
+julia&gt; half(ans)
+ERROR: InexactError: Integer(3//4)</code></pre><h3><a class="nav-anchor" id="onehalf-1" href="#onehalf-1"><code>onehalf</code></a></h3><p>Analogous to <code>zero</code> and <code>one</code>, the function <code>onehalf</code> returns the value 1/2 in the specified type (the argument may be a value of the desired type or the type itself):</p><pre><code class="language-julia-repl">julia&gt; onehalf(HalfInt)
+1/2
+
+julia&gt; onehalf(big&quot;2.0&quot;)
+0.50
+
+julia&gt; onehalf(7//3)
+1//2</code></pre><h3><a class="nav-anchor" id="ishalfinteger-1" href="#ishalfinteger-1"><code>ishalfinteger</code></a></h3><p>The function <code>ishalfinteger</code> can be used to check whether a number is equal to some half-integer:</p><pre><code class="language-julia-repl">julia&gt; ishalfinteger(0.5)
+true
+
+julia&gt; ishalfinteger(4)
+true
+
+julia&gt; ishalfinteger(1//3)
+false</code></pre><h2><a class="nav-anchor" id="Wraparound-behavior-1" href="#Wraparound-behavior-1">Wraparound behavior</a></h2><p>Since the implementation of the <code>HalfInteger</code> type is based on the underlying integers (e.g., standard <code>Int</code> arithmetic in the case of the <code>HalfInt</code> type), <code>HalfInteger</code>s may be subject to <a href="https://docs.julialang.org/en/v1/manual/integers-and-floating-point-numbers/#Overflow-behavior-1">integer overflow</a>:</p><pre><code class="language-julia-repl">julia&gt; typemax(HalfInt64)
+9223372036854775807/2
+
+julia&gt; ans + onehalf(HalfInt64)
+-4611686018427387904</code></pre><p>The behavior in the above example is due to <code>9223372036854775807 + 1 == -9223372036854775808</code>.</p><p>Overflows can also occur when converting an <code>Integer</code> to a <code>HalfInteger</code> type (which may happen implicitly due to promotion):</p><pre><code class="language-julia-repl">julia&gt; typemax(Int64)
+9223372036854775807
+
+julia&gt; HalfInt64(ans)  # 2 * 9223372036854775807 == -2
+-1</code></pre><p>If you prefer checked arithmetic, you can use the <a href="https://github.com/JeffreySarnoff/SaferIntegers.jl">SaferIntegers</a> package:</p><pre><code class="language-julia-repl">julia&gt; using SaferIntegers
+
+julia&gt; const SafeHalfInt64 = Half{SafeInt64}
+Half{SafeInt64}
+
+julia&gt; typemax(SafeHalfInt64)
+9223372036854775807/2
+
+julia&gt; ans + onehalf(SafeHalfInt64)
+ERROR: OverflowError: 9223372036854775807 +y overflowed for type Int64</code></pre><footer><hr/><a class="previous" href="../"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="../api/"><span class="direction">Next</span><span class="title">API documentation</span></a></footer></article></body></html>
