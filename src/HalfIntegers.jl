@@ -35,8 +35,10 @@ is considered a half-integer, regardless of whether ``n`` is even or odd.
 abstract type HalfInteger <: Real end
 
 HalfInteger(x::Real) = HalfInt(x)
+HalfInteger(x::Integer) = Half{typeof(x)}(x)
 HalfInteger(x::HalfInteger) = x
-HalfInteger(x::Union{BigInt,BigFloat,Rational{BigInt}}) = BigHalfInt(x)
+HalfInteger(x::Rational{T}) where T = Half{T}(x)
+HalfInteger(x::BigFloat) = BigHalfInt(x)
 
 (T::Type{<:AbstractFloat})(x::HalfInteger) = T(float(x))
 (T::Type{<:Integer})(x::HalfInteger) =
@@ -57,7 +59,7 @@ Base.:+(x::HalfInteger) = half(+twice(x))
 Base.:-(x::T, y::T) where T<:HalfInteger = half(twice(x)-twice(y))
 Base.:-(x::HalfInteger) = half(-twice(x))
 
-Base.:*(x::T, y::T) where T<:HalfInteger = twice(x)*twice(y)/4
+Base.:*(x::T, y::T) where T<:HalfInteger = float(x)*float(y)
 Base.:*(x::HalfInteger, y::Integer) = half(twice(x)*y)
 Base.:*(x::Integer, y::HalfInteger) = y*x
 

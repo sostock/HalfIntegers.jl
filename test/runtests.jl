@@ -35,23 +35,34 @@ halfuinttypes = (:HalfUInt, :HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :
         @eval @test_throws InexactError $T(-1+0im)
         @eval @test_throws InexactError $T(HalfInt(-2))
     end
-    @test HalfInteger(2.5) isa HalfInteger
-    @test HalfInteger(3) isa HalfInteger
-    @test HalfInteger(31//2) isa HalfInteger
-    @test HalfInteger(1.5 + 0.0im) isa HalfInteger
-    @test HalfInteger(2 + 0im) isa HalfInteger
-    @test_throws InexactError HalfInteger(2im)
-    @test_throws InexactError HalfInteger(2.0im)
-    @test_throws InexactError HalfInteger(big(2im))
-    @test_throws InexactError HalfInteger(big(2.0im))
-    @test HalfInteger(big(2.5)) isa BigHalfInt
-    @test HalfInteger(big(3)) isa BigHalfInt
-    @test HalfInteger(big(31//2)) isa BigHalfInt
-    @test HalfInteger(big(1.5 + 0.0im)) isa BigHalfInt
-    @test HalfInteger(big(2 + 0im)) isa BigHalfInt
-    @test_throws MethodError Half(2)
     @test HalfInt32(HalfInt64(-11/2)) === HalfInt32(-11/2)
     @test HalfUInt8(BigHalfInt(3/2)) === HalfUInt8(3/2)
+    @test HalfInteger(2.5) isa HalfInteger
+    @test HalfInteger(1.5 + 0.0im) isa HalfInteger
+    @test HalfInteger(2 + 0im) isa HalfInteger
+    for T in (inttypes..., uinttypes...)
+        @eval @test HalfInteger($T(3)) === Half{$T}(3)
+        @eval @test HalfInteger($T(3) + $T(0)im) === Half{$T}(3)
+        @eval @test_throws InexactError HalfInteger($T(3) + $T(1)im)
+        @eval @test HalfInteger($T(31)//$T(2)) === Half{$T}(31//2)
+        @eval @test HalfInteger($T(31)//$T(2) + $T(0)//$T(1)*im) === Half{$T}(31//2)
+        @eval @test_throws InexactError HalfInteger($T(31)//$T(2) + $T(1)//$T(1)*im)
+    end
+    @test HalfInteger(big(3)) isa BigHalfInt
+    @test HalfInteger(big(3)) == 3
+    @test HalfInteger(big(3 + 0im)) isa BigHalfInt
+    @test HalfInteger(big(3 + 0im)) == 3
+    @test HalfInteger(big(2.5)) isa BigHalfInt
+    @test HalfInteger(big(2.5)) == 5/2
+    @test HalfInteger(big(2.5 + 0.0im)) isa BigHalfInt
+    @test HalfInteger(big(2.5 + 0.0im)) == 5/2
+    @test HalfInteger(big(31//2)) isa BigHalfInt
+    @test HalfInteger(big(31//2)) == 31/2
+    @test HalfInteger(big(31//2 + 0//1*im)) isa BigHalfInt
+    @test HalfInteger(big(31//2 + 0//1*im)) == 31/2
+    @test_throws InexactError HalfInteger(2.0im)
+    @test_throws InexactError HalfInteger(big(2.0im))
+    @test_throws MethodError Half(2)
 end
 
 @testset "Conversion" begin
@@ -810,6 +821,7 @@ end
     end
 
     @testset "Multiplication" begin
+        @test typemax(HalfInt8)*typemax(HalfInt8) === 16_129/4
         for T in (halfinttypes..., halfuinttypes...)
             @eval @test $T(3/2) * $T(5/2) === 3.75
             @eval @test $T(3/2) * $T(2) === 3.0
@@ -930,6 +942,63 @@ end
             @test Float64(2.0) / BigHalfInt(2) == 1.0
             @test BigFloat(2.0) / BigHalfInt(2) == 1.0
             @test (4//3) / BigHalfInt(3/2) == 8//9
+        end
+
+        @testset "\\" begin
+            for T in (halfinttypes..., halfuinttypes...)
+                @eval @test $T(2) \ $T(3/2) === 0.75
+                @eval @test 2 \ $T(3/2) === 0.75
+                @eval @test BigInt(2) \ $T(3/2) isa BigFloat
+                @eval @test BigInt(2) \ $T(3/2) == 0.75
+                @eval @test Float16(2.0) \ $T(3/2) === Float16(0.75)
+                @eval @test Float32(2.0) \ $T(3/2) === Float32(0.75)
+                @eval @test Float64(2.0) \ $T(3/2) === Float64(0.75)
+                @eval @test BigFloat(2.0) \ $T(3/2) isa BigFloat
+                @eval @test BigFloat(2.0) \ $T(3/2) == 0.75
+                @eval @test (2//3) \ $T(3/2) isa Rational
+                @eval @test (2//3) \ $T(3/2) == 9//4
+                @eval @test $T(2) \ 3 === 1.5
+                @eval @test $T(2) \ BigInt(3) isa BigFloat
+                @eval @test $T(2) \ BigInt(3) == 1.5
+                @eval @test $T(2) \ Float16(3.0) === Float16(1.5)
+                @eval @test $T(2) \ Float32(3.0) === Float32(1.5)
+                @eval @test $T(2) \ Float64(3.0) === Float64(1.5)
+                @eval @test $T(2) \ BigFloat(3.0) isa BigFloat
+                @eval @test $T(2) \ BigFloat(3.0) == 1.5
+                @eval @test $T(5/2) \ (2//3) isa Rational
+                @eval @test $T(5/2) \ (2//3) == 4//15
+            end
+            @test HalfInt16(3/2) \ HalfInt128(3/2) == 1.0
+            @test BigHalfInt(3/2) \ BigHalfInt(3/2) isa BigFloat
+            @test 2 \ BigHalfInt(3/2) isa BigFloat
+            @test BigInt(2) \ BigHalfInt(3/2) isa BigFloat
+            @test Float16(2.0) \ BigHalfInt(3/2) isa BigFloat
+            @test Float32(2.0) \ BigHalfInt(3/2) isa BigFloat
+            @test Float64(2.0) \ BigHalfInt(3/2) isa BigFloat
+            @test BigFloat(2.0) \ BigHalfInt(3/2) isa BigFloat
+            @test (4//3) \ BigHalfInt(3/2) isa Rational{BigInt}
+            @test BigHalfInt(2) \ BigHalfInt(3/2) == 0.75
+            @test 2 \ BigHalfInt(3/2) == 0.75
+            @test BigInt(2) \ BigHalfInt(3/2) == 0.75
+            @test Float16(2.0) \ BigHalfInt(3/2) == 0.75
+            @test Float32(2.0) \ BigHalfInt(3/2) == 0.75
+            @test Float64(2.0) \ BigHalfInt(3/2) == 0.75
+            @test BigFloat(2.0) \ BigHalfInt(3/2) == 0.75
+            @test (4//3) \ BigHalfInt(3/2) == 9//8
+            @test BigHalfInt(2) \ 2 isa BigFloat
+            @test BigHalfInt(3/2) \ BigInt(2) isa BigFloat
+            @test BigHalfInt(3/2) \ Float16(2.0) isa BigFloat
+            @test BigHalfInt(3/2) \ Float32(2.0) isa BigFloat
+            @test BigHalfInt(3/2) \ Float64(2.0) isa BigFloat
+            @test BigHalfInt(3/2) \ BigFloat(2.0) isa BigFloat
+            @test BigHalfInt(3/2) \ (1//3) isa Rational{BigInt}
+            @test BigHalfInt(2) \ 2 == 1.0
+            @test BigHalfInt(2) \ BigInt(2) == 1.0
+            @test BigHalfInt(2) \ Float16(2.0) == 1.0
+            @test BigHalfInt(2) \ Float32(2.0) == 1.0
+            @test BigHalfInt(2) \ Float64(2.0) == 1.0
+            @test BigHalfInt(2) \ BigFloat(2.0) == 1.0
+            @test BigHalfInt(3/2) \ (4//3) == 8//9
         end
 
         @testset "//" begin
@@ -1288,6 +1357,43 @@ end
         @test complex(BigHalfInt(-2))^HalfInt(5/2) ≈ √32*im
     end
 
+    @testset "abs" begin
+        for T in halfinttypes
+            @eval @test abs($T(0)) === $T(0)
+            @eval @test abs($T(1)) === $T(1)
+            @eval @test abs($T(11/2)) === $T(11/2)
+            @eval @test abs($T(-1/2)) === $T(1/2)
+            @eval @test abs($T(-3)) === $T(3)
+        end
+        for T in halfuinttypes
+            @eval @test abs($T(0)) === $T(0)
+            @eval @test abs($T(1)) === $T(1)
+            @eval @test abs($T(11/2)) === $T(11/2)
+        end
+        @test @inferred(abs(BigHalfInt(0))) isa BigHalfInt
+        @test abs(BigHalfInt(0)) == BigHalfInt(0)
+        @test abs(BigHalfInt(1)) == BigHalfInt(1)
+        @test abs(BigHalfInt(11/2)) == BigHalfInt(11/2)
+        @test abs(BigHalfInt(-1/2)) == BigHalfInt(1/2)
+        @test abs(BigHalfInt(-3)) == BigHalfInt(3)
+    end
+
+    @testset "abs2" begin
+        @test @inferred(abs2(BigHalfInt(0))) isa BigFloat
+        for T in (halfinttypes..., :BigHalfInt)
+            @eval @test abs2($T(0)) == 0.0
+            @eval @test abs2($T(1)) == 1.0
+            @eval @test abs2($T(11/2)) == 30.25
+            @eval @test abs2($T(-1/2)) == 0.25
+            @eval @test abs2($T(-3)) == 9.0
+        end
+        for T in halfuinttypes
+            @eval @test abs2($T(0)) == 0.0
+            @eval @test abs2($T(1)) == 1.0
+            @eval @test abs2($T(11/2)) == 30.25
+        end
+    end
+
     @testset "sign" begin
         for T in (halfinttypes..., :BigHalfInt)
             @eval @test sign($T(0)) == 0
@@ -1300,6 +1406,21 @@ end
             @eval @test sign($T(0)) == 0
             @eval @test sign($T(1)) == 1
             @eval @test sign($T(11/2)) == 1
+        end
+    end
+
+    @testset "signbit" begin
+        for T in (halfinttypes..., :BigHalfInt)
+            @eval @test signbit($T(0)) === false
+            @eval @test signbit($T(1)) === false
+            @eval @test signbit($T(11/2)) === false
+            @eval @test signbit($T(-1/2)) === true
+            @eval @test signbit($T(-3)) === true
+        end
+        for T in halfuinttypes
+            @eval @test signbit($T(0)) === false
+            @eval @test signbit($T(1)) === false
+            @eval @test signbit($T(11/2)) === false
         end
     end
 
@@ -1899,5 +2020,56 @@ end
             @eval @test_broken (1:3:7) ∩ ($T(3):$T(5)) == 4:3:4
             @eval @test_broken ($T(3):$T(5)) ∩ (1:3:7) == 4:3:4
         end
+    end
+end
+
+using SaferIntegers
+
+safeinttypes  = (:SafeInt, :SafeInt8, :SafeInt16, :SafeInt32, :SafeInt64, :SafeInt128)
+safeuinttypes = (:SafeUInt, :SafeUInt8, :SafeUInt16, :SafeUInt32, :SafeUInt64, :SafeUInt128)
+
+@testset "SaferIntegers" begin
+    @test_throws OverflowError Half{SafeInt8}(typemax(Int8))
+    @test_throws OverflowError typemax(Half{SafeInt8}) + one(HalfInt8)
+    @test_throws OverflowError typemax(Half{SafeInt8}) + one(Int8)
+    @test_throws OverflowError typemin(Half{SafeInt8}) - one(HalfInt8)
+    @test_throws OverflowError typemin(Half{SafeInt8}) - one(Int8)
+    for T in safeinttypes
+        @eval @test HalfInteger(one($T)) === one(Half{$T})
+        @eval @test_throws OverflowError Half{$T}(typemax($T))
+        @eval @test_throws OverflowError Half{$T}(typemin($T))
+        @eval @test_throws OverflowError Half{$T}(typemax($T)//one($T))
+        @eval @test_throws OverflowError Half{$T}(typemin($T)//one($T))
+        @eval @test_throws OverflowError Half{$T}(complex(typemax($T)))
+        @eval @test_throws OverflowError Half{$T}(complex(typemin($T)))
+        @eval @test_throws OverflowError Half{$T}(complex(typemax($T)//one($T)))
+        @eval @test_throws OverflowError Half{$T}(complex(typemin($T)//one($T)))
+        @eval @test_throws OverflowError -typemin(Half{$T})
+        @eval @test_throws OverflowError abs(typemin(Half{$T}))
+        @eval @test_throws OverflowError typemax(Half{$T}) + onehalf(Half{$T})
+        @eval @test_throws OverflowError typemin(Half{$T}) - onehalf(Half{$T})
+        @eval @test_throws OverflowError twice(typemax($T))
+        @eval @test_throws OverflowError twice(typemin($T))
+        @eval @test_throws OverflowError round(typemax(Half{$T}))
+        @eval @test_throws OverflowError round(typemax(Half{$T}), RoundNearest)
+        @eval @test_throws OverflowError round(typemax(Half{$T}), RoundNearestTiesAway)
+        @eval @test_throws OverflowError round(typemax(Half{$T}), RoundNearestTiesUp)
+        @eval @test_throws OverflowError round(typemax(Half{$T}), RoundUp)
+    end
+    for T in safeuinttypes
+        @eval @test HalfInteger(one($T)) === one(Half{$T})
+        @eval @test_throws OverflowError Half{$T}(typemax($T))
+        @eval @test_throws OverflowError Half{$T}(typemax($T)//one($T))
+        @eval @test_throws OverflowError Half{$T}(complex(typemax($T)))
+        @eval @test_throws OverflowError Half{$T}(complex(typemax($T)//one($T)))
+        @eval @test_throws OverflowError -onehalf(Half{$T})
+        @eval @test_throws OverflowError typemax(Half{$T}) + onehalf(Half{$T})
+        @eval @test_throws OverflowError typemin(Half{$T}) - onehalf(Half{$T})
+        @eval @test_throws OverflowError twice(typemax($T))
+        @eval @test_throws OverflowError round(typemax(Half{$T}))
+        @eval @test_throws OverflowError round(typemax(Half{$T}), RoundNearest)
+        @eval @test_throws OverflowError round(typemax(Half{$T}), RoundNearestTiesAway)
+        @eval @test_throws OverflowError round(typemax(Half{$T}), RoundNearestTiesUp)
+        @eval @test_throws OverflowError round(typemax(Half{$T}), RoundUp)
     end
 end
