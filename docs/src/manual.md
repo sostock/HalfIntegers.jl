@@ -186,3 +186,7 @@ julia> typemax(SafeHalfInt64)
 julia> ans + onehalf(SafeHalfInt64)
 ERROR: OverflowError: 9223372036854775807 +y overflowed for type Int64
 ```
+
+!!! warning
+    
+    Some `Half{<:SafeInteger}` types require Julia ≥ 1.1 and SaferIntegers ≥ 2.2.0 to work correctly.
