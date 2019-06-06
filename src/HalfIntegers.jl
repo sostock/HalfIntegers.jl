@@ -101,8 +101,6 @@ Base.round(x::HalfInteger, ::typeof(RoundDown)) =
 
 Base.big(x::HalfInteger) = BigHalfInt(x)
 
-Base.decompose(x::HalfInteger) = twice(x), 0, 2
-
 Base.float(x::HalfInteger) = twice(x)/2
 
 Base.isfinite(x::HalfInteger) = isfinite(twice(x))
@@ -149,6 +147,30 @@ Base.any(::typeof(isinteger), r::AbstractUnitRange{<:HalfInteger}) =
     !isempty(r) & isinteger(first(r))
 Base.any(::typeof(!isinteger), r::AbstractUnitRange{<:HalfInteger}) =
     !isempty(r) & !isinteger(first(r))
+
+
+# Hashing
+
+
+Base.decompose(x::HalfInteger) = twice(x), 0, 2
+
+Base.hash(x::HalfInteger, h::UInt) = hashhalf(twice(x), h)
+
+# Compute hash(half(x), h)
+hashhalf(x::Integer, h::UInt) = invoke(hash, Tuple{Real,UInt}, half(x), h)
+
+# Version for integers with ≤ 64 bits, adapted from hash(::Rational{<:Base.BitInteger64}, ::UInt)
+function hashhalf(x::Base.BitInteger64, h::UInt)
+    iseven(x) && return hash(x÷2, h)
+    if abs(x) < 9007199254740992
+        return hash(ldexp(Float64(x),-1),h)
+    end
+    h = Base.hash_integer(1, h)
+    h = Base.hash_integer(-1, h)
+    h = Base.hash_integer(x, h)
+    return h
+end
+
 
 """
     half([T<:HalfInteger,] x)

@@ -1694,6 +1694,12 @@ end
         @eval @test @inferred(hash($T(1))) === hash(1)
         @eval @test @inferred(hash($T(5/2))) === hash(5//2)
     end
+    for T in (inttypes..., uinttypes...)
+        @eval @test @inferred(hash(half(typemax($T)))) === hash(typemax($T)//2)
+        @eval @test @inferred(hash(half(typemin($T)))) === hash(typemin($T)//2)
+    end
+    @test @inferred(hash(half(-393050634124102232869567034555427371542904833))) ===
+        hash(-393050634124102232869567034555427371542904833//2)
 end
 
 @testset "widen" begin
