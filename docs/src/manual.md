@@ -190,3 +190,92 @@ ERROR: OverflowError: 9223372036854775807 +y overflowed for type Int64
 !!! warning
     
     Some `Half{<:SafeInteger}` types require Julia ≥ 1.1 and SaferIntegers ≥ 2.2.1 to work correctly.
+
+## Custom `HalfInteger` types
+
+To implement a custom type `MyHalfInt <: HalfInteger`, at least the following methods must be defined:
+
+| Required method | Brief description |
+| :-------------- | :---------------- |
+| `half(::Type{MyHalfInt}, x)` | Return `x/2` as a value of type `MyHalfInt` |
+| `twice(x::MyHalfInt)`        | Return `2x` as a value of some `Integer` type |
+
+Thus, a simple implementation of a custom `HalfInteger` type may look like this:
+
+```@example halfintegers
+struct MyHalfInt <: HalfInteger
+    val::HalfInt
+end
+
+MyHalfInt(x::MyHalfInt) = x  # to avoid method ambiguity
+
+HalfIntegers.half(::Type{MyHalfInt}, x) = MyHalfInt(half(HalfInt, x))
+
+HalfIntegers.twice(x::MyHalfInt) = twice(x.val)
+nothing # hide
+```
+
+The `MyHalfInt` type supports all arithmetic operations defined for `HalfInteger`s. However, some operations will return values of a `Half{T}` type, which may not be desirable:
+
+```@repl halfintegers
+MyHalfInt(3/2) + MyHalfInt(2)
+typeof(ans)
+```
+
+The following sections describe how to customize this behavior.
+
+### Customizing arithmetic operators and functions
+
+The operators/functions that return a `Half{T}` type are `+`, `-`, `mod` and `rem` (and other functions that make use of those, like `round`).
+If we want those operations to return `MyHalfInt`s, we can define the following methods (note that both one- and two-argument versions of `+` and `-` are defined):
+
+```@example halfintegers
+Base.:+(x::MyHalfInt) = x
+Base.:+(x::MyHalfInt, y::MyHalfInt) = MyHalfInt(x.val + y.val)
+
+Base.:-(x::MyHalfInt) = MyHalfInt(-x.val)
+Base.:-(x::MyHalfInt, y::MyHalfInt) = MyHalfInt(x.val - y.val)
+
+Base.mod(x::MyHalfInt, y::MyHalfInt) = MyHalfInt(mod(x.val, y.val))
+Base.rem(x::MyHalfInt, y::MyHalfInt) = MyHalfInt(rem(x.val, y.val))
+nothing # hide
+```
+
+Now, these arithmetic operations will return a `MyHalfInt` for `MyHalfInt` arguments.
+Certain operations will still yield other types:
+* `*` and `/` return floating-point numbers,
+* `div`, `fld`, `cld` etc. return values of some `Integer` type.
+To change this behavior, we would need to define methods for these functions as well.
+For example, if we want our `MyHalfInt` type to return a `Rational` for multiplication and division, we could define the following methods:
+
+```@example halfintegers
+Base.:*(x::MyHalfInt, y::MyHalfInt) = twice(x)*twice(y)//4
+Base.:/(x::MyHalfInt, y::MyHalfInt) = twice(x)//twice(y)
+nothing # hide
+```
+
+### Promotion rules
+
+In order to make mixed-type operations work with our `MyHalfInt` type, promotion rules need to be defined.
+As a simple example, we can define our `MyHalfInt` type to promote like `HalfInt` as follows:
+
+```@example halfintegers
+Base.promote_rule(::Type{MyHalfInt}, T::Type{<:Real}) = promote_type(HalfInt, T)
+nothing # hide
+```
+
+For more information on how to define promotion rules, cf. the
+[Julia documentation](https://docs.julialang.org/en/v1/manual/conversion-and-promotion/#Promotion-1).
+
+### Ranges of custom `HalfInteger` types
+
+Ranges of custom `HalfInteger` types should work out-of-the-box, but intersecting them may again yield ranges of `Half{T}` values:
+
+```@repl halfintegers
+a = MyHalfInt(3/2):MyHalfInt(3/2):MyHalfInt(15/2)
+b = MyHalfInt(2):MyHalfInt(1):MyHalfInt(9)
+intersect(a, b)
+typeof(ans)
+```
+
+In order to change this behavior, custom methods for `Base.intersect` need to be defined as well.
