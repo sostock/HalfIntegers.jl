@@ -7,11 +7,15 @@ Functions for convenient use are defined as well.
 
 ## Installation
 
-Until HalfIntegers.jl is registered, you can install it by typing
+HalfIntegers.jl is compatible with Julia ≥ 0.7.
+It can be installed by typing
 ```
-add https://github.com/sostock/HalfIntegers.jl
+] add HalfIntegers
 ```
-in `Pkg` REPL mode.
+in the Julia REPL or via
+```julia
+using Pkg; Pkg.add("HalfIntegers")
+```
 
 ## Contents
 

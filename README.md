@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/sostock/HalfIntegers.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/sostock/HalfIntegers.jl)
 [![Coverage Status](https://coveralls.io/repos/github/sostock/HalfIntegers.jl/badge.svg?branch=master)](https://coveralls.io/github/sostock/HalfIntegers.jl?branch=master)
 
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://sostock.github.io/HalfIntegers.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://sostock.github.io/HalfIntegers.jl/dev)
 
 This package provides data types for half-integer numbers. Here, any number *n*/2 where *n*
@@ -17,6 +18,18 @@ For example, the `HalfInt` type provided by this package can be used to represen
 signed and unsigned integer types, e.g., `HalfInt8`, `HalfUInt128`, and `BigHalfInt` for
 arbitrarily large half-integers. All half-integer types are subtypes of the abstract type
 `HalfInteger`.
+
+## Installation
+
+HalfIntegers.jl is compatible with Julia ≥ 0.7.
+It can be installed by typing
+```
+] add HalfIntegers
+```
+in the Julia REPL or via
+```julia
+using Pkg; Pkg.add("HalfIntegers")
+```
 
 ## Basic usage
 
