@@ -131,6 +131,46 @@ HalfIntegers.twice(x::MyHalfInt) = twice(x.val)
         @test trunc(Int, MyHalfInt(7/2)) === 3
     end
 
+    Base.promote_rule(::Type{MyHalfInt}, T::Type{<:Real}) = promote_type(HalfInt, T)
+
+    @testset "Promotion" begin
+        @test MyHalfInt(2) == 2
+        @test MyHalfInt(2) == 2//1
+        @test MyHalfInt(2) == 2.0
+        @test MyHalfInt(2) != nextfloat(2.0)
+        @test MyHalfInt(3/2) < 2.6
+        @test MyHalfInt(2)^MyHalfInt(4) ≈ 16
+        @test MyHalfInt(2) + 3 === HalfInt(5)
+    end
+
+    @testset "Ranges" begin
+        @testset "UnitRange" begin
+            @test MyHalfInt(1/2):MyHalfInt(5) isa UnitRange{MyHalfInt}
+            @test MyHalfInt(1/2):MyHalfInt(5) === MyHalfInt(1/2):MyHalfInt(9/2)
+            @test first(MyHalfInt(1/2):MyHalfInt(5)) === MyHalfInt(1/2)
+            @test last(MyHalfInt(1/2):MyHalfInt(5)) === MyHalfInt(9/2)
+            @test length(MyHalfInt(1/2):MyHalfInt(5)) == 5
+            @test isempty(MyHalfInt(1):MyHalfInt(1/2))
+            @test 2.5 ∈ MyHalfInt(1/2):MyHalfInt(5)
+            @test !any(isinteger, MyHalfInt(1/2):MyHalfInt(5))
+        end
+
+        @testset "StepRange" begin
+            @test MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5) isa StepRange{MyHalfInt,MyHalfInt}
+            @test MyHalfInt(2):MyHalfInt(2):MyHalfInt(5) === MyHalfInt(2):MyHalfInt(2):MyHalfInt(4)
+            @test first(MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5)) === MyHalfInt(2)
+            @test last(MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5)) === MyHalfInt(5)
+            @test length(MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5)) == 7
+            @test 2.5 ∈ MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5)
+        end
+
+        @test @inferred(intersect(MyHalfInt(1/2):MyHalfInt(2), MyHalfInt(3/2):MyHalfInt(3))) === MyHalfInt(3/2):MyHalfInt(3/2)
+        @test isempty(intersect(MyHalfInt(1/2):MyHalfInt(2), MyHalfInt(1):MyHalfInt(3)))
+        @test @inferred(intersect(MyHalfInt(3/2):MyHalfInt(3/2):MyHalfInt(15/2), MyHalfInt(2):MyHalfInt(1):MyHalfInt(9))) ==
+            3:3:6
+        @test @inferred(reverse(MyHalfInt(1/2):MyHalfInt(3/2))) == MyHalfInt(3/2):MyHalfInt(-1):MyHalfInt(1/2)
+    end
+
     Base.:+(x::MyHalfInt) = x
     Base.:+(x::MyHalfInt, y::MyHalfInt) = MyHalfInt(x.val + y.val)
 
@@ -192,42 +232,5 @@ HalfIntegers.twice(x::MyHalfInt) = twice(x.val)
         @test ceil(Int, MyHalfInt(7/2)) === 4
         @test floor(Int, MyHalfInt(7/2)) === 3
         @test trunc(Int, MyHalfInt(7/2)) === 3
-    end
-
-    Base.promote_rule(::Type{MyHalfInt}, T::Type{<:Real}) = promote_type(HalfInt, T)
-
-    @testset "Promotion" begin
-        @test MyHalfInt(2) == 2
-        @test MyHalfInt(2) == 2//1
-        @test MyHalfInt(2) == 2.0
-        @test MyHalfInt(2) != nextfloat(2.0)
-        @test MyHalfInt(3/2) < 2.6
-        @test MyHalfInt(2)^MyHalfInt(4) ≈ 16
-        @test MyHalfInt(2) + 3 === HalfInt(5)
-    end
-
-    @testset "Ranges" begin
-        @testset "UnitRange" begin
-            @test MyHalfInt(1/2):MyHalfInt(5) isa UnitRange{MyHalfInt}
-            @test MyHalfInt(1/2):MyHalfInt(5) === MyHalfInt(1/2):MyHalfInt(9/2)
-            @test first(MyHalfInt(1/2):MyHalfInt(5)) === MyHalfInt(1/2)
-            @test last(MyHalfInt(1/2):MyHalfInt(5)) === MyHalfInt(9/2)
-            @test length(MyHalfInt(1/2):MyHalfInt(5)) == 5
-            @test isempty(MyHalfInt(1):MyHalfInt(1/2))
-            @test 2.5 ∈ MyHalfInt(1/2):MyHalfInt(5)
-            @test !any(isinteger, MyHalfInt(1/2):MyHalfInt(5))
-        end
-
-        @testset "StepRange" begin
-            @test MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5) isa StepRange{MyHalfInt,MyHalfInt}
-            @test MyHalfInt(2):MyHalfInt(2):MyHalfInt(5) === MyHalfInt(2):MyHalfInt(2):MyHalfInt(4)
-            @test first(MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5)) === MyHalfInt(2)
-            @test last(MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5)) === MyHalfInt(5)
-            @test length(MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5)) == 7
-            @test 2.5 ∈ MyHalfInt(2):MyHalfInt(1/2):MyHalfInt(5)
-        end
-
-        @test reverse(MyHalfInt(1/2):MyHalfInt(3/2)) == MyHalfInt(3/2):MyHalfInt(-1):MyHalfInt(1/2)
-        @test intersect(MyHalfInt(3/2):MyHalfInt(3/2):MyHalfInt(15/2), MyHalfInt(2):MyHalfInt(1):MyHalfInt(9)) == 3:3:6
     end
 end

@@ -313,7 +313,9 @@ Base.in(x::Real, r::AbstractUnitRange{<:HalfInteger}) =
 function Base.intersect(r::AbstractUnitRange{<:HalfInteger},
                         s::AbstractUnitRange{<:HalfIntegerOrInteger})
     fir = max(first(r),first(s))
-    fir:ifelse(isinteger(first(r)) ⊻ isinteger(first(s)), fir-one(fir), min(last(r),last(s)))
+    las = min(last(r), last(s))
+    las = ifelse(isinteger(first(r)) ⊻ isinteger(first(s)), oftype(las, fir-one(fir)), las)
+    fir:las
 end
 Base.intersect(r::AbstractUnitRange{<:Integer}, s::AbstractUnitRange{<:HalfInteger}) = s ∩ r
 
