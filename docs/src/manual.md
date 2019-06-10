@@ -269,7 +269,8 @@ For more information on how to define promotion rules, cf. the
 
 ### Ranges of custom `HalfInteger` types
 
-Ranges of custom `HalfInteger` types should work out-of-the-box, but intersecting them may again yield ranges of `Half{T}` values:
+Ranges of custom `HalfInteger` types should work if either custom arithmetics or promotion rules are defined.
+However, intersecting these ranges may again yield ranges of `Half{T}` values:
 
 ```@repl halfintegers
 a = MyHalfInt(3/2):MyHalfInt(3/2):MyHalfInt(15/2)
