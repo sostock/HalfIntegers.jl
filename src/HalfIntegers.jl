@@ -46,6 +46,8 @@ HalfInteger(x::BigFloat) = BigHalfInt(x)
 (T::Type{<:Rational})(x::HalfInteger) = (t=twice(x); T(t,oftype(t,2)))
 Base.Bool(x::HalfInteger) = invoke(Bool, Tuple{Real}, x)
 
+Base.ArithmeticStyle(::Type{<:HalfInteger}) = Base.ArithmeticWraps()
+
 for op in (:<, :≤, :(==))
     @eval Base.$op(x::HalfInteger, y::HalfInteger) = $op(twice(x), twice(y))
     @eval Base.$op(x::HalfInteger, y::Integer) = ((pt,py)=promote(twice(x),y); $op(pt, twice(py)))
