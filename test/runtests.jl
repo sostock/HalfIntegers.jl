@@ -1245,12 +1245,20 @@ end
             @eval @test big(2.0)^$T(-3/2) ≈ 1/√8
             @eval @test big(2.0)^$T(4) ≈ 16
             @eval @test big(2.0)^$T(-3) ≈ 1/8
+            @eval @test exp($T(5/2)) ≈ exp(2.5)
+            @eval @test exp($T(5/2)*im) ≈ exp(2.5*im)
+            @eval @test ℯ^$T(5/2) == exp($T(5/2))
+            @eval @test ℯ^($T(5/2)*im) == exp($T(5/2)*im)
         end
         for T in halfuinttypes
             @eval @test 2^$T(5/2) ≈ √32
             @eval @test 2^$T(4) ≈ 16
             @eval @test 2.0^$T(5/2) ≈ √32
             @eval @test 2.0^$T(4) ≈ 16
+            @eval @test exp($T(5/2)) ≈ exp(2.5)
+            @eval @test exp($T(5/2)*im) ≈ exp(2.5*im)
+            @eval @test ℯ^$T(5/2) == exp($T(5/2))
+            @eval @test ℯ^($T(5/2)*im) == exp($T(5/2)*im)
         end
         @test 2^BigHalfInt(5/2) isa BigFloat
         @test 2^BigHalfInt(5/2) ≈ √32
@@ -1268,6 +1276,14 @@ end
         @test big(2.0)^BigHalfInt(-3/2) ≈ 1/√8
         @test big(2.0)^BigHalfInt(4) ≈ 16
         @test big(2.0)^BigHalfInt(-3) ≈ 1/8
+        @test exp(BigHalfInt(5/2)) isa BigFloat
+        @test exp(BigHalfInt(5/2)*im) isa Complex{BigFloat}
+        @test exp(BigHalfInt(5/2)) ≈ exp(big(2.5))
+        @test exp(BigHalfInt(5/2)*im) ≈ exp(big(2.5)*im)
+        @test ℯ^BigHalfInt(5/2) isa BigFloat
+        @test ℯ^(BigHalfInt(5/2)*im) isa Complex{BigFloat}
+        @test ℯ^BigHalfInt(5/2) == exp(BigHalfInt(5/2))
+        @test ℯ^(BigHalfInt(5/2)*im) == exp(BigHalfInt(5/2)*im)
         # Half-integer base
         for T in halfinttypes
             @eval @test $T(2)^4 ≈ 16

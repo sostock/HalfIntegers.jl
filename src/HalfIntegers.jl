@@ -72,6 +72,7 @@ Base.://(x::HalfInteger, y) = twice(x)//twice(y)
 Base.://(x, y::HalfInteger) = twice(x)//twice(y)
 
 Base.:^(x::Real, y::HalfInteger) = x^float(y)
+Base.:^(::Irrational{:ℯ}, x::HalfInteger) = exp(x)
 
 Base.div(x::T, y::T) where T<:HalfInteger = div(twice(x), twice(y))
 Base.fld(x::T, y::T) where T<:HalfInteger = fld(twice(x), twice(y))
