@@ -1,5 +1,5 @@
-@static if VERSION > v"1.0.4"
-    # In Julia ≤ 1.0.4, zero(Half{T}) and one(Half{T}) do not work for
+@static if VERSION ≥ v"1.1"
+    # In Julia < 1.1, zero(Half{T}) and one(Half{T}) do not work for
     # T ∈ [SafeInt8, SafeInt16, SafeUInt8, SafeUInt16] due to a bug in Julia, cf.
     # https://github.com/JuliaLang/julia/issues/32203
 
