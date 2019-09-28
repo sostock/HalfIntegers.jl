@@ -184,7 +184,7 @@ julia> typemax(SafeHalfInt64)
 9223372036854775807/2
 
 julia> ans + onehalf(SafeHalfInt64)
-ERROR: OverflowError: 9223372036854775807 +y overflowed for type Int64
+ERROR: OverflowError: 9223372036854775807 + 1 overflowed for type Int64
 ```
 
 !!! warning
