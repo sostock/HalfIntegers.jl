@@ -10,7 +10,6 @@ using HalfIntegers
 ```
 
 !!! note
-    
     In this package, any number ``\frac{n}{2}`` where ``n\in\mathbb{Z}`` is considered a half-integer -- contrary to the common definition, ``n`` does not have to be odd, i.e., the integers are a subset of the half-integers.
 
 The abstract type `HalfInteger <: Real` is provided as a supertype for all half-integer types.
@@ -187,9 +186,8 @@ julia> ans + onehalf(SafeHalfInt64)
 ERROR: OverflowError: 9223372036854775807 + 1 overflowed for type Int64
 ```
 
-!!! warning
-    
-    Some `Half{<:SafeInteger}` types require Julia ≥ 1.1 and SaferIntegers ≥ 2.2.1 to work correctly.
+!!! compat
+    Due to a [bug](https://github.com/JuliaLang/julia/issues/32203), the `Half{SafeInt8}`, `Half{SafeInt16}`, `Half{SafeUInt8}` and `Half{SafeUInt16}` types require Julia ≥ 1.1 to work correctly.
 
 ## Custom `HalfInteger` types
 
