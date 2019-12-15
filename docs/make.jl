@@ -1,6 +1,8 @@
 using Documenter
 using HalfIntegers
 
+DocMeta.setdocmeta!(HalfIntegers, :DocTestSetup, :(using HalfIntegers))
+
 makedocs(
     sitename = "HalfIntegers.jl",
     format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
