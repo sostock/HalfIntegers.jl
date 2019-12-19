@@ -74,9 +74,13 @@ Base.://(x, y::HalfInteger) = twice(x)//twice(y)
 Base.:^(x::Real, y::HalfInteger) = x^float(y)
 Base.:^(::Irrational{:ℯ}, x::HalfInteger) = exp(x)
 
-Base.div(x::T, y::T) where T<:HalfInteger = div(twice(x), twice(y))
-Base.fld(x::T, y::T) where T<:HalfInteger = fld(twice(x), twice(y))
-Base.cld(x::T, y::T) where T<:HalfInteger = cld(twice(x), twice(y))
+@static if VERSION < v"1.4.0-DEV.208"
+    Base.div(x::T, y::T) where T<:HalfInteger = div(twice(x), twice(y))
+else
+    Base.div(x::T, y::T, r::RoundingMode) where T<:HalfInteger = div(twice(x), twice(y), r)
+end
+Base.fld(x::T, y::T) where T<:HalfInteger = fld(twice(x), twice(y)) # can be removed in Julia 2.0
+Base.cld(x::T, y::T) where T<:HalfInteger = cld(twice(x), twice(y)) # can be removed in Julia 2.0
 Base.rem(x::T, y::T) where T<:HalfInteger = half(rem(twice(x), twice(y)))
 Base.mod(x::T, y::T) where T<:HalfInteger = half(mod(twice(x), twice(y)))
 

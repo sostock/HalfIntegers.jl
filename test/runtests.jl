@@ -1035,196 +1035,63 @@ end
             @test (4//3) // BigHalfInt(3/2) == 8//9
         end
 
-        @testset "div/fld/fld1/cld/rem/mod" begin
-            for T in (halfinttypes..., halfuinttypes...)
-                # 7/2, 3/2
-                @eval @test div($T(7/2), $T(3/2)) == 2
-                @eval @test fld($T(7/2), $T(3/2)) == 2
-                @eval @test cld($T(7/2), $T(3/2)) == 3
-                @eval @test rem($T(7/2), $T(3/2)) === $T(1/2)
-                @eval @test mod($T(7/2), $T(3/2)) === $T(1/2)
-                @eval @test fld1($T(7/2), $T(3/2)) == 3
-                @eval @test mod1($T(7/2), $T(3/2)) === $T(1/2)
-                # 7/2, 1/2
-                @eval @test div($T(7/2), $T(1/2)) == 7
-                @eval @test fld($T(7/2), $T(1/2)) == 7
-                @eval @test cld($T(7/2), $T(1/2)) == 7
-                @eval @test rem($T(7/2), $T(1/2)) === $T(0)
-                @eval @test mod($T(7/2), $T(1/2)) === $T(0)
-                @eval @test fld1($T(7/2), $T(1/2)) == 7
-                @eval @test mod1($T(7/2), $T(1/2)) === $T(1/2)
-                # 9/2, 3
-                @eval @test div($T(9/2), 3) == 1
-                @eval @test fld($T(9/2), 3) == 1
-                @eval @test cld($T(9/2), 3) == 2
-                @eval @test rem($T(9/2), 3) == 3/2
-                @eval @test mod($T(9/2), 3) == 3/2
-                @eval @test fld1($T(9/2), 3) == 2
-                @eval @test mod1($T(9/2), 3) == 3/2
-                # 7/2, -2
-                @eval @test div($T(7/2), big(-2)) == -1
-                @eval @test fld($T(7/2), big(-2)) == -2
-                @eval @test cld($T(7/2), big(-2)) == -1
-                @eval @test rem($T(7/2), big(-2)) == 3/2
-                @eval @test mod($T(7/2), big(-2)) == -1/2
-                @eval @test fld1($T(7/2), big(-2)) == -1
-                @eval @test mod1($T(7/2), big(-2)) == -1/2
-                # 4, 3/2
-                @eval @test div(4, $T(3/2)) == 2
-                @eval @test fld(4, $T(3/2)) == 2
-                @eval @test cld(4, $T(3/2)) == 3
-                @eval @test rem(4, $T(3/2)) == 1
-                @eval @test mod(4, $T(3/2)) == 1
-                @eval @test fld1(4, $T(3/2)) == 3
-                @eval @test mod1(4, $T(3/2)) == 1
-                # -7, 5/2
-                @eval @test div(big(-7), $T(5/2)) == -2
-                @eval @test fld(big(-7), $T(5/2)) == -3
-                @eval @test cld(big(-7), $T(5/2)) == -2
-                @eval @test rem(big(-7), $T(5/2)) == -2
-                @eval @test mod(big(-7), $T(5/2)) == 1/2
-                @eval @test fld1(big(-7), $T(5/2)) == -2
-                @eval @test mod1(big(-7), $T(5/2)) == 1/2
+        @testset "div/rem/mod" begin
+            for f in (:div, :fld, :cld, :rem, :mod, :fld1, :mod1)
+                for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
+                    @eval @test @inferred($f($T(7/2), $T(3/2))) == $f(7//2, 3//2)
+                    @eval @test @inferred($f($T(7/2), $T(1/2))) == $f(7//2, 1//2)
+                    @eval @test @inferred($f($T(9/2), 3)) == $f(9//2, 3)
+                    @eval @test @inferred($f($T(7/2), big(-2))) == $f(7//2, -2)
+                    @eval @test @inferred($f(4, $T(3/2))) == $f(4, 3//2)
+                    @eval @test @inferred($f(big(-7), $T(5/2))) == $f(-7, 5//2)
+                end
+                @eval @test @inferred($f(HalfInt32(7/2), HalfInt128(3/2))) == $f(7//2, 3//2)
+                @eval @test @inferred($f(HalfInt8(7/2), HalfInt64(1/2))) == $f(7//2, 1//2)
+                @eval @test @inferred($f(HalfInt16(9/2), HalfInt32(3))) == $f(9//2, 3)
+                @eval @test @inferred($f(HalfInt64(7/2), HalfInt128(-2))) == $f(7//2, -2)
+                @eval @test @inferred($f(HalfInt16(4), HalfInt8(3/2))) == $f(4, 3//2)
+                @eval @test @inferred($f(HalfInt64(-7), HalfInt32(5/2))) == $f(-7, 5//2)
             end
-            # 7/2, 3/2
-            @test div(HalfInt32(7/2), HalfInt128(3/2)) == 2
-            @test fld(HalfInt32(7/2), HalfInt128(3/2)) == 2
-            @test cld(HalfInt32(7/2), HalfInt128(3/2)) == 3
-            @test rem(HalfInt32(7/2), HalfInt128(3/2)) == 1/2
-            @test mod(HalfInt32(7/2), HalfInt128(3/2)) == 1/2
-            @test fld1(HalfInt32(7/2), HalfInt128(3/2)) == 3
-            @test mod1(HalfInt32(7/2), HalfInt128(3/2)) == 1/2
-            # 7/2, 1/2
-            @test div(HalfInt8(7/2), HalfInt64(1/2)) == 7
-            @test fld(HalfInt8(7/2), HalfInt64(1/2)) == 7
-            @test cld(HalfInt8(7/2), HalfInt64(1/2)) == 7
-            @test rem(HalfInt8(7/2), HalfInt64(1/2)) == 0
-            @test mod(HalfInt8(7/2), HalfInt64(1/2)) == 0
-            @test fld1(HalfInt8(7/2), HalfInt64(1/2)) == 7
-            @test mod1(HalfInt8(7/2), HalfInt64(1/2)) == 1/2
-            # 9/2, 3
-            @test div(HalfInt16(9/2), HalfInt32(3)) == 1
-            @test fld(HalfInt16(9/2), HalfInt32(3)) == 1
-            @test cld(HalfInt16(9/2), HalfInt32(3)) == 2
-            @test rem(HalfInt16(9/2), HalfInt32(3)) == 3/2
-            @test mod(HalfInt16(9/2), HalfInt32(3)) == 3/2
-            @test fld1(HalfInt16(9/2), HalfInt32(3)) == 2
-            @test mod1(HalfInt16(9/2), HalfInt32(3)) == 3/2
-            # 7/2, -2
-            @test div(HalfInt64(7/2), HalfInt128(-2)) == -1
-            @test fld(HalfInt64(7/2), HalfInt128(-2)) == -2
-            @test cld(HalfInt64(7/2), HalfInt128(-2)) == -1
-            @test rem(HalfInt64(7/2), HalfInt128(-2)) == 3/2
-            @test mod(HalfInt64(7/2), HalfInt128(-2)) == -1/2
-            @test fld1(HalfInt64(7/2), HalfInt128(-2)) == -1
-            @test mod1(HalfInt64(7/2), HalfInt128(-2)) == -1/2
-            # 4, 3/2
-            @test div(HalfInt16(4), HalfInt8(3/2)) == 2
-            @test fld(HalfInt16(4), HalfInt8(3/2)) == 2
-            @test cld(HalfInt16(4), HalfInt8(3/2)) == 3
-            @test rem(HalfInt16(4), HalfInt8(3/2)) == 1
-            @test mod(HalfInt16(4), HalfInt8(3/2)) == 1
-            @test fld1(HalfInt16(4), HalfInt8(3/2)) == 3
-            @test mod1(HalfInt16(4), HalfInt8(3/2)) == 1
-            # -7, 5/2
-            @test div(HalfInt64(-7), HalfInt32(5/2)) == -2
-            @test fld(HalfInt64(-7), HalfInt32(5/2)) == -3
-            @test cld(HalfInt64(-7), HalfInt32(5/2)) == -2
-            @test rem(HalfInt64(-7), HalfInt32(5/2)) == -2
-            @test mod(HalfInt64(-7), HalfInt32(5/2)) == 1/2
-            @test fld1(HalfInt64(-7), HalfInt32(5/2)) == -2
-            @test mod1(HalfInt64(-7), HalfInt32(5/2)) == 1/2
-            # BigHalfInt
-            @test @inferred(div(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigInt
-            @test @inferred(fld(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigInt
-            @test @inferred(cld(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigInt
-            @test @inferred(rem(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigHalfInt
-            @test @inferred(mod(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigHalfInt
-            @test @inferred(fld1(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigInt
-            @test @inferred(mod1(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigHalfInt
-            @test @inferred(div(BigHalfInt(9/2), 3)) isa BigInt
-            @test @inferred(fld(BigHalfInt(9/2), 3)) isa BigInt
-            @test @inferred(cld(BigHalfInt(9/2), 3)) isa BigInt
-            @test @inferred(rem(BigHalfInt(9/2), 3)) isa BigHalfInt
-            @test @inferred(mod(BigHalfInt(9/2), 3)) isa BigHalfInt
-            @test @inferred(fld1(BigHalfInt(9/2), 3)) isa BigInt
-            @test @inferred(mod1(BigHalfInt(9/2), 3)) isa BigHalfInt
-            @test @inferred(div(BigHalfInt(9/2), big(3))) isa BigInt
-            @test @inferred(fld(BigHalfInt(9/2), big(3))) isa BigInt
-            @test @inferred(cld(BigHalfInt(9/2), big(3))) isa BigInt
-            @test @inferred(rem(BigHalfInt(9/2), big(3))) isa BigHalfInt
-            @test @inferred(mod(BigHalfInt(9/2), big(3))) isa BigHalfInt
-            @test @inferred(fld1(BigHalfInt(9/2), big(3))) isa BigInt
-            @test @inferred(mod1(BigHalfInt(9/2), big(3))) isa BigHalfInt
-            @test @inferred(div(HalfInt(9/2), big(3))) isa BigInt
-            @test @inferred(fld(HalfInt(9/2), big(3))) isa BigInt
-            @test @inferred(cld(HalfInt(9/2), big(3))) isa BigInt
-            @test @inferred(rem(HalfInt(9/2), big(3))) isa BigHalfInt
-            @test @inferred(mod(HalfInt(9/2), big(3))) isa BigHalfInt
-            @test @inferred(fld1(HalfInt(9/2), big(3))) isa BigInt
-            @test @inferred(mod1(HalfInt(9/2), big(3))) isa BigHalfInt
-            @test @inferred(div(big(4), BigHalfInt(3/2))) isa BigInt
-            @test @inferred(fld(big(4), BigHalfInt(3/2))) isa BigInt
-            @test @inferred(cld(big(4), BigHalfInt(3/2))) isa BigInt
-            @test @inferred(rem(big(4), BigHalfInt(3/2))) isa BigHalfInt
-            @test @inferred(mod(big(4), BigHalfInt(3/2))) isa BigHalfInt
-            @test @inferred(fld1(big(4), BigHalfInt(3/2))) isa BigInt
-            @test @inferred(mod1(big(4), BigHalfInt(3/2))) isa BigHalfInt
-            @test @inferred(div(big(4), HalfInt(3/2))) isa BigInt
-            @test @inferred(fld(big(4), HalfInt(3/2))) isa BigInt
-            @test @inferred(cld(big(4), HalfInt(3/2))) isa BigInt
-            @test @inferred(rem(big(4), HalfInt(3/2))) isa BigHalfInt
-            @test @inferred(mod(big(4), HalfInt(3/2))) isa BigHalfInt
-            @test @inferred(fld1(big(4), HalfInt(3/2))) isa BigInt
-            @test @inferred(mod1(big(4), HalfInt(3/2))) isa BigHalfInt
-            # 7/2, 3/2
-            @test div(BigHalfInt(7/2), BigHalfInt(3/2)) == 2
-            @test fld(BigHalfInt(7/2), BigHalfInt(3/2)) == 2
-            @test cld(BigHalfInt(7/2), BigHalfInt(3/2)) == 3
-            @test rem(BigHalfInt(7/2), BigHalfInt(3/2)) == 1/2
-            @test mod(BigHalfInt(7/2), BigHalfInt(3/2)) == 1/2
-            @test fld1(BigHalfInt(7/2), BigHalfInt(3/2)) == 3
-            @test mod1(BigHalfInt(7/2), BigHalfInt(3/2)) == 1/2
-            # 7/2, 1/2
-            @test div(BigHalfInt(7/2), BigHalfInt(1/2)) == 7
-            @test fld(BigHalfInt(7/2), BigHalfInt(1/2)) == 7
-            @test cld(BigHalfInt(7/2), BigHalfInt(1/2)) == 7
-            @test rem(BigHalfInt(7/2), BigHalfInt(1/2)) == 0
-            @test mod(BigHalfInt(7/2), BigHalfInt(1/2)) == 0
-            @test fld1(BigHalfInt(7/2), BigHalfInt(1/2)) == 7
-            @test mod1(BigHalfInt(7/2), BigHalfInt(1/2)) == 1/2
-            # 9/2, 3
-            @test div(BigHalfInt(9/2), 3) == 1
-            @test fld(BigHalfInt(9/2), 3) == 1
-            @test cld(BigHalfInt(9/2), 3) == 2
-            @test rem(BigHalfInt(9/2), 3) == 3/2
-            @test mod(BigHalfInt(9/2), 3) == 3/2
-            @test fld1(BigHalfInt(9/2), 3) == 2
-            @test mod1(BigHalfInt(9/2), 3) == 3/2
-            # 7/2, -2
-            @test div(BigHalfInt(7/2), big(-2)) == -1
-            @test fld(BigHalfInt(7/2), big(-2)) == -2
-            @test cld(BigHalfInt(7/2), big(-2)) == -1
-            @test rem(BigHalfInt(7/2), big(-2)) == 3/2
-            @test mod(BigHalfInt(7/2), big(-2)) == -1/2
-            @test fld1(BigHalfInt(7/2), big(-2)) == -1
-            @test mod1(BigHalfInt(7/2), big(-2)) == -1/2
-            # 4, 3/2
-            @test div(4, BigHalfInt(3/2)) == 2
-            @test fld(4, BigHalfInt(3/2)) == 2
-            @test cld(4, BigHalfInt(3/2)) == 3
-            @test rem(4, BigHalfInt(3/2)) == 1
-            @test mod(4, BigHalfInt(3/2)) == 1
-            @test fld1(4, BigHalfInt(3/2)) == 3
-            @test mod1(4, BigHalfInt(3/2)) == 1
-            # -7, 5/2
-            @test div(big(-7), BigHalfInt(5/2)) == -2
-            @test fld(big(-7), BigHalfInt(5/2)) == -3
-            @test cld(big(-7), BigHalfInt(5/2)) == -2
-            @test rem(big(-7), BigHalfInt(5/2)) == -2
-            @test mod(big(-7), BigHalfInt(5/2)) == 1/2
-            @test fld1(big(-7), BigHalfInt(5/2)) == -2
-            @test mod1(big(-7), BigHalfInt(5/2)) == 1/2
+            for f in (:div, :fld, :cld, :fld1) 
+                @eval @test @inferred($f(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigInt
+                @eval @test @inferred($f(BigHalfInt(9/2), 3)) isa BigInt
+                @eval @test @inferred($f(BigHalfInt(9/2), big(3))) isa BigInt
+                @eval @test @inferred($f(HalfInt(9/2), big(3))) isa BigInt
+                @eval @test @inferred($f(big(4), BigHalfInt(3/2))) isa BigInt
+                @eval @test @inferred($f(big(4), HalfInt(3/2))) isa BigInt
+            end
+            for f in (:rem, :mod, :mod1)
+                @eval @test @inferred($f(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigHalfInt
+                @eval @test @inferred($f(BigHalfInt(9/2), 3)) isa BigHalfInt
+                @eval @test @inferred($f(BigHalfInt(9/2), big(3))) isa BigHalfInt
+                @eval @test @inferred($f(HalfInt(9/2), big(3))) isa BigHalfInt
+                @eval @test @inferred($f(big(4), BigHalfInt(3/2))) isa BigHalfInt
+                @eval @test @inferred($f(big(4), HalfInt(3/2))) isa BigHalfInt
+            end
+        end
+        @static if VERSION ≥ v"1.4.0-DEV.208"
+            for r in (:RoundNearest, :RoundNearestTiesAway, :RoundNearestTiesUp, :RoundToZero, :RoundUp, :RoundDown)
+                for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
+                    @eval @test @inferred(div($T(7/2), $T(3/2), $r)) == div(7//2, 3//2, $r)
+                    @eval @test @inferred(div($T(7/2), $T(1/2), $r)) == div(7//2, 1//2, $r)
+                    @eval @test @inferred(div($T(9/2), 3, $r)) == div(9//2, 3, $r)
+                    @eval @test @inferred(div($T(7/2), big(-2), $r)) == div(7//2, -2, $r)
+                    @eval @test @inferred(div(4, $T(3/2), $r)) == div(4, 3//2, $r)
+                    @eval @test @inferred(div(big(-7), $T(5/2), $r)) == div(-7, 5//2, $r)
+                end
+                @eval @test @inferred(div(HalfInt32(7/2), HalfInt128(3/2), $r)) == div(7//2, 3//2, $r)
+                @eval @test @inferred(div(HalfInt8(7/2), HalfInt64(1/2), $r)) == div(7//2, 1//2, $r)
+                @eval @test @inferred(div(HalfInt16(9/2), HalfInt32(3), $r)) == div(9//2, 3, $r)
+                @eval @test @inferred(div(HalfInt64(7/2), HalfInt128(-2), $r)) == div(7//2, -2, $r)
+                @eval @test @inferred(div(HalfInt16(4), HalfInt8(3/2), $r)) == div(4, 3//2, $r)
+                @eval @test @inferred(div(HalfInt64(-7), HalfInt32(5/2), $r)) == div(-7, 5//2, $r)
+                @eval @test @inferred(div(BigHalfInt(7/2), BigHalfInt(3/2), $r)) isa BigInt
+                @eval @test @inferred(div(BigHalfInt(9/2), 3, $r)) isa BigInt
+                @eval @test @inferred(div(BigHalfInt(9/2), big(3), $r)) isa BigInt
+                @eval @test @inferred(div(HalfInt(9/2), big(3), $r)) isa BigInt
+                @eval @test @inferred(div(big(4), BigHalfInt(3/2), $r)) isa BigInt
+                @eval @test @inferred(div(big(4), HalfInt(3/2), $r)) isa BigInt
+            end
         end
     end
 
