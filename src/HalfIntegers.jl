@@ -86,6 +86,40 @@ Base.mod(x::T, y::T) where T<:HalfInteger = half(mod(twice(x), twice(y)))
 
 Base.fld1(x::T, y::T) where T<:HalfInteger = fld1(twice(x), twice(y))
 
+# `lcm`/`gcd`/`gcdx` are only extended to `HalfInteger`s if they are defined for `Rational`s
+@static if VERSION ≥ v"1.4.0-DEV.606"
+    Base.gcd(x::HalfInteger) = x
+    Base.lcm(x::HalfInteger) = x
+
+    Base.gcd(a::T, b::T) where T<:HalfInteger = half(gcd(twice(a), twice(b)))
+    Base.lcm(a::T, b::T) where T<:HalfInteger = half(lcm(twice(a), twice(b)))
+
+    function Base.gcdx(x::T, y::T) where T<:HalfInteger
+        d, u, v = gcdx(twice(x), twice(y))
+        half(d), u, v
+    end
+
+    const IntOrRatOrHalf = Union{Integer, Rational, HalfInteger}
+    Base.lcm(a::IntOrRatOrHalf, b::IntOrRatOrHalf) = lcm(promote(a,b)...)
+    Base.gcd(a::IntOrRatOrHalf, b::IntOrRatOrHalf) = gcd(promote(a,b)...)
+    Base.lcm(a::IntOrRatOrHalf, b::IntOrRatOrHalf...) = lcm(a, lcm(b...))
+    Base.gcd(a::IntOrRatOrHalf, b::IntOrRatOrHalf...) = gcd(a, gcd(b...))
+    Base.gcdx(a::IntOrRatOrHalf, b::IntOrRatOrHalf) = gcdx(promote(a,b)...)
+
+    Base.lcm(abc::AbstractArray{<:IntOrRatOrHalf}) = reduce(lcm, abc; init=one(eltype(abc)))
+
+    function Base.gcd(abc::AbstractArray{<:IntOrRatOrHalf})
+        a = zero(eltype(abc))
+        for b in abc
+            a = gcd(a,b)
+            if a == 1
+                return a
+            end
+        end
+        return a
+    end
+end
+
 Base.ceil(T::Type{<:Integer}, x::HalfInteger)  = round(T, x, RoundUp)
 Base.floor(T::Type{<:Integer}, x::HalfInteger) = round(T, x, RoundDown)
 Base.trunc(T::Type{<:Integer}, x::HalfInteger) = round(T, x, RoundToZero)

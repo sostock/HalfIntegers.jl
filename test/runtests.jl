@@ -1052,7 +1052,7 @@ end
                 @eval @test @inferred($f(HalfInt16(4), HalfInt8(3/2))) == $f(4, 3//2)
                 @eval @test @inferred($f(HalfInt64(-7), HalfInt32(5/2))) == $f(-7, 5//2)
             end
-            for f in (:div, :fld, :cld, :fld1) 
+            for f in (:div, :fld, :cld, :fld1)
                 @eval @test @inferred($f(BigHalfInt(7/2), BigHalfInt(3/2))) isa BigInt
                 @eval @test @inferred($f(BigHalfInt(9/2), 3)) isa BigInt
                 @eval @test @inferred($f(BigHalfInt(9/2), big(3))) isa BigInt
@@ -1238,6 +1238,139 @@ end
         @test complex(BigHalfInt(2))^HalfInt(3/2) ≈ √8
         @test complex(BigHalfInt(-2))^HalfInt(3/2) ≈ -√8*im
         @test complex(BigHalfInt(-2))^HalfInt(5/2) ≈ √32*im
+    end
+
+    @static if VERSION ≥ v"1.4.0-DEV.606"
+        @testset "lcm/gcd/gcdx" begin
+            @testset "Scalar-argument gcd/lcm" begin
+                for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
+                    # One argument
+                    @eval @test gcd($T(3/2)) == $T(3/2)
+                    @eval @test lcm($T(3/2)) == $T(3/2)
+
+                    # Two arguments
+                    @eval @test lcm($T(1), $T(1/2)) == $T(1)
+                    @eval @test lcm($T(1), $T(3/2)) == $T(3)
+                    @eval @test lcm($T(2), $T(3/2)) == $T(6)
+                    @eval @test lcm($T(3/2), $T(3/2)) == $T(3/2)
+                    @eval @test lcm($T(5/2), $T(3/2)) == $T(15/2)
+                    @eval @test lcm(1, $T(1/2)) == 1
+                    @eval @test lcm(1//1, $T(3/2)) == 3
+                    @eval @test lcm(big(2), $T(3/2)) == 6
+                    @eval @test lcm($T(1/2), 1) == 1
+                    @eval @test lcm($T(3/2), 1//1) == 3
+                    @eval @test lcm($T(3/2), big(2)) == 6
+                    @eval @test @inferred(lcm($T(3/2), BigHalfInt(2))) isa BigHalfInt
+                    @eval @test @inferred(lcm(BigHalfInt(3/2), $T(2))) isa BigHalfInt
+                    @eval @test lcm($T(3/2), BigHalfInt(1)) == 3
+                    @eval @test lcm(BigHalfInt(3/2), $T(2)) == 6
+                    @eval @test gcd($T(1), $T(3/2)) == $T(1/2)
+                    @eval @test gcd($T(2), $T(3/2)) == $T(1/2)
+                    @eval @test gcd($T(3), $T(3/2)) == $T(3/2)
+                    @eval @test gcd($T(3), $T(9/2)) == $T(3/2)
+                    @eval @test gcd($T(3/2), $T(3/2)) == $T(3/2)
+                    @eval @test gcd(1, $T(3/2)) == 1/2
+                    @eval @test gcd(2//1, $T(3/2)) == 1/2
+                    @eval @test gcd(big(3), $T(3/2)) == 3/2
+                    @eval @test gcd($T(3/2), 2) == 1/2
+                    @eval @test gcd($T(3/2), 3//1) == 3/2
+                    @eval @test gcd($T(9/2), big(3)) == 3/2
+                    @eval @test @inferred(gcd($T(9/2), BigHalfInt(3))) isa BigHalfInt
+                    @eval @test @inferred(gcd(BigHalfInt(9/2), $T(3))) isa BigHalfInt
+                    @eval @test gcd($T(3/2), BigHalfInt(2)) == 1/2
+                    @eval @test gcd(BigHalfInt(3/2), $T(1)) == 1/2
+
+                    # Three arguments
+                    @eval @test lcm($T(2), $T(3/2), $T(2)) == $T(6)
+                    @eval @test lcm($T(2), $T(3/2), $T(3/2)) == $T(6)
+                    @eval @test lcm($T(2), $T(3/2), $T(3)) == $T(6)
+                    @eval @test lcm($T(2), $T(3/2), $T(6)) == $T(6)
+                    @eval @test lcm($T(3/2), 2, $T(3)) == 6
+                    @eval @test lcm($T(3/2), 2, 3//1) == 6
+                    @eval @test lcm(2, $T(3/2), $T(3)) == 6
+                    @eval @test lcm(2, $T(3/2), 3) == 6
+                    @eval @test lcm(2//1, 3, $T(3/2)) == 6
+                    @eval @test @inferred(lcm($T(3/2), $T(3/2), BigHalfInt(2))) isa BigHalfInt
+                    @eval @test @inferred(lcm(BigHalfInt(3/2), $T(2), $T(2))) isa BigHalfInt
+                    @eval @test lcm($T(3/2), $T(3), BigHalfInt(2)) == 6
+                    @eval @test lcm(BigHalfInt(3/2), $T(2), $T(3)) == 6
+                    @eval @test gcd($T(3), $T(9/2), $T(1)) == $T(1/2)
+                    @eval @test gcd(3, 6, $T(9/2)) == 3/2
+                    @eval @test gcd($T(9/2), 3//1, $T(3/2)) == 3/2
+                    @eval @test @inferred(gcd($T(9/2), $T(6), BigHalfInt(3))) isa BigHalfInt
+                    @eval @test @inferred(gcd(BigHalfInt(9/2), $T(3), $T(3/2))) isa BigHalfInt
+                    @eval @test gcd($T(9/2), $T(6), BigHalfInt(3)) == 3/2
+                    @eval @test gcd(BigHalfInt(9/2), $T(3), $T(3/2)) == 3/2
+
+                    # Four arguments
+                    @eval @test lcm($T(2), $T(3/2), $T(2), $T(3)) == $T(6)
+                    @eval @test lcm($T(2), $T(3/2), $T(6), $T(3/2)) == $T(6)
+                    @eval @test lcm($T(3/2), 2, 3, $T(1/2)) == 6
+                    @eval @test lcm(2//1, 3, $T(6), $T(1/2)) == 6
+                    @eval @test lcm(2, 3, 6//1, $T(1/2)) == 6
+                    @eval @test @inferred(lcm($T(3/2), $T(3/2), $T(2), BigHalfInt(2))) isa BigHalfInt
+                    @eval @test @inferred(lcm(BigHalfInt(3/2), $T(3/2), $T(2), $T(2))) isa BigHalfInt
+                    @eval @test lcm($T(3/2), $T(3), $T(1/2), BigHalfInt(2)) == 6
+                    @eval @test lcm(BigHalfInt(3/2), $T(2), $T(3), $T(1/2)) == 6
+                    @eval @test gcd($T(3), $T(9/2), $T(3), $T(9/2)) == $T(3/2)
+                    @eval @test gcd(3, 6, $T(3/2), $T(9/2)) == 3/2
+                    @eval @test gcd(3//1, 6, 2, $T(9/2)) == 1/2
+                    @eval @test gcd($T(9/2), big(3), $T(3/2), $T(4)) == 1/2
+                    @eval @test @inferred(gcd($T(9/2), $T(6), $T(5), BigHalfInt(3))) isa BigHalfInt
+                    @eval @test @inferred(gcd(BigHalfInt(9/2), $T(3), $T(3/2), $T(2))) isa BigHalfInt
+                    @eval @test gcd($T(9/2), $T(6), $T(5), BigHalfInt(3)) == 1/2
+                    @eval @test gcd(BigHalfInt(9/2), $T(3), $T(3/2), $T(9)) == 3/2
+                end
+                for T in halfinttypes
+                    @eval @test gcd($T(-5/2), $T(3/2)) === $T(1/2)
+                end
+                @test @inferred(lcm(BigHalfInt(1/2))) isa BigHalfInt
+                @test @inferred(lcm(BigHalfInt(1), BigHalfInt(1/2))) isa BigHalfInt
+                @test @inferred(lcm(BigHalfInt(1), BigHalfInt(1/2), BigHalfInt(3/2))) isa BigHalfInt
+                @test @inferred(lcm(BigHalfInt(1), BigHalfInt(1/2), BigHalfInt(3/2), BigHalfInt(3))) isa BigHalfInt
+                @test @inferred(gcd(BigHalfInt(1))) isa BigHalfInt
+                @test @inferred(gcd(BigHalfInt(1), BigHalfInt(3/2))) isa BigHalfInt
+                @test @inferred(gcd(BigHalfInt(1), BigHalfInt(3/2), BigHalfInt(3))) isa BigHalfInt
+                @test @inferred(gcd(BigHalfInt(1), BigHalfInt(3/2), BigHalfInt(3), BigHalfInt(1/2))) isa BigHalfInt
+            end
+
+            @testset "gcd/lcm for arrays" begin
+                @test lcm([HalfInt(2), HalfInt(3/2)]) === HalfInt(6)
+                @test lcm([HalfInt(2), HalfInt(3/2), HalfInt(3)]) === HalfInt(6)
+                @test lcm([HalfInt(3/2), 2, 3//2]) == 6//1
+                @test gcd([HalfInt(3), HalfInt(9/2)]) === HalfInt(3/2)
+                @test gcd([3, 9//2, HalfInt(1)]) == 1//2
+                @test gcd([HalfInt(9/2), HalfInt(6), HalfInt(5), HalfInt(3)]) === HalfInt(1/2)
+            end
+
+            @testset "gcdx" begin
+                for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
+                    @eval @test ((d,u,v) = gcdx($T(1), $T(3/2)); u*$T(1) + v*$T(3/2) == d == 1/2)
+                    @eval @test ((d,u,v) = gcdx($T(2), $T(3/2)); u*$T(2) + v*$T(3/2) == d == 1/2)
+                    @eval @test ((d,u,v) = gcdx($T(3), $T(3/2)); u*$T(3) + v*$T(3/2) == d == 3/2)
+                    @eval @test ((d,u,v) = gcdx($T(3), $T(9/2)); u*$T(3) + v*$T(9/2) == d == 3/2)
+                    @eval @test ((d,u,v) = gcdx($T(3/2), $T(3/2)); u*$T(3/2) + v*$T(3/2) == d == 3/2)
+                    @eval @test ((d,u,v) = gcdx(1, $T(3/2)); u*1 + v*$T(3/2) == d == 1/2)
+                    @eval @test ((d,u,v) = gcdx(2, $T(3/2)); u*2 + v*$T(3/2) == d == 1/2)
+                    @eval @test ((d,u,v) = gcdx($T(3/2), 3); u*$T(3/2) + v*3 == d == 3/2)
+                    @eval @test ((d,u,v) = gcdx($T(9/2), 3); u*$T(9/2) + v*3 == d == 3/2)
+                end
+                for T in (halfinttypes..., :BigHalfInt)
+                    @eval @test ((d,u,v) = gcdx($T(-5/2), $T(3/2)); u*$T(-5/2) + v*$T(3/2) == d == 1/2)
+                    # For `UInt`s, the Bézout coefficients might be near their typemax, so the
+                    # identity cannot be tested for `Rational`s since they check for overflow.
+                    # Therefore, `gcdx` with one `HalfInteger` and one `Rational` argument is only
+                    # tested for signed integers.
+                    @eval @test ((d,u,v) = gcdx(3//2, $T(2)); u*(3//2) + v*$T(2) == d == 1/2)
+                    @eval @test ((d,u,v) = gcdx($T(9/2), 3//1); u*$T(9/2) + v*(3//1) == d == 3/2)
+                end
+                @test gcdx(BigHalfInt(1), BigHalfInt(3/2)) isa Tuple{BigHalfInt,BigInt,BigInt}
+                @test gcdx(1, BigHalfInt(3/2)) isa Tuple{BigHalfInt,BigInt,BigInt}
+                @test gcdx(BigHalfInt(3/2), 1) isa Tuple{BigHalfInt,BigInt,BigInt}
+                @test gcdx(1//1, BigHalfInt(3/2)) isa Tuple{Rational{BigInt},BigInt,BigInt}
+                @test gcdx(BigHalfInt(3/2), 1//1) isa Tuple{Rational{BigInt},BigInt,BigInt}
+            end
+        end
     end
 
     @testset "abs" begin

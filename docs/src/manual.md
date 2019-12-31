@@ -106,6 +106,12 @@ HalfInt(7/2) // HalfInt(3/2)
 HalfInt(7/2) ÷ HalfInt(3/2)
 ```
 
+!!! note
+    In general, `HalfInteger`s support every operation that is implemented for `Rational`s in `Base`.
+    Some operations are only available in newer Julia versions.
+    For example, `gcd` for rational numbers is only defined in Julia 1.4 or newer.
+    Therefore, `gcd` is only extended to `HalfInteger`s in those Julia versions.
+
 ## Auxiliary functions
 
 ### `twice`
