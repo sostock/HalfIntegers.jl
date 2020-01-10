@@ -1069,6 +1069,38 @@ end
                 @eval @test @inferred($f(big(4), HalfInt(3/2))) isa BigHalfInt
             end
         end
+        for r in (:RoundToZero, :RoundUp, :RoundDown)
+            for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
+                if T in halfuinttypes && r == :RoundUp
+                    # cf. https://github.com/JuliaLang/julia/issues/34325
+                    @eval @test_skip @inferred(rem($T(7/2), $T(3/2), $r)) == rem(7//2, 3//2, $r)
+                    @eval @test_skip @inferred(rem($T(7/2), $T(1/2), $r)) == rem(7//2, 1//2, $r)
+                    @eval @test_skip @inferred(rem($T(9/2), 3, $r)) == rem(9//2, 3, $r)
+                    @eval @test_skip @inferred(rem($T(7/2), big(-2), $r)) == rem(7//2, -2, $r)
+                    @eval @test_skip @inferred(rem(4, $T(3/2), $r)) == rem(4, 3//2, $r)
+                    @eval @test_skip @inferred(rem(big(-7), $T(5/2), $r)) == rem(-7, 5//2, $r)
+                else
+                    @eval @test @inferred(rem($T(7/2), $T(3/2), $r)) == rem(7//2, 3//2, $r)
+                    @eval @test @inferred(rem($T(7/2), $T(1/2), $r)) == rem(7//2, 1//2, $r)
+                    @eval @test @inferred(rem($T(9/2), 3, $r)) == rem(9//2, 3, $r)
+                    @eval @test @inferred(rem($T(7/2), big(-2), $r)) == rem(7//2, -2, $r)
+                    @eval @test @inferred(rem(4, $T(3/2), $r)) == rem(4, 3//2, $r)
+                    @eval @test @inferred(rem(big(-7), $T(5/2), $r)) == rem(-7, 5//2, $r)
+                end
+            end
+            @eval @test @inferred(rem(HalfInt32(7/2), HalfInt128(3/2), $r)) == rem(7//2, 3//2, $r)
+            @eval @test @inferred(rem(HalfInt8(7/2), HalfInt64(1/2), $r)) == rem(7//2, 1//2, $r)
+            @eval @test @inferred(rem(HalfInt16(9/2), HalfInt32(3), $r)) == rem(9//2, 3, $r)
+            @eval @test @inferred(rem(HalfInt64(7/2), HalfInt128(-2), $r)) == rem(7//2, -2, $r)
+            @eval @test @inferred(rem(HalfInt16(4), HalfInt8(3/2), $r)) == rem(4, 3//2, $r)
+            @eval @test @inferred(rem(HalfInt64(-7), HalfInt32(5/2), $r)) == rem(-7, 5//2, $r)
+            @eval @test @inferred(rem(BigHalfInt(7/2), BigHalfInt(3/2), $r)) isa BigHalfInt
+            @eval @test @inferred(rem(BigHalfInt(9/2), 3, $r)) isa BigHalfInt
+            @eval @test @inferred(rem(BigHalfInt(9/2), big(3), $r)) isa BigHalfInt
+            @eval @test @inferred(rem(HalfInt(9/2), big(3), $r)) isa BigHalfInt
+            @eval @test @inferred(rem(big(4), BigHalfInt(3/2), $r)) isa BigHalfInt
+            @eval @test @inferred(rem(big(4), HalfInt(3/2), $r)) isa BigHalfInt
+        end
         @static if VERSION ≥ v"1.4.0-DEV.208"
             for r in (:RoundNearest, :RoundNearestTiesAway, :RoundNearestTiesUp, :RoundToZero, :RoundUp, :RoundDown)
                 for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
@@ -1091,6 +1123,38 @@ end
                 @eval @test @inferred(div(HalfInt(9/2), big(3), $r)) isa BigInt
                 @eval @test @inferred(div(big(4), BigHalfInt(3/2), $r)) isa BigInt
                 @eval @test @inferred(div(big(4), HalfInt(3/2), $r)) isa BigInt
+            end
+            for r in (:RoundToZero, :RoundUp, :RoundDown)
+                for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
+                    if T in halfuinttypes && r == :RoundUp
+                        # cf. https://github.com/JuliaLang/julia/issues/34325
+                        @eval @test_skip @inferred(divrem($T(7/2), $T(3/2), $r)) == divrem(7//2, 3//2, $r)
+                        @eval @test_skip @inferred(divrem($T(7/2), $T(1/2), $r)) == divrem(7//2, 1//2, $r)
+                        @eval @test_skip @inferred(divrem($T(9/2), 3, $r)) == divrem(9//2, 3, $r)
+                        @eval @test_skip @inferred(divrem($T(7/2), big(-2), $r)) == divrem(7//2, -2, $r)
+                        @eval @test_skip @inferred(divrem(4, $T(3/2), $r)) == divrem(4, 3//2, $r)
+                        @eval @test_skip @inferred(divrem(big(-7), $T(5/2), $r)) == divrem(-7, 5//2, $r)
+                    else
+                        @eval @test @inferred(divrem($T(7/2), $T(3/2), $r)) == divrem(7//2, 3//2, $r)
+                        @eval @test @inferred(divrem($T(7/2), $T(1/2), $r)) == divrem(7//2, 1//2, $r)
+                        @eval @test @inferred(divrem($T(9/2), 3, $r)) == divrem(9//2, 3, $r)
+                        @eval @test @inferred(divrem($T(7/2), big(-2), $r)) == divrem(7//2, -2, $r)
+                        @eval @test @inferred(divrem(4, $T(3/2), $r)) == divrem(4, 3//2, $r)
+                        @eval @test @inferred(divrem(big(-7), $T(5/2), $r)) == divrem(-7, 5//2, $r)
+                    end
+                end
+                @eval @test @inferred(divrem(HalfInt32(7/2), HalfInt128(3/2), $r)) == divrem(7//2, 3//2, $r)
+                @eval @test @inferred(divrem(HalfInt8(7/2), HalfInt64(1/2), $r)) == divrem(7//2, 1//2, $r)
+                @eval @test @inferred(divrem(HalfInt16(9/2), HalfInt32(3), $r)) == divrem(9//2, 3, $r)
+                @eval @test @inferred(divrem(HalfInt64(7/2), HalfInt128(-2), $r)) == divrem(7//2, -2, $r)
+                @eval @test @inferred(divrem(HalfInt16(4), HalfInt8(3/2), $r)) == divrem(4, 3//2, $r)
+                @eval @test @inferred(divrem(HalfInt64(-7), HalfInt32(5/2), $r)) == divrem(-7, 5//2, $r)
+                @eval @test @inferred(divrem(BigHalfInt(7/2), BigHalfInt(3/2), $r)) isa Tuple{BigInt,BigHalfInt}
+                @eval @test @inferred(divrem(BigHalfInt(9/2), 3, $r)) isa Tuple{BigInt,BigHalfInt}
+                @eval @test @inferred(divrem(BigHalfInt(9/2), big(3), $r)) isa Tuple{BigInt,BigHalfInt}
+                @eval @test @inferred(divrem(HalfInt(9/2), big(3), $r)) isa Tuple{BigInt,BigHalfInt}
+                @eval @test @inferred(divrem(big(4), BigHalfInt(3/2), $r)) isa Tuple{BigInt,BigHalfInt}
+                @eval @test @inferred(divrem(big(4), HalfInt(3/2), $r)) isa Tuple{BigInt,BigHalfInt}
             end
         end
     end
