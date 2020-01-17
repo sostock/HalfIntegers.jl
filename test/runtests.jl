@@ -1405,6 +1405,7 @@ end
                 @test gcd([HalfInt(3), HalfInt(9/2)]) === HalfInt(3/2)
                 @test gcd([3, 9//2, HalfInt(1)]) == 1//2
                 @test gcd([HalfInt(9/2), HalfInt(6), HalfInt(5), HalfInt(3)]) === HalfInt(1/2)
+                @test gcd([5, 2, HalfInt(1/2)]) === HalfInt(1/2)
             end
 
             @testset "gcdx" begin

@@ -106,18 +106,8 @@ Base.fld1(x::T, y::T) where T<:HalfInteger = fld1(twice(x), twice(y))
     Base.gcd(a::IntOrRatOrHalf, b::IntOrRatOrHalf...) = gcd(a, gcd(b...))
     Base.gcdx(a::IntOrRatOrHalf, b::IntOrRatOrHalf) = gcdx(promote(a,b)...)
 
+    Base.gcd(abc::AbstractArray{<:IntOrRatOrHalf}) = reduce(gcd, abc; init=zero(eltype(abc)))
     Base.lcm(abc::AbstractArray{<:IntOrRatOrHalf}) = reduce(lcm, abc; init=one(eltype(abc)))
-
-    function Base.gcd(abc::AbstractArray{<:IntOrRatOrHalf})
-        a = zero(eltype(abc))
-        for b in abc
-            a = gcd(a,b)
-            if a == 1
-                return a
-            end
-        end
-        return a
-    end
 end
 
 Base.ceil(T::Type{<:Integer}, x::HalfInteger)  = round(T, x, RoundUp)
