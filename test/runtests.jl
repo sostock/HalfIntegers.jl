@@ -1304,7 +1304,7 @@ end
         @test complex(BigHalfInt(-2))^HalfInt(5/2) ≈ √32*im
     end
 
-    @static if VERSION ≥ v"1.4.0-DEV.606"
+    @static if VERSION ≥ v"1.4.0-DEV.699"
         @testset "lcm/gcd/gcdx" begin
             @testset "Scalar-argument gcd/lcm" begin
                 for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
