@@ -7,7 +7,7 @@ Functions for convenient use are defined as well.
 
 ## Installation
 
-HalfIntegers.jl is compatible with Julia ≥ 0.7.
+HalfIntegers.jl is compatible with Julia ≥ 1.0.
 It can be installed by typing
 ```
 ] add HalfIntegers
