@@ -8,6 +8,8 @@
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://sostock.github.io/HalfIntegers.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://sostock.github.io/HalfIntegers.jl/dev)
 
+**If you are using version 0.1 of this package, it is highly recommended that you upgrade to version 1.0. It is backwards compatible except for removing support for Julia 0.7.**
+
 This package provides data types for half-integer numbers. Here, any number *n*/2 where *n*
 is an integer is considered a half-integer – contrary to the
 [common definition](https://en.wikipedia.org/wiki/Half-integer),
