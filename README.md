@@ -1,5 +1,6 @@
 # HalfIntegers
 
+[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/H/HalfIntegers.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html)
 [![Build Status](https://travis-ci.com/sostock/HalfIntegers.jl.svg?branch=master)](https://travis-ci.com/sostock/HalfIntegers.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/lsp8kuibvmm9agut/branch/master?svg=true)](https://ci.appveyor.com/project/sostock/halfintegers-jl/branch/master)
 [![codecov](https://codecov.io/gh/sostock/HalfIntegers.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/sostock/HalfIntegers.jl)
