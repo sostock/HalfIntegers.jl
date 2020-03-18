@@ -1157,6 +1157,39 @@ end
                 @eval @test @inferred(divrem(big(4), HalfInt(3/2), $r)) isa Tuple{BigInt,BigHalfInt}
             end
         end
+        @static if VERSION ≥ v"1.5.0-DEV.471"
+            for (f,bigreturntype) in ((:rem, :BigHalfInt), (:divrem, :(Tuple{BigInt,BigHalfInt})))
+                for T in (halfinttypes..., :BigHalfInt)
+                    @eval @test @inferred($f($T(7/2), $T(3/2), RoundNearest)) == $f(7//2, 3//2, RoundNearest)
+                    @eval @test @inferred($f($T(7/2), $T(1/2), RoundNearest)) == $f(7//2, 1//2, RoundNearest)
+                    @eval @test @inferred($f($T(9/2), 3, RoundNearest)) == $f(9//2, 3, RoundNearest)
+                    @eval @test @inferred($f($T(7/2), big(-2), RoundNearest)) == $f(7//2, -2, RoundNearest)
+                    @eval @test @inferred($f(4, $T(3/2), RoundNearest)) == $f(4, 3//2, RoundNearest)
+                    @eval @test @inferred($f(big(-7), $T(5/2), RoundNearest)) == $f(-7, 5//2, RoundNearest)
+                end
+                for T in halfuinttypes
+                    # cf. https://github.com/JuliaLang/julia/issues/34325
+                    @eval @test_skip @inferred($f($T(7/2), $T(3/2), RoundNearest)) == $f(7//2, 3//2, RoundNearest)
+                    @eval @test_skip @inferred($f($T(7/2), $T(1/2), RoundNearest)) == $f(7//2, 1//2, RoundNearest)
+                    @eval @test_skip @inferred($f($T(9/2), 3, RoundNearest)) == $f(9//2, 3, RoundNearest)
+                    @eval @test_skip @inferred($f($T(7/2), big(-2), RoundNearest)) == $f(7//2, -2, RoundNearest)
+                    @eval @test_skip @inferred($f(4, $T(3/2), RoundNearest)) == $f(4, 3//2, RoundNearest)
+                    @eval @test_skip @inferred($f(big(-7), $T(5/2), RoundNearest)) == $f(-7, 5//2, RoundNearest)
+                end
+                @eval @test @inferred($f(HalfInt32(7/2), HalfInt128(3/2), RoundNearest)) == $f(7//2, 3//2, RoundNearest)
+                @eval @test @inferred($f(HalfInt8(7/2), HalfInt64(1/2), RoundNearest)) == $f(7//2, 1//2, RoundNearest)
+                @eval @test @inferred($f(HalfInt16(9/2), HalfInt32(3), RoundNearest)) == $f(9//2, 3, RoundNearest)
+                @eval @test @inferred($f(HalfInt64(7/2), HalfInt128(-2), RoundNearest)) == $f(7//2, -2, RoundNearest)
+                @eval @test @inferred($f(HalfInt16(4), HalfInt8(3/2), RoundNearest)) == $f(4, 3//2, RoundNearest)
+                @eval @test @inferred($f(HalfInt64(-7), HalfInt32(5/2), RoundNearest)) == $f(-7, 5//2, RoundNearest)
+                @eval @test @inferred($f(BigHalfInt(7/2), BigHalfInt(3/2), RoundNearest)) isa $bigreturntype
+                @eval @test @inferred($f(BigHalfInt(9/2), 3, RoundNearest)) isa $bigreturntype
+                @eval @test @inferred($f(BigHalfInt(9/2), big(3), RoundNearest)) isa $bigreturntype
+                @eval @test @inferred($f(HalfInt(9/2), big(3), RoundNearest)) isa $bigreturntype
+                @eval @test @inferred($f(big(4), BigHalfInt(3/2), RoundNearest)) isa $bigreturntype
+                @eval @test @inferred($f(big(4), HalfInt(3/2), RoundNearest)) isa $bigreturntype
+            end
+        end
     end
 
     @testset "Exponentiation" begin
