@@ -213,7 +213,7 @@ julia> half(HalfInt16, 8)
 ```
 """
 half(x::Real) = half(HalfInteger, x)
-half(::Type{HalfInteger}, x) = half(HalfInteger, Integer(x))
+half(::Type{HalfInteger}, x::Number) = half(HalfInteger, Integer(x))
 half(::Type{HalfInteger}, x::Integer) = half(Half{typeof(x)}, x)
 
 """
@@ -235,8 +235,19 @@ julia> half(Complex{HalfInt32}, 1.0 + 5.0im)
 ```
 """
 half(x::Complex) = half(Complex, x)
-half(::Type{Complex{T}}, x) where T<:HalfInteger = Complex(half(T,real(x)), half(T,imag(x)))
-half(::Type{Complex}, x) = Complex(half(real(x)), half(imag(x)))
+half(::Type{Complex{T}}, x::Number) where T<:HalfInteger = Complex(half(T,real(x)), half(T,imag(x)))
+half(::Type{Complex}, x::Number) = Complex(half(real(x)), half(imag(x)))
+
+half(::Missing) = missing
+@static if VERSION ≥ v"1.2"
+    half(::Type{T}, x) where T>:Missing = half(Base.nonmissingtype_checked(T), x)
+else
+    half(::Type{T}, x) where T>:Missing = half(Base.nonmissingtype(T), x)
+end
+half(::Type{>:Missing}, ::Missing) = missing
+half(::Type{T}, ::Missing) where T =
+    throw(MissingException("cannot convert a missing value to type $T: use Union{$T, Missing} instead"))
+
 
 """
     twice(x)
@@ -276,9 +287,18 @@ julia> twice(Complex{BigInt}, HalfInt(5/2) + HalfInt(3)*im)
 5 + 6im
 ```
 """
-twice(T::Type{<:Integer}, x) = T(twice(x))
+twice(T::Type{<:Integer}, x::Number) = T(twice(x))
 twice(T::Type{<:Integer}, x::Integer) = twice(T(x)) # convert to T first to reduce probability of overflow
-twice(::Type{Complex{T}}, x) where T<:Integer = Complex(twice(T,real(x)), twice(T,imag(x)))
+twice(::Type{Complex{T}}, x::Number) where T<:Integer = Complex(twice(T,real(x)), twice(T,imag(x)))
+
+@static if VERSION ≥ v"1.2"
+    twice(::Type{T}, x) where T>:Missing = twice(Base.nonmissingtype_checked(T), x)
+else
+    twice(::Type{T}, x) where T>:Missing = twice(Base.nonmissingtype(T), x)
+end
+twice(::Type{>:Missing}, ::Missing) = missing
+twice(::Type{T}, ::Missing) where T =
+    throw(MissingException("cannot convert a missing value to type $T: use Union{$T, Missing} instead"))
 
 """
     onehalf(x)
@@ -295,12 +315,13 @@ julia> onehalf(HalfInt)
 1/2
 ```
 """
-onehalf(x::Number) = onehalf(typeof(x))
+onehalf(x::Union{Number,Missing}) = onehalf(typeof(x))
 
 onehalf(T::Type{<:HalfInteger})     = half(T, 1)
 onehalf(T::Type{<:AbstractFloat})   = T(0.5)
 onehalf(T::Type{<:Rational})        = T(1//2)
 onehalf(::Type{Complex{T}}) where T = Complex(onehalf(T), zero(T))
+onehalf(::Type{Missing}) = missing
 
 const HalfIntegerOrInteger = Union{HalfInteger, Integer}
 
@@ -386,7 +407,7 @@ end
 Half{T}(x::Real) where T<:Integer = half(Half{T}, twice(T,x))
 Half{T}(x::Half{T}) where T<:Integer = x
 
-half(::Type{Half{T}}, x) where T<:Integer = Half{T}(Val{:inner}(), x)
+half(::Type{Half{T}}, x::Number) where T<:Integer = Half{T}(Val{:inner}(), x)
 
 twice(x::Half) = x.twice
 

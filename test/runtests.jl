@@ -1964,6 +1964,60 @@ end
     end
 end
 
+@testset "Missing" begin
+    @test twice(missing) === missing
+    for T = (halfinttypes..., halfuinttypes..., :BigHalfInt)
+        for S = (inttypes..., uinttypes...)
+            @eval @test twice(Union{$S,Missing}, $T(5/2)) === $S(5)
+            @eval @test twice(Union{$S,Missing}, Complex{$T}(5/2)) === $S(5)
+            @eval @test twice(Union{Complex{$S},Missing}, $T(5/2)) === Complex{$S}(5)
+            @eval @test twice(Union{Complex{$S},Missing}, Complex{$T}(5/2 + 3/2*im)) === Complex{$S}(5 + 3im)
+        end
+        @eval @test twice(Union{BigInt,Missing}, $T(5/2)) == 5
+        @eval @test twice(Union{BigInt,Missing}, $T(5/2)) isa BigInt
+        @eval @test twice(Union{BigInt,Missing}, Complex{$T}(5/2)) == 5
+        @eval @test twice(Union{BigInt,Missing}, Complex{$T}(5/2)) isa BigInt
+        @eval @test twice(Union{Complex{BigInt},Missing}, $T(5/2)) == 5
+        @eval @test twice(Union{Complex{BigInt},Missing}, $T(5/2)) isa Complex{BigInt}
+        @eval @test twice(Union{Complex{BigInt},Missing}, Complex{$T}(5/2 + 3/2*im)) == 5 + 3im
+        @eval @test twice(Union{Complex{BigInt},Missing}, Complex{$T}(5/2 + 3/2*im)) isa Complex{BigInt}
+    end
+    for T = (inttypes..., uinttypes..., :BigInt)
+        @eval @test twice(Union{$T,Missing}, missing) === missing
+        @eval @test twice(Union{Complex{$T},Missing}, missing) === missing
+        @eval @test_throws MissingException twice($T, missing)
+        @eval @test_throws MissingException twice(Complex{$T}, missing)
+    end
+
+    @test half(missing) === missing
+    for T = (inttypes..., uinttypes..., :BigInt)
+        for S = (halfinttypes..., halfuinttypes...)
+            @eval @test half(Union{$S,Missing}, $T(5)) === $S(5/2)
+            @eval @test half(Union{$S,Missing}, Complex{$T}(5)) === $S(5/2)
+            @eval @test half(Union{Complex{$S},Missing}, $T(5)) === Complex{$S}(5/2)
+            @eval @test half(Union{Complex{$S},Missing}, Complex{$T}(5 + 3*im)) === Complex{$S}(5/2 + 3/2*im)
+        end
+        @eval @test half(Union{BigHalfInt,Missing}, $T(5)) == 5/2
+        @eval @test half(Union{BigHalfInt,Missing}, $T(5)) isa BigHalfInt
+        @eval @test half(Union{BigHalfInt,Missing}, Complex{$T}(5)) == 5/2
+        @eval @test half(Union{BigHalfInt,Missing}, Complex{$T}(5)) isa BigHalfInt
+        @eval @test half(Union{Complex{BigHalfInt},Missing}, $T(5)) == 5/2
+        @eval @test half(Union{Complex{BigHalfInt},Missing}, $T(5)) isa Complex{BigHalfInt}
+        @eval @test half(Union{Complex{BigHalfInt},Missing}, Complex{$T}(5 + 3*im)) == 5/2 + 3/2*im
+        @eval @test half(Union{Complex{BigHalfInt},Missing}, Complex{$T}(5 + 3*im)) isa Complex{BigHalfInt}
+    end
+    for T = (halfinttypes..., halfuinttypes..., :BigHalfInt)
+        @eval @test half(Union{$T,Missing}, missing) === missing
+        @eval @test half(Union{Complex{$T},Missing}, missing) === missing
+        @eval @test_throws MissingException half($T, missing)
+        @eval @test_throws MissingException half(Complex{$T}, missing)
+    end
+
+    @test onehalf(missing) === onehalf(Missing) === missing
+
+    @test ishalfinteger(missing) === missing
+end
+
 include("ranges.jl")
 include("saferintegers.jl")
 include("customtypes.jl")
