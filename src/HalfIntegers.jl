@@ -239,7 +239,7 @@ half(::Type{Complex{T}}, x::Number) where T<:HalfInteger = Complex(half(T,real(x
 half(::Type{Complex}, x::Number) = Complex(half(real(x)), half(imag(x)))
 
 half(::Missing) = missing
-@static if VERSION ≥ v"1.2"
+@static if VERSION ≥ v"1.3"
     half(::Type{T}, x) where T>:Missing = half(Base.nonmissingtype_checked(T), x)
 else
     half(::Type{T}, x) where T>:Missing = half(Base.nonmissingtype(T), x)
@@ -291,7 +291,7 @@ twice(T::Type{<:Integer}, x::Number) = T(twice(x))
 twice(T::Type{<:Integer}, x::Integer) = twice(T(x)) # convert to T first to reduce probability of overflow
 twice(::Type{Complex{T}}, x::Number) where T<:Integer = Complex(twice(T,real(x)), twice(T,imag(x)))
 
-@static if VERSION ≥ v"1.2"
+@static if VERSION ≥ v"1.3"
     twice(::Type{T}, x) where T>:Missing = twice(Base.nonmissingtype_checked(T), x)
 else
     twice(::Type{T}, x) where T>:Missing = twice(Base.nonmissingtype(T), x)
