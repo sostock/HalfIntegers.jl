@@ -95,6 +95,7 @@ end
                 @eval @test_throws InexactError $I($T(1/2))
                 # Rational
                 @eval @test Rational{$I}($T(7/2)) ==ₜ Rational{$I}(7//2)
+                @eval @test Rational{$I}($T(3)) ==ₜ Rational{$I}(3//1)
                 # Complex
                 @eval @test Complex{$I}($T(5)) ==ₜ Complex{$I}(5)
                 @eval @test Complex{Rational{$I}}($T(5)) ==ₜ Complex{Rational{$I}}(5)
@@ -127,6 +128,7 @@ end
         # Rational
         for T in (inttypes..., uinttypes..., :BigInt)
             @eval @test Rational(Half{$T}(11/2)) ==ₜ Rational{$T}(11//2)
+            @eval @test Rational(Half{$T}(5)) ==ₜ Rational{$T}(5//1)
         end
     end
 
