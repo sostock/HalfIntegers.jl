@@ -42,9 +42,28 @@ HalfInteger(x::BigFloat) = BigHalfInt(x)
 
 (T::Type{<:AbstractFloat})(x::HalfInteger) = T(float(x))
 (T::Type{<:Integer})(x::HalfInteger) =
-    isinteger(x) ? (t=twice(x); T(t÷oftype(t,2))) : throw(InexactError(Symbol(T), T, x))
-(T::Type{<:Rational})(x::HalfInteger) = (t=twice(x); T(t,oftype(t,2)))
-Base.Bool(x::HalfInteger) = invoke(Bool, Tuple{Real}, x)
+    isinteger(x) ? T(twice(x) >> 1) : throw(InexactError(Symbol(T), T, x))
+(::Type{Bool})(x::HalfInteger) = invoke(Bool, Tuple{Real}, x)
+@static if VERSION ≥ v"1.5.0-DEV.820"
+    function (::Type{Rational})(x::HalfInteger)
+        tx = twice(x)
+        if isinteger(x)
+            Base.unsafe_rational(tx >> 1, one(tx))
+        else
+            Base.unsafe_rational(tx, oftype(tx, 2))
+        end
+    end
+    function (::Type{Rational{T}})(x::HalfInteger) where T
+        tx = twice(x)
+        if isinteger(x)
+            Base.unsafe_rational(T, tx >> 1, one(tx))
+        else
+            Base.unsafe_rational(T, tx, oftype(tx,2))
+        end
+    end
+else
+    (T::Type{<:Rational})(x::HalfInteger) = (tx=twice(x); T(tx,oftype(tx,2)))
+end
 
 Base.ArithmeticStyle(::Type{<:HalfInteger}) = Base.ArithmeticWraps()
 
@@ -52,8 +71,8 @@ for op in (:<, :≤, :(==))
     @eval Base.$op(x::HalfInteger, y::HalfInteger) = $op(twice(x), twice(y))
     @eval Base.$op(x::HalfInteger, y::Integer) = ((pt,py)=promote(twice(x),y); $op(pt, twice(py)))
     @eval Base.$op(x::Integer, y::HalfInteger) = ((px,pt)=promote(x,twice(y)); $op(twice(px), pt))
-    @eval Base.$op(x::HalfInteger, y::Rational) = $op(Rational(x), y)
-    @eval Base.$op(x::Rational, y::HalfInteger) = $op(x, Rational(y))
+    @eval Base.$op(x::HalfInteger, y::Rational) = $op(twice(x)*denominator(y), twice(numerator(y)))
+    @eval Base.$op(x::Rational, y::HalfInteger) = $op(twice(numerator(x)), twice(y)*denominator(x))
 end
 
 Base.:+(x::T, y::T) where T<:HalfInteger = half(twice(x)+twice(y))
@@ -105,7 +124,7 @@ Base.floor(T::Type{<:Integer}, x::HalfInteger) = round(T, x, RoundDown)
 Base.trunc(T::Type{<:Integer}, x::HalfInteger) = round(T, x, RoundToZero)
 
 Base.round(T::Type{<:Integer}, x::HalfInteger, r::RoundingMode=RoundNearest) =
-    (t=twice(round(x, r)); T(t÷oftype(t,2)))
+    T(twice(round(x, r)) >> 1)
 
 Base.round(x::HalfInteger, ::typeof(RoundNearest)) =
     ifelse(isinteger(x), +x, ifelse(isone(mod1(twice(x),4)), x-onehalf(x), x+onehalf(x)))
@@ -128,12 +147,13 @@ Base.isfinite(x::HalfInteger) = isfinite(twice(x))
 
 Base.isinteger(x::HalfInteger) = iseven(twice(x))
 
-Base.show(io::IO, x::HalfInteger) = isinteger(x) ? print(io,twice(x)÷2) : print(io,twice(x),"/2")
+Base.show(io::IO, x::HalfInteger) =
+    isinteger(x) ? print(io, twice(x) >> 1) : print(io, twice(x), "/2")
 
 Base.sign(x::HalfInteger) = oftype(x, sign(twice(x)))
 
 Base.denominator(x::HalfInteger) = (t=twice(x); ifelse(isinteger(x), one(t), oftype(t,2)))
-Base.numerator(x::HalfInteger) = (t=twice(x); ifelse(isinteger(x), t÷oftype(t,2), t))
+Base.numerator(x::HalfInteger) = (t=twice(x); ifelse(isinteger(x), t >> 1, t))
 
 Base.sinpi(x::HalfInteger) = sinpihalf(twice(x))
 Base.cospi(x::HalfInteger) = cospihalf(twice(x))
@@ -182,7 +202,7 @@ hashhalf(x::Integer, h::UInt) = invoke(hash, Tuple{Real,UInt}, half(x), h)
 
 # Version for integers with ≤ 64 bits, adapted from hash(::Rational{<:Base.BitInteger64}, ::UInt)
 function hashhalf(x::Base.BitInteger64, h::UInt)
-    iseven(x) && return hash(x÷2, h)
+    iseven(x) && return hash(x >> 1, h)
     if abs(x) < 9007199254740992
         return hash(ldexp(Float64(x),-1),h)
     end
@@ -317,9 +337,14 @@ julia> onehalf(HalfInt)
 """
 onehalf(x::Union{Number,Missing}) = onehalf(typeof(x))
 
-onehalf(T::Type{<:HalfInteger})     = half(T, 1)
-onehalf(T::Type{<:AbstractFloat})   = T(0.5)
-onehalf(T::Type{<:Rational})        = T(1//2)
+onehalf(T::Type{<:HalfInteger}) = half(T, 1)
+onehalf(T::Type{<:AbstractFloat}) = T(0.5)
+@static if VERSION ≥ v"1.5.0-DEV.820"
+    onehalf(::Type{Rational}) = Base.unsafe_rational(1, 2)
+    onehalf(::Type{Rational{T}}) where T = Base.unsafe_rational(T, 1, 2)
+else
+    onehalf(T::Type{<:Rational}) = T(1, 2)
+end
 onehalf(::Type{Complex{T}}) where T = Complex(onehalf(T), zero(T))
 onehalf(::Type{Missing}) = missing
 
