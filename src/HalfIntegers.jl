@@ -127,17 +127,20 @@ Base.round(T::Type{<:Integer}, x::HalfInteger, r::RoundingMode=RoundNearest) =
     T(twice(round(x, r)) >> 1)
 
 Base.round(x::HalfInteger, ::typeof(RoundNearest)) =
-    ifelse(isinteger(x), +x, ifelse(isone(mod1(twice(x),4)), x-onehalf(x), x+onehalf(x)))
+    isinteger(x)             ? +x           :
+    isone(mod1(twice(x), 4)) ? x-onehalf(x) : x+onehalf(x)
 Base.round(x::HalfInteger, ::typeof(RoundNearestTiesAway)) =
-    ifelse(isinteger(x), +x, ifelse(x < zero(x), x-onehalf(x), x+onehalf(x)))
+    isinteger(x) ? +x           :
+    x < zero(x)  ? x-onehalf(x) : x+onehalf(x)
 Base.round(x::HalfInteger, ::typeof(RoundNearestTiesUp)) =
-    ifelse(isinteger(x), +x, x+onehalf(x))
+    isinteger(x) ? +x : x+onehalf(x)
 Base.round(x::HalfInteger, ::typeof(RoundToZero)) =
-    ifelse(isinteger(x), +x, ifelse(x < zero(x), x+onehalf(x), x-onehalf(x)))
+    isinteger(x) ? +x           :
+    x < zero(x)  ? x+onehalf(x) : x-onehalf(x)
 Base.round(x::HalfInteger, ::typeof(RoundUp)) =
     round(x, RoundNearestTiesUp)
 Base.round(x::HalfInteger, ::typeof(RoundDown)) =
-    ifelse(isinteger(x), +x, x-onehalf(x))
+    isinteger(x) ? +x : x-onehalf(x)
 
 Base.big(x::HalfInteger) = BigHalfInt(x)
 
@@ -152,8 +155,8 @@ Base.show(io::IO, x::HalfInteger) =
 
 Base.sign(x::HalfInteger) = oftype(x, sign(twice(x)))
 
-Base.denominator(x::HalfInteger) = (t=twice(x); ifelse(isinteger(x), one(t), oftype(t,2)))
-Base.numerator(x::HalfInteger) = (t=twice(x); ifelse(isinteger(x), t >> 1, t))
+Base.denominator(x::HalfInteger) = (t=twice(x); isinteger(x) ? one(t) : oftype(t,2))
+Base.numerator(x::HalfInteger)   = (t=twice(x); isinteger(x) ? t >> 1 : t)
 
 Base.sinpi(x::HalfInteger) = sinpihalf(twice(x))
 Base.cospi(x::HalfInteger) = cospihalf(twice(x))
@@ -162,7 +165,7 @@ Base.cospi(x::HalfInteger) = cospihalf(twice(x))
 function sinpihalf(x::Integer)
     xm4 = mod(x,4)
     if (xm4 == 0) | (xm4 == 2)
-        ifelse(x<0, -float(zero(x)), +float(zero(x)))
+        x < 0 ? -float(zero(x)) : +float(zero(x))
     elseif xm4 == 1
         +float(one(x))
     else
@@ -381,7 +384,7 @@ function Base.intersect(r::AbstractUnitRange{<:HalfInteger},
                         s::AbstractUnitRange{<:HalfIntegerOrInteger})
     fir = max(first(r),first(s))
     las = min(last(r), last(s))
-    las = ifelse(isinteger(first(r)) ⊻ isinteger(first(s)), oftype(las, fir-one(fir)), las)
+    las = isinteger(first(r)) ⊻ isinteger(first(s)) ? oftype(las, fir-one(fir)) : las
     fir:las
 end
 Base.intersect(r::AbstractUnitRange{<:Integer}, s::AbstractUnitRange{<:HalfInteger}) = s ∩ r
