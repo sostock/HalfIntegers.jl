@@ -91,3 +91,12 @@ etc. are based on standard integer arithmetic, they are subject to
 If you prefer checked arithmetic, you can use the
 [SaferIntegers](https://github.com/JeffreySarnoff/SaferIntegers.jl)
 package and use `Half{SafeInt}` instead of `HalfInt`.
+
+## Alternatives to this package
+
+- [FixedPointNumbers.jl](https://github.com/JuliaMath/FixedPointNumbers.jl) implements
+  numbers with a fixed number of fraction bits. Thus, the `Fixed{Int,1}` type from that
+  package can be considered equivalent to the `HalfInt` type from this package. However, the
+  types behave differently in some ways. For example, multiplying two `Fixed{T,f}` numbers
+  results in another `Fixed{T,f}` number, whereas multiplying two `HalfInteger`s results in
+  a floating-point number.
