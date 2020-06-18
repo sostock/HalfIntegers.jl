@@ -7,6 +7,9 @@ halfuinttypes = (:HalfUInt, :HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :
 
 ==ₜ(x, y) = x === y
 ==ₜ(x::T, y::T) where T<:Union{BigInt,BigFloat,BigHalfInt,Rational{BigInt},Complex{BigInt},Complex{BigFloat},Complex{BigHalfInt},Complex{Rational{BigInt}}} = x == y
+==ₜ(x::AbstractArray, y::AbstractArray) = (x == y) && (typeof(x) == typeof(y))
+
+@test isempty(Test.detect_ambiguities(HalfIntegers, Base))
 
 @testset "Constructors" begin
     for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
@@ -671,6 +674,13 @@ end
             @test 2 // BigHalfInt(2) ==ₜ Rational{BigInt}(1//1)
             @test BigInt(2) // BigHalfInt(2) ==ₜ Rational{BigInt}(1//1)
             @test (4//3) // BigHalfInt(3/2) ==ₜ Rational{BigInt}(8//9)
+
+            # Extra tests for ambiguity resolution with Base
+            for T in (halfinttypes..., halfuinttypes..., BigHalfInt)
+                @eval @test [1]//$T(2) ==ₜ [1//$T(2)]
+                @eval @test Complex(2,0)//$T(2) ==ₜ Complex(2//$T(2),0//1)
+                @eval @test $T(2)//Complex(2,0) ==ₜ Complex($T(2)//2,0//1)
+            end
         end
 
         @testset "div/rem/mod" begin
