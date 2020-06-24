@@ -1461,53 +1461,33 @@ end
 end
 
 @testset "Trigonometry" begin
-    @testset "sinpi" begin
-        for T in halfinttypes
-            @eval @test sinpi($T(0)) === 0.0
-            @eval @test sinpi($T(1/2)) === 1.0
-            @eval @test sinpi($T(-1)) === -0.0
-            @eval @test sinpi($T(5/2)) === 1.0
-            @eval @test sinpi($T(-5/2)) === -1.0
-        end
-        for T in halfuinttypes
-            @eval @test sinpi($T(0)) === 0.0
-            @eval @test sinpi($T(1/2)) === 1.0
-            @eval @test sinpi($T(1)) === 0.0
-            @eval @test sinpi($T(5/2)) === 1.0
-            @eval @test sinpi($T(7/2)) === -1.0
-        end
-        @test @inferred(sinpi(BigHalfInt(0))) isa BigFloat
-        @test isequal(sinpi(BigHalfInt(0)), 0.0)
-        @test isequal(sinpi(BigHalfInt(1/2)), 1.0)
-        @test isequal(sinpi(BigHalfInt(-1)), -0.0)
-        @test isequal(sinpi(BigHalfInt(5/2)), 1.0)
-        @test isequal(sinpi(BigHalfInt(-5/2)), -1.0)
+    fs = @static if VERSION ≥ v"1.6.0-DEV.292"
+        (:sinpi, :cospi, :sincospi)
+    else
+        (:sinpi, :cospi)
     end
-
-    @testset "cospi" begin
-        for T in halfinttypes
-            @eval @test cospi($T(0)) === 1.0
-            @eval @test cospi($T(1/2)) === 0.0
-            @eval @test cospi($T(-1)) === -1.0
-            @eval @test cospi($T(2)) === 1.0
-            @eval @test cospi($T(5/2)) === 0.0
-            @eval @test cospi($T(-5/2)) === 0.0
+    for f = fs
+        for T = inttypes
+            @eval xs = half.(Half{$T}, [0, 1, -2, 4, 5, -5,
+                                        typemax($T), typemax($T)-1, typemax($T)-2, typemax($T)-3,
+                                        typemin($T), typemin($T)+1, typemin($T)+2, typemin($T)+3])
+            @eval @test typeof(@inferred($f(zero(Half{$T})))) === typeof($f(zero(Rational{$T})))
+            for x = xs
+                @eval @test isequal($f($x), $f(Rational{BigInt}($x)))
+            end
         end
-        for T in halfuinttypes
-            @eval @test cospi($T(0)) === 1.0
-            @eval @test cospi($T(1/2)) === 0.0
-            @eval @test cospi($T(1)) === -1.0
-            @eval @test cospi($T(2)) === 1.0
-            @eval @test cospi($T(5/2)) === 0.0
-            @eval @test cospi($T(7/2)) === 0.0
+        for T = uinttypes
+            @eval xs = half.(Half{$T}, [0, 1, 2, 4, 5, 7,
+                                        typemax($T), typemax($T)-1, typemax($T)-2, typemax($T)-3])
+            @eval @test typeof(@inferred($f(zero(Half{$T})))) === typeof($f(zero(Rational{$T})))
+            for x = xs
+                @eval @test isequal($f($x), $f(Rational{BigInt}($x)))
+            end
         end
-        @test @inferred(cospi(BigHalfInt(0))) isa BigFloat
-        @test isequal(cospi(BigHalfInt(0)), 1.0)
-        @test isequal(cospi(BigHalfInt(1/2)), 0.0)
-        @test isequal(cospi(BigHalfInt(-1)), -1.0)
-        @test isequal(cospi(BigHalfInt(2)), 1.0)
-        @test isequal(cospi(BigHalfInt(5/2)), 0.0)
-        @test isequal(cospi(BigHalfInt(-5/2)), 0.0)
+        @eval @test typeof(@inferred($f(zero(BigHalfInt)))) === typeof($f(zero(Rational{BigInt})))
+        for x = BigHalfInt[0, 1/2, 1, 2, 5/2, 7/2]
+            @eval @test isequal($f($x), $f(Rational{BigInt}($x)))
+        end
     end
 end
 
