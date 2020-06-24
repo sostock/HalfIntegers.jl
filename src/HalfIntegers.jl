@@ -169,23 +169,44 @@ Base.cospi(x::HalfInteger) = cospihalf(twice(x))
 # Compute sin(x*π/2)
 function sinpihalf(x::Integer)
     xm4 = mod(x,4)
+    T = float(typeof(x))
     if (xm4 == 0) | (xm4 == 2)
-        x < 0 ? -float(zero(x)) : +float(zero(x))
+        x < 0 ? -zero(T) : +zero(T)
     elseif xm4 == 1
-        +float(one(x))
+        +one(T)
     else
-        -float(one(x))
+        -one(T)
     end
 end
 # Compute cos(x*π/2)
 function cospihalf(x::Integer)
     xm4 = mod(x,4)
+    T = float(typeof(x))
     if (xm4 == 1) | (xm4 == 3)
-        +float(zero(x))
+        +zero(T)
     elseif xm4 == 0
-        +float(one(x))
+        +one(T)
     else
-        -float(one(x))
+        -one(T)
+    end
+end
+
+@static if VERSION ≥ v"1.6.0-DEV.292"
+    Base.sincospi(x::HalfInteger) = sincospihalf(twice(x))
+
+    # Compute sincos(x*π/2)
+    function sincospihalf(x::Integer)
+        xm4 = mod(x,4)
+        T = float(typeof(x))
+        if xm4 == 0
+            (x < 0 ? -zero(T) : +zero(T), +one(T))
+        elseif xm4 == 1
+            (+one(T), +zero(T))
+        elseif xm4 == 2
+            (x < 0 ? -zero(T) : +zero(T), -one(T))
+        else
+            (-one(T), +zero(T))
+        end
     end
 end
 
