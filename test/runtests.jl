@@ -1,15 +1,31 @@
 using HalfIntegers, Test
 
-inttypes  = (:Int, :Int8, :Int16, :Int32, :Int64, :Int128)
-uinttypes = (:UInt, :UInt8, :UInt16, :UInt32, :UInt64, :UInt128)
-halfinttypes  = (:HalfInt, :HalfInt8, :HalfInt16, :HalfInt32, :HalfInt64, :HalfInt128)
-halfuinttypes = (:HalfUInt, :HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :HalfUInt128)
+inttypes  = (:Int8, :Int16, :Int32, :Int64, :Int128)
+uinttypes = (:UInt8, :UInt16, :UInt32, :UInt64, :UInt128)
+halfinttypes  = (:HalfInt8, :HalfInt16, :HalfInt32, :HalfInt64, :HalfInt128)
+halfuinttypes = (:HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :HalfUInt128)
 
 ==ₜ(x, y) = x === y
 ==ₜ(x::T, y::T) where T<:Union{BigInt,BigFloat,BigHalfInt,Rational{BigInt},Complex{BigInt},Complex{BigFloat},Complex{BigHalfInt},Complex{Rational{BigInt}}} = x == y
 ==ₜ(x::AbstractArray, y::AbstractArray) = (x == y) && (typeof(x) == typeof(y))
 
 @test isempty(Test.detect_ambiguities(HalfIntegers, Base))
+
+@testset "Aliases" begin
+    @test HalfInt === Half{Int}
+    @test HalfInt8 === Half{Int8}
+    @test HalfInt16 === Half{Int16}
+    @test HalfInt32 === Half{Int32}
+    @test HalfInt64 === Half{Int64}
+    @test HalfInt128 === Half{Int128}
+    @test BigHalfInt === Half{BigInt}
+    @test HalfUInt === Half{UInt}
+    @test HalfUInt8 === Half{UInt8}
+    @test HalfUInt16 === Half{UInt16}
+    @test HalfUInt32 === Half{UInt32}
+    @test HalfUInt64 === Half{UInt64}
+    @test HalfUInt128 === Half{UInt128}
+end
 
 @testset "Constructors" begin
     for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
