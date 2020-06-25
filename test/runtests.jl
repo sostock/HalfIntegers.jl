@@ -1278,8 +1278,7 @@ end
             @eval @test round(Integer, Half{$T}(3),   RoundUp) ==ₜ $T(3)
             @eval @test round(Integer, Half{$T}(5/2), RoundUp) ==ₜ $T(3)
             @eval @test round(Integer, Half{$T}(7/2), RoundUp) ==ₜ $T(4)
-            for S in (:Int, :Int8, :Int16, :Int32, :Int64, :Int128, :BigInt,
-                      :UInt, :UInt8, :UInt16, :UInt32, :UInt64, :UInt128)
+            for S in (inttypes..., uinttypes..., :BigInt)
                 @eval @test round($S, Half{$T}(3))   ==ₜ $S(3)
                 @eval @test round($S, Half{$T}(5/2)) ==ₜ $S(2)
                 @eval @test round($S, Half{$T}(7/2)) ==ₜ $S(4)
@@ -1325,7 +1324,7 @@ end
             @eval @test round($T(-7),   RoundUp) == -7
             @eval @test round($T(-3/2), RoundUp) == -1
             @eval @test round($T(-9/2), RoundUp) == -4
-            for S in (:Integer, :Int, :Int8, :Int16, :Int32, :Int64, :Int128, :BigInt)
+            for S in (:Integer, inttypes..., :BigInt)
                 @eval @test round($S, $T(-7))   == -7
                 @eval @test round($S, $T(-3/2)) == -2
                 @eval @test round($S, $T(-9/2)) == -4
@@ -1348,7 +1347,7 @@ end
                 @eval @test round($S, $T(-3/2), RoundUp) == -1
                 @eval @test round($S, $T(-9/2), RoundUp) == -4
             end
-            for S in (:UInt, :UInt8, :UInt16, :UInt32, :UInt64, :UInt128)
+            for S in uinttypes
                 @eval @test_throws InexactError round($S, $T(-7))
                 @eval @test_throws InexactError round($S, $T(-3/2))
                 @eval @test_throws InexactError round($S, $T(-9/2))
@@ -1394,8 +1393,7 @@ end
             @eval @test trunc(Integer, Half{$T}(3))   ==ₜ $T(3)
             @eval @test trunc(Integer, Half{$T}(5/2)) ==ₜ $T(2)
             @eval @test trunc(Integer, Half{$T}(7/2)) ==ₜ $T(3)
-            for S in (:Int, :Int8, :Int16, :Int32, :Int64, :Int128, :BigInt,
-                      :UInt, :UInt8, :UInt16, :UInt32, :UInt64, :UInt128)
+            for S in (inttypes..., uinttypes..., :BigInt)
                 @eval @test ceil($S, Half{$T}(3))   ==ₜ $S(3)
                 @eval @test ceil($S, Half{$T}(5/2)) ==ₜ $S(3)
                 @eval @test ceil($S, Half{$T}(7/2)) ==ₜ $S(4)
@@ -1417,7 +1415,7 @@ end
             @eval @test trunc($T(-7))   == -7
             @eval @test trunc($T(-3/2)) == -1
             @eval @test trunc($T(-9/2)) == -4
-            for S in (:Integer, :Int, :Int8, :Int16, :Int32, :Int64, :Int128, :BigInt)
+            for S in (:Integer, inttypes..., :BigInt)
                 @eval @test ceil($S, $T(-7))   == -7
                 @eval @test ceil($S, $T(-3/2)) == -1
                 @eval @test ceil($S, $T(-9/2)) == -4
@@ -1428,7 +1426,7 @@ end
                 @eval @test trunc($S, $T(-3/2)) == -1
                 @eval @test trunc($S, $T(-9/2)) == -4
             end
-            for S in (:UInt, :UInt8, :UInt16, :UInt32, :UInt64, :UInt128)
+            for S in uinttypes
                 @eval @test ceil($S, $T(-1/2)) == 0
                 @eval @test trunc($S, $T(-1/2)) == 0
                 @eval @test_throws InexactError ceil($S, $T(-7))
