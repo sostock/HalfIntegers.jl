@@ -65,14 +65,14 @@ HalfIntegers.twice(x::MyHalfInt) = twice(x.val)
     end
 
     @testset "Trigonometry" begin
-        @test sinpi(MyHalfInt(0)) === 0.0
-        @test sinpi(MyHalfInt(1/2)) === 1.0
-        @test sinpi(MyHalfInt(-1)) === -0.0
-        @test sinpi(MyHalfInt(-5/2)) === -1.0
-        @test cospi(MyHalfInt(0)) === 1.0
-        @test cospi(MyHalfInt(1)) === -1.0
-        @test cospi(MyHalfInt(5/2)) === 0.0
-        @test cospi(MyHalfInt(7/2)) === 0.0
+        for x = [typemax(HalfInt), typemax(HalfInt)-HalfInt(1/2),
+                 typemax(HalfInt)-HalfInt(1), typemax(HalfInt)-HalfInt(3/2),
+                 typemin(HalfInt), typemin(HalfInt)+HalfInt(1/2),
+                 typemin(HalfInt)+HalfInt(1), typemin(HalfInt)+HalfInt(3/2)]
+            @test sinpi(MyHalfInt(x)) === sinpi(x)
+            @test cospi(MyHalfInt(x)) === cospi(x)
+            @test sincospi(MyHalfInt(x)) === sincospi(x)
+        end
     end
 
     @testset "string" begin
