@@ -366,6 +366,7 @@ julia> onehalf(HalfInt)
 """
 onehalf(x::Union{Number,Missing}) = onehalf(typeof(x))
 
+onehalf(T::Type{<:Number}) = T(onehalf(HalfInteger))
 onehalf(T::Type{<:HalfInteger}) = half(T, 1)
 onehalf(T::Type{<:AbstractFloat}) = T(0.5)
 @static if VERSION ≥ v"1.5.0-DEV.820"
@@ -374,7 +375,7 @@ onehalf(T::Type{<:AbstractFloat}) = T(0.5)
 else
     onehalf(T::Type{<:Rational}) = T(1, 2)
 end
-onehalf(::Type{Complex{T}}) where T = Complex(onehalf(T), zero(T))
+onehalf(::Type{Complex{T}}) where T = Complex{T}(onehalf(T), zero(T))
 onehalf(::Type{Missing}) = missing
 
 const HalfIntegerOrInteger = Union{HalfInteger, Integer}
