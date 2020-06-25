@@ -318,10 +318,13 @@ end
 end
 
 @testset "onehalf" begin
-    for T in (halfinttypes..., halfuinttypes..., :BigHalfInt, :Float16, :Float32, :Float64, :BigFloat,
-              :(Rational{Int}), :(Rational{UInt8}), :(Rational{BigInt}))
-        @eval @test onehalf($T) ==ₜ $T(1//2)
-        @eval @test onehalf(Complex{$T}) ==ₜ Complex{$T}(1//2, 0)
+    @test onehalf(Number) === onehalf(HalfInt)
+    @test onehalf(Complex) === onehalf(Complex{HalfInt})
+    for T in (:Real, :HalfInteger, halfinttypes..., halfuinttypes..., :BigHalfInt, :(Half{Integer}),
+              :AbstractFloat, :Float16, :Float32, :Float64, :BigFloat,
+              :Rational, :(Rational{Int}), :(Rational{UInt8}), :(Rational{BigInt}), :(Rational{Integer}))
+        @eval @test onehalf($T) ==ₜ $T(HalfInt(1/2))
+        @eval @test onehalf(Complex{$T}) ==ₜ Complex{$T}(HalfInt(1/2), 0)
     end
 end
 
