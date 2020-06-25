@@ -71,7 +71,9 @@ HalfIntegers.twice(x::MyHalfInt) = twice(x.val)
                  typemin(HalfInt)+HalfInt(1), typemin(HalfInt)+HalfInt(3/2)]
             @test sinpi(MyHalfInt(x)) === sinpi(x)
             @test cospi(MyHalfInt(x)) === cospi(x)
-            @test sincospi(MyHalfInt(x)) === sincospi(x)
+            @static if VERSION ≥ v"1.6.0-DEV.292"
+                @test sincospi(MyHalfInt(x)) === sincospi(x)
+            end
         end
     end
 
