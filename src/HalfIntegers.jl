@@ -506,4 +506,6 @@ const HalfUInt128 = Half{UInt128}
 Base.sinpi(x::BigHalfInt) = big(invoke(sinpi, Tuple{HalfInteger}, x))
 Base.cospi(x::BigHalfInt) = big(invoke(cospi, Tuple{HalfInteger}, x))
 
+unsafeconvert(::Type{T}, x::Half{T}) where {T<:Integer} = twice(x) >> 1
+
 end # module

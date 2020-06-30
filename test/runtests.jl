@@ -9,7 +9,7 @@ halfuinttypes = (:HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :HalfUInt128
 ==ₜ(x::T, y::T) where T<:Union{BigInt,BigFloat,BigHalfInt,Rational{BigInt},Complex{BigInt},Complex{BigFloat},Complex{BigHalfInt},Complex{Rational{BigInt}}} = x == y
 ==ₜ(x::AbstractArray, y::AbstractArray) = (x == y) && (typeof(x) == typeof(y))
 
-@test isempty(Test.detect_ambiguities(HalfIntegers, Base))
+@test isempty(Test.detect_ambiguities(HalfIntegers, Base, Core))
 
 @testset "Aliases" begin
     @test HalfInt === Half{Int}
@@ -148,6 +148,12 @@ end
         for T in (inttypes..., uinttypes..., :BigInt)
             @eval @test Rational(Half{$T}(11/2)) ==ₜ Rational{$T}(11//2)
             @eval @test Rational(Half{$T}(5)) ==ₜ Rational{$T}(5//1)
+        end
+
+        @testset "unsafe" begin
+            for T in (inttypes..., uinttypes..., :BigInt)
+                @eval @test HalfIntegers.unsafeconvert($T,one(Half{$T})) ==ₜ one($T)
+            end
         end
     end
 
