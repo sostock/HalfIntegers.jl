@@ -77,6 +77,25 @@ half(Complex{HalfInt}, 4+1im)
 
 Calling the `Half` constructor without type parameter is disallowed to avoid confusion with the `half` function.
 
+## Conversion
+
+`HalfInteger`s can be converted to any other number type in the usual ways. When the value is not representable in the new type, an error is thrown:
+```@repl halfintegers
+Float32(HalfInt(3/2))
+convert(Rational{Int}, HalfInt(-5))
+float(HalfInt(2))
+complex(HalfInt(-1/2))
+convert(Int, HalfInt(7/2))
+```
+
+!!! note
+    The fastest way of converting a `HalfInteger` to an `Integer` type is the `floor` function, since it reduces to a single bit-shift:
+    ```@repl halfintegers
+    julia> floor(Integer, HalfInt(5)) # returns an Int
+    5
+    ```
+    Thus, `convert(Integer, x)` can be replaced by `floor(Integer, x)` when it is known that `x` is equal to an integer. This can be useful in performance-critical applications.
+
 ## Arithmetic operations
 
 The provided half-integer types support all common arithmetic operations.
@@ -89,7 +108,7 @@ HalfInt(1/2) + 5.0
 complex(HalfInt(1/2)) + 5//1
 ```
 
-Since the product of two half-integers is not a half-integer (unless one of them is actually an integer), multiplication of two `HalfInteger`s result in a floating-point number.
+Since the product of two half-integers is not a half-integer (unless one of them is actually an integer), multiplication of two `HalfInteger`s results in a floating-point number.
 Multiplication of a `HalfInteger` and an `Integer` yields another `HalfInteger`:
 
 ```@repl halfintegers
