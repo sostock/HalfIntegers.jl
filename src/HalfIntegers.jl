@@ -130,6 +130,7 @@ Base.trunc(T::Type{<:Integer}, x::HalfInteger) = round(T, x, RoundToZero)
 
 Base.round(T::Type{<:Integer}, x::HalfInteger, r::RoundingMode=RoundNearest) =
     T(twice(round(x, r)) >> 1)
+Base.round(T::Type{<:Integer}, x::HalfInteger, ::typeof(RoundDown)) = T(twice(x) >> 1)
 
 Base.round(x::HalfInteger, ::typeof(RoundNearest)) =
     isinteger(x)             ? +x           :
