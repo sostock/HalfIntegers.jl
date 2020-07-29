@@ -504,7 +504,4 @@ const HalfUInt32 = Half{UInt32}
 const HalfUInt64 = Half{UInt64}
 const HalfUInt128 = Half{UInt128}
 
-Base.sinpi(x::BigHalfInt) = big(invoke(sinpi, Tuple{HalfInteger}, x))
-Base.cospi(x::BigHalfInt) = big(invoke(cospi, Tuple{HalfInteger}, x))
-
 end # module
