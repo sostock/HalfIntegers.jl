@@ -2,21 +2,21 @@
 
 ## v1.2.1
 
-* ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Add specialized `round(::Type{<:Integer}, ::HalfInteger, ::typeof(RoundDown))` method for better performance. (#16)
+* ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Add specialized `round(::Type{<:Integer}, ::HalfInteger, ::typeof(RoundDown))` method for better performance. ([#16](https://github.com/sostock/HalfIntegers.jl/pull/16))
 
 ## v1.2.0
 
-* ![Feature](https://img.shields.io/badge/-feature-green) `onehalf` now accepts abstract types as argument. (#14)
-* ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Add custom `sincospi` method (only on Julia ≥ 1.6). (#10)
-* ![Bugfix](https://img.shields.io/badge/-bugfix-purple) `onehalf(Complex{T})` now actually returns a `Complex{T}` when `T` is an abstract type. (#14)
+* ![Feature](https://img.shields.io/badge/-feature-green) `onehalf` now accepts abstract types as argument. ([#14](https://github.com/sostock/HalfIntegers.jl/pull/14))
+* ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Add custom `sincospi` method (only on Julia ≥ 1.6). ([#10](https://github.com/sostock/HalfIntegers.jl/pull/10))
+* ![Bugfix](https://img.shields.io/badge/-bugfix-purple) `onehalf(Complex{T})` now actually returns a `Complex{T}` when `T` is an abstract type. ([#14](https://github.com/sostock/HalfIntegers.jl/pull/14))
 
 ## v1.1.2
 
-* ![Bugfix](https://img.shields.io/badge/-bugfix-purple) Resolve method ambiguities with `Base`. (#9)
+* ![Bugfix](https://img.shields.io/badge/-bugfix-purple) Resolve method ambiguities with `Base`. ([#9](https://github.com/sostock/HalfIntegers.jl/pull/9))
 
 ## v1.1.1
 
-* ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Performance improvements for `Rational`s on Julia ≥ 1.5. (#7)
+* ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Performance improvements for `Rational`s on Julia ≥ 1.5. ([#7](https://github.com/sostock/HalfIntegers.jl/pull/7))
 
 ## v1.1.0
 
