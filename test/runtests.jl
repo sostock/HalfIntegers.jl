@@ -1616,16 +1616,22 @@ end
     end
 end
 
-@testset "string" begin
+@testset "Printing" begin
     for T in (halfinttypes..., :BigHalfInt)
-        @eval @test string($T(3/2)) === "3/2"
-        @eval @test string($T(5)) === "5"
-        @eval @test string($T(-3/2)) === "-3/2"
-        @eval @test string($T(-5)) === "-5"
+        @eval @test Base.alignment(stdout, $T(3/2))   === (1,2)
+        @eval @test Base.alignment(stdout, $T(15))    === (2,0)
+        @eval @test Base.alignment(stdout, $T(-11/2)) === (3,2)
+        @eval @test Base.alignment(stdout, $T(-10))   === (3,0)
+        @eval @test sprint(show, $T(3/2))   === "3/2"
+        @eval @test sprint(show, $T(15))    === "15"
+        @eval @test sprint(show, $T(-11/2)) === "-11/2"
+        @eval @test sprint(show, $T(-10))   === "-10"
     end
     for T in halfuinttypes
-        @eval @test string($T(3/2)) === "3/2"
-        @eval @test string($T(5)) === "5"
+        @eval @test Base.alignment(stdout, $T(3/2)) === (1,2)
+        @eval @test Base.alignment(stdout, $T(15))  === (2,0)
+        @eval @test sprint(show, $T(3/2)) === "3/2"
+        @eval @test sprint(show, $T(15))  === "15"
     end
 end
 

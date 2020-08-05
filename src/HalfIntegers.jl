@@ -155,6 +155,12 @@ Base.isinteger(x::HalfInteger) = iseven(twice(x))
     Base.ispow2(x::HalfInteger) = ispow2(twice(x))
 end
 
+function Base.alignment(io::IO, x::HalfInteger)
+    s = sprint(show, x, context=io, sizehint=0)
+    m = match(r"^(.*?)/2$", s)
+    m === nothing ? (length(s), 0) : (length(m.captures[1]), 2)
+end
+
 Base.show(io::IO, x::HalfInteger) =
     isinteger(x) ? print(io, twice(x) >> 1) : print(io, twice(x), "/2")
 
