@@ -249,6 +249,9 @@ end
 For an integer value `x`, return `x/2` as a half-integer of type `T`. If `T` is not given,
 return an appropriate `HalfInteger` type. Throw an `InexactError` if `x` is not an integer.
 
+!!! compat "HalfIntegers 1.1"
+    `missing` as an argument requires at least HalfIntegers 1.1.
+
 # Examples
 
 ```jldoctest
@@ -273,6 +276,9 @@ For a complex value `x` with integer real and imaginary parts, return `x/2` as a
 number of type `T`. If `T` is not given, return an appropriate complex number type with
 half-integer parts. Throw an `InexactError` if the real or the imaginary part of `x` are not
 integer.
+
+!!! compat "HalfIntegers 1.1"
+    `missing` as an argument requires at least HalfIntegers 1.1.
 
 # Examples
 
@@ -304,6 +310,11 @@ half(::Type{T}, ::Missing) where T =
 
 Return `2x`. If `x` is a `HalfInteger`, return an appropriate integer type.
 
+!!! compat "HalfIntegers 1.1"
+    `missing` as an argument requires at least HalfIntegers 1.1.
+
+# Examples
+
 ```jldoctest
 julia> twice(2)
 4
@@ -326,6 +337,9 @@ twice(x::Complex) = Complex(twice(real(x)), twice(imag(x)))
     twice(T<:Complex{<:Integer}, x)
 
 Return `2x` as a number of type `T`.
+
+!!! compat "HalfIntegers 1.1"
+    `missing` as an argument requires at least HalfIntegers 1.1.
 
 # Examples
 
@@ -354,6 +368,12 @@ twice(::Type{T}, ::Missing) where T =
     onehalf(x)
 
 Return the value 1/2 in the type of `x` (`x` can also specify the type itself).
+
+!!! compat "HalfIntegers 1.1"
+    `missing` as an argument requires at least HalfIntegers 1.1.
+
+!!! compat "HalfIntegers 1.2"
+    Some abstract types as arguments require at least HalfIntegers 1.2.
 
 # Examples
 
