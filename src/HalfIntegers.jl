@@ -524,4 +524,6 @@ const HalfUInt32 = Half{UInt32}
 const HalfUInt64 = Half{UInt64}
 const HalfUInt128 = Half{UInt128}
 
+Base.float(::Type{BigHalfInt}) = BigFloat
+
 end # module

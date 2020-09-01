@@ -94,10 +94,14 @@ end
 
     @testset "float" begin
         for T in (halfinttypes..., halfuinttypes...)
+            @eval @test float($T) === Float64
             @eval @test float($T(3/2)) === 1.5
+            @eval @test float(Complex{$T}) === Complex{Float64}
             @eval @test float(Complex{$T}(3/2 + 5im)) === 1.5 + 5.0im
         end
+        @test float(BigHalfInt) === BigFloat
         @test float(BigHalfInt(-5/2)) ==ₜ BigFloat(-2.5)
+        @test float(Complex{BigHalfInt}) === Complex{BigFloat}
         @test float(Complex{BigHalfInt}(-5/2 + 3im)) ==ₜ Complex{BigFloat}(-2.5 + 3.0im)
     end
 
