@@ -1,5 +1,9 @@
 # HalfIntegers.jl changelog
 
+## master
+
+* ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Added a specialized `float(::Type{BigHalfInt})` method for better performance. ([#21](https://github.com/sostock/HalfIntegers.jl/pull/21))
+
 ## v1.2.1
 
 * ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Added a specialized `round(::Type{<:Integer}, ::HalfInteger, ::typeof(RoundDown))` method for better performance. ([#16](https://github.com/sostock/HalfIntegers.jl/pull/16))
