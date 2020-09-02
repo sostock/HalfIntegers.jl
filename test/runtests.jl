@@ -1520,9 +1520,9 @@ end
             @eval @test $eq($f($x), $f(float($x)))
         end
     end
-    for T = inttypes
+    for T = uinttypes
         @eval xs = half.(Half{$T}, 0:20)
-        @eval @test typeof(@inferred($f(zero(Half{$T})))) === Float64
+        @eval @test typeof(@inferred($f(zero(Half{$T})))) === float($T)
         for x = xs
             @eval @test $eq($f($x), $f(float($x)))
         end
