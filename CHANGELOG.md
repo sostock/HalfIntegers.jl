@@ -2,6 +2,8 @@
 
 ## master
 
+## v1.2.2
+
 * ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Added a specialized `float(::Type{BigHalfInt})` method for better performance. ([#21](https://github.com/sostock/HalfIntegers.jl/pull/21))
 * ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Added specialized `sinc` and `cosc` methods for better performance. ([#22](https://github.com/sostock/HalfIntegers.jl/pull/22))
 
