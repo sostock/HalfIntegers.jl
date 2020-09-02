@@ -9,7 +9,11 @@ halfuinttypes = (:HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :HalfUInt128
 ==ₜ(x::T, y::T) where T<:Union{BigInt,BigFloat,BigHalfInt,Rational{BigInt},Complex{BigInt},Complex{BigFloat},Complex{BigHalfInt},Complex{Rational{BigInt}}} = x == y
 ==ₜ(x::AbstractArray, y::AbstractArray) = (x == y) && (typeof(x) == typeof(y))
 
-@test isempty(Test.detect_ambiguities(HalfIntegers, Base, Core))
+@static if VERSION ≥ v"1.6.0-DEV.816"
+    @test isempty(Test.detect_ambiguities(HalfIntegers))
+else
+    @test isempty(Test.detect_ambiguities(HalfIntegers, Base, Core))
+end
 
 @testset "Aliases" begin
     @test HalfInt === Half{Int}
