@@ -167,6 +167,9 @@ Base.numerator(x::HalfInteger)   = (t=twice(x); isinteger(x) ? t >> 1 : t)
 Base.sinpi(x::HalfInteger) = sinpihalf(twice(x))
 Base.cospi(x::HalfInteger) = cospihalf(twice(x))
 
+Base.sinc(x::HalfInteger) = sinchalf(twice(x))
+Base.cosc(x::HalfInteger) = coschalf(twice(x))
+
 # Compute sin(x*π/2)
 function sinpihalf(x::Integer)
     xm4 = mod(x,4)
@@ -189,6 +192,30 @@ function cospihalf(x::Integer)
         +one(T)
     else
         -one(T)
+    end
+end
+
+# Compute sinc(x/2)
+function sinchalf(x::Integer)
+    iszero(x) && return one(float(typeof(x)))
+    iseven(x) && return zero(float(typeof(x)))
+    d = inv(π*x)
+    isone(mod(x % Int8, Int8(4))) ? 2*d : -2*d
+end
+# Compute cosc(x/2)
+function coschalf(x::Integer)
+    T = float(typeof(x))
+    iszero(x) && return zero(T)
+    xm4 = mod(x % Int8, Int8(4))
+    x⁻¹ = inv(x)
+    if xm4 == 0
+        2*x⁻¹
+    elseif xm4 == 1
+        (-4/T(π))*x⁻¹*x⁻¹
+    elseif xm4 == 2
+        -2*x⁻¹
+    else
+        (4/T(π))*x⁻¹*x⁻¹
     end
 end
 
