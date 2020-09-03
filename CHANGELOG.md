@@ -2,6 +2,10 @@
 
 ## master
 
+## v1.2.3
+
+* ![Maintenance](https://img.shields.io/badge/-maintenance-grey) Fix tests on Julia ≥ 1.6.
+
 ## v1.2.2
 
 * ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Added a specialized `float(::Type{BigHalfInt})` method for better performance. ([#21](https://github.com/sostock/HalfIntegers.jl/pull/21))
