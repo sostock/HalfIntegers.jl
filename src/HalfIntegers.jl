@@ -87,13 +87,8 @@ Base.:*(x::Integer, y::HalfInteger) = y*x
 Base.:/(x::T, y::T) where T<:HalfInteger = twice(x)/twice(y)
 
 Base.://(x::HalfInteger, y::HalfInteger) = twice(x)//twice(y)
-Base.://(x::HalfInteger, y) = twice(x)//twice(y)
-Base.://(x, y::HalfInteger) = twice(x)//twice(y)
-
-# Ambiguity resolution with Base
-Base.://(x::HalfInteger, y::Complex) = twice(x)//twice(y)
-Base.://(x::Complex, y::HalfInteger) = twice(x)//twice(y)
-Base.://(x::AbstractArray, y::HalfInteger) = twice.(x) .// twice(y)
+Base.://(x::HalfInteger, y::Real) = twice(x)//twice(y)
+Base.://(x::Real, y::HalfInteger) = twice(x)//twice(y)
 
 Base.:^(x::Real, y::HalfInteger) = x^float(y)
 Base.:^(::Irrational{:ℯ}, x::HalfInteger) = exp(x)
