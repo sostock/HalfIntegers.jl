@@ -371,6 +371,28 @@ end
         end
     end
 
+    @static if VERSION ≥ v"1.6.0-DEV.999"
+        @testset "ispow2" begin
+            for T in (halfinttypes..., :BigHalfInt)
+                @eval @test ispow2($T(1/2))
+                @eval @test ispow2($T(1))
+                @eval @test ispow2($T(4))
+                @eval @test !ispow2($T(0))
+                @eval @test !ispow2($T(3/2))
+                @eval @test !ispow2($T(-1/2))
+                @eval @test !ispow2($T(-1))
+                @eval @test !ispow2($T(-4))
+            end
+            for T in halfuinttypes
+                @eval @test ispow2($T(1/2))
+                @eval @test ispow2($T(1))
+                @eval @test ispow2($T(4))
+                @eval @test !ispow2($T(0))
+                @eval @test !ispow2($T(3/2))
+            end
+        end
+    end
+
     @testset "typemin/typemax" begin
         for T in (inttypes..., uinttypes...)
             @eval @test typemin(Half{$T}) === half(Half{$T}, typemin($T))
