@@ -2,6 +2,8 @@
 
 ## master
 
+* ![Feature](https://img.shields.io/badge/-feature-green) `ispow2` accepts `HalfInteger` arguments on Julia ≥ 1.6. ([#26](https://github.com/sostock/HalfIntegers.jl/pull/26))
+
 ## v1.2.4
 
 * ![Maintenance](https://img.shields.io/badge/-maintenance-grey) Fix tests on Julia ≥ 1.6. ([#25](https://github.com/sostock/HalfIntegers.jl/pull/25))
