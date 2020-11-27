@@ -1,10 +1,8 @@
 # HalfIntegers
 
 [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/H/HalfIntegers.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html)
-[![Build Status](https://travis-ci.com/sostock/HalfIntegers.jl.svg?branch=master)](https://travis-ci.com/sostock/HalfIntegers.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/lsp8kuibvmm9agut/branch/master?svg=true)](https://ci.appveyor.com/project/sostock/halfintegers-jl/branch/master)
+[![CI](https://github.com/sostock/HalfIntegers.jl/workflows/CI/badge.svg)](https://github.com/sostock/HalfIntegers.jl/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/sostock/HalfIntegers.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/sostock/HalfIntegers.jl)
-[![Coverage Status](https://coveralls.io/repos/github/sostock/HalfIntegers.jl/badge.svg?branch=master)](https://coveralls.io/github/sostock/HalfIntegers.jl?branch=master)
 
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://sostock.github.io/HalfIntegers.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://sostock.github.io/HalfIntegers.jl/dev)
