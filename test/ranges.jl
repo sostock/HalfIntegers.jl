@@ -191,7 +191,7 @@
                 @eval @test_broken range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
                 @eval @test_broken range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
             else
-                if Int === Int32
+                if Int === Int32 && T ∈ (:HalfUInt32, :HalfUInt64, :HalfUInt128)
                     @eval @test_broken @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
                     @eval @test_broken range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
                 else
