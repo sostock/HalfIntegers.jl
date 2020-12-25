@@ -178,17 +178,27 @@
             elseif T === :HalfUInt64
                 @eval @test_broken @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
                 @eval @test_broken range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
-                @eval @test @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
-                @eval @test range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
+                if Int === Int32
+                    @eval @test_broken @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
+                    @eval @test_broken range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
+                else
+                    @eval @test @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
+                    @eval @test range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
+                end
             elseif T === :HalfUInt128
                 @eval @test_broken @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
                 @eval @test_broken @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
                 @eval @test_broken range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
                 @eval @test_broken range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
             else
-                @eval @test @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
+                if Int === Int32
+                    @eval @test_broken @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
+                    @eval @test_broken range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
+                else
+                    @eval @test @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
+                    @eval @test range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
+                end
                 @eval @test @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
-                @eval @test range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
                 @eval @test range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
             end
             @eval @test @inferred(range(big(10), stop=$T(2), length=5)) isa LinRange{BigFloat}
