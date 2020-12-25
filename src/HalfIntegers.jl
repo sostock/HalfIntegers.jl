@@ -451,6 +451,14 @@ ishalfinteger(::HalfIntegerOrInteger) = true
 ishalfinteger(::AbstractIrrational) = false
 ishalfinteger(::Missing) = missing
 
+Base._range(start::T, ::Nothing, stop::T, len::Integer) where T<:HalfInteger =
+    Base._linspace(float(T), start, stop, len)
+
+Base._linspace(::Type{T}, start::HalfInteger, stop::HalfInteger, len::Integer) where T =
+    LinRange{T}(start, stop, len)
+Base._linspace(::Type{T}, start::HalfInteger, stop::HalfInteger, len::Integer) where T<:Base.IEEEFloat =
+    Base._linspace(T, twice(start), twice(stop), len, 2)
+
 Base.in(x::Real, r::AbstractUnitRange{<:HalfInteger}) = 
     ishalfinteger(x) & (first(r) ≤ x ≤ last(r)) & !(isinteger(x) ⊻ isinteger(first(r)))
 

@@ -2,6 +2,8 @@
 
 ## master
 
+* ![Bugfix](https://img.shields.io/badge/-bugfix-purple) Fix `range(start::HalfInteger; stop::HalfInteger, length)`. ([#28](https://github.com/sostock/HalfIntegers.jl/pull/28))
+
 ## v1.3.0
 
 * ![Feature](https://img.shields.io/badge/-feature-green) `ispow2` accepts `HalfInteger` arguments on Julia ≥ 1.6. ([#26](https://github.com/sostock/HalfIntegers.jl/pull/26))
