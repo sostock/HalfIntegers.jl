@@ -2,7 +2,7 @@
 
 ## master
 
-* ![Bugfix](https://img.shields.io/badge/-bugfix-purple) Fix `range(start::HalfInteger; stop::HalfInteger, length)`. ([#9](https://github.com/sostock/HalfIntegers.jl/pull/28))
+* ![Bugfix](https://img.shields.io/badge/-bugfix-purple) Fix `range(start::HalfInteger; stop::HalfInteger, length)`. ([#28](https://github.com/sostock/HalfIntegers.jl/pull/28))
 
 ## v1.3.0
 
