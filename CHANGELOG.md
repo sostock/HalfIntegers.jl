@@ -1,5 +1,9 @@
 # HalfIntegers.jl changelog
 
+## master
+
+* ![Maintenance](https://img.shields.io/badge/-maintenance-grey) Fix `range(start::HalfInteger; stop::HalfInteger, length)` on Julia ≥ 1.7. ([#29](https://github.com/sostock/HalfIntegers.jl/pull/25))
+
 ## v1.3.1
 
 * ![Bugfix](https://img.shields.io/badge/-bugfix-purple) Fix `range(start::HalfInteger; stop::HalfInteger, length)`. ([#28](https://github.com/sostock/HalfIntegers.jl/pull/28))
