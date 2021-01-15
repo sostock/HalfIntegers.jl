@@ -451,8 +451,13 @@ ishalfinteger(::HalfIntegerOrInteger) = true
 ishalfinteger(::AbstractIrrational) = false
 ishalfinteger(::Missing) = missing
 
-Base._range(start::T, ::Nothing, stop::T, len::Integer) where T<:HalfInteger =
-    Base._linspace(float(T), start, stop, len)
+@static if VERSION ≥ v"1.7.0-DEV.263"
+    Base.range_start_stop_length(start::T, stop::T, len::Integer) where T<:HalfInteger =
+        Base._linspace(float(T), start, stop, len)
+else
+    Base._range(start::T, ::Nothing, stop::T, len::Integer) where T<:HalfInteger =
+        Base._linspace(float(T), start, stop, len)
+end
 
 Base._linspace(::Type{T}, start::HalfInteger, stop::HalfInteger, len::Integer) where T =
     LinRange{T}(start, stop, len)
