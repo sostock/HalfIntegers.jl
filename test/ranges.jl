@@ -298,7 +298,7 @@
 
         @static if VERSION ≥ v"1.7.0-DEV.263"
             for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
-                if T in (:HalfUInt64, :HalfUInt128)
+                if T in (:HalfUInt64, :HalfUInt128) || (Int === Int32 && T === :HalfUInt32)
                     @eval @test_broken @inferred(range(stop=$T(23/2), step=Int8(2), length=5)) isa StepRange{$T,Int8}
                     @eval @test_broken range(stop=$T(23/2), step=Int8(2), length=5) == $T[7/2, 11/2, 15/2, 19/2, 23/2]
                 else
