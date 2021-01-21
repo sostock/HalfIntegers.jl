@@ -173,6 +173,18 @@
                 @eval @test range(start=big(1), stop=$T(7/2)) == BigHalfInt[1, 2, 3]
             end
 
+            @eval @test @inferred(range($T(1/2), length=5)) isa UnitRange{$T}
+            @eval @test range($T(1/2), length=5) == $T[1/2, 3/2, 5/2, 7/2, 9/2]
+            @static if VERSION ≥ v"1.7.0-DEV.263"
+                @eval @test @inferred(range(start=$T(1/2), length=5)) isa UnitRange{$T}
+                @eval @test range(start=$T(1/2), length=5) == $T[1/2, 3/2, 5/2, 7/2, 9/2]
+
+                @static if VERSION ≥ v"1.7.0-DEV.349"
+                    @eval @test @inferred(range(stop=$T(11/2), length=5)) isa UnitRange{$T}
+                end
+                @eval @test range(stop=$T(11/2), length=5) == $T[3/2, 5/2, 7/2, 9/2, 11/2]
+            end
+
             @eval @test @inferred(range($T(2), step=$T(1/2), stop=$T(5))) isa StepRange{$T,$T}
             @eval @test @inferred(range($T(2), step=Int8(2), stop=$T(9/2))) isa StepRange{$T,Int8}
             @eval @test @inferred(range($T(2), step=big(2), stop=$T(9/2))) isa StepRange{BigHalfInt,BigInt}
