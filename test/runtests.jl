@@ -241,31 +241,45 @@ end
 
 @testset "twice" begin
     @testset "Real" begin
+        for T in (inttypes..., uinttypes...)
+            @eval @test_throws OverflowError twice(Rational{$T}(typemax($T),one($T)))
+        end
+        for T in inttypes
+            @eval @test_throws OverflowError twice(Rational{$T}(typemin($T),one($T)))
+        end
         for T in (inttypes..., uinttypes..., :BigInt)
-            @eval @test twice(Half{$T}(2)) ==ₜ $T(4)
+            @eval @test @inferred(twice(Half{$T}(2))) ==ₜ $T(4)
             @eval @test twice(Half{$T}(3/2)) ==ₜ $T(3)
-            @eval @test twice($T(3)) ==ₜ $T(6)
-            @eval @test twice($T, HalfInt(3)) ==ₜ $T(6)
-            @eval @test twice($T, HalfInt(3/2)) ==ₜ $T(3)
-            @eval @test twice($T, 3) ==ₜ $T(6)
-            @eval @test twice($T, Float16(2.5)) ==ₜ $T(5)
-            @eval @test twice($T, Float32(2.5)) ==ₜ $T(5)
-            @eval @test twice($T, Float64(2.5)) ==ₜ $T(5)
-            @eval @test twice($T, BigFloat(2.5)) ==ₜ $T(5)
-            @eval @test twice($T, 17//2) ==ₜ $T(17)
-            @eval @test twice($T, complex(HalfInt(3))) ==ₜ $T(6)
-            @eval @test twice($T, complex(HalfInt(3/2))) ==ₜ $T(3)
-            @eval @test twice($T, complex(3)) ==ₜ $T(6)
-            @eval @test twice($T, complex(Float16(2.5))) ==ₜ $T(5)
-            @eval @test twice($T, complex(Float32(2.5))) ==ₜ $T(5)
-            @eval @test twice($T, complex(Float64(2.5))) ==ₜ $T(5)
-            @eval @test twice($T, complex(BigFloat(2.5))) ==ₜ $T(5)
-            @eval @test twice($T, complex(17//2)) ==ₜ $T(17)
+            @eval @test @inferred(twice($T(3))) ==ₜ $T(6)
+            @eval @test @inferred(twice(Rational{$T}(3,8))) ==ₜ Rational{$T}(3,4)
+            @eval @test twice(Rational{$T}(5,2)) ==ₜ Rational{$T}(5,1)
+            @eval @test twice(Rational{$T}(7,1)) ==ₜ Rational{$T}(14,1)
+            @eval @test twice(Rational{$T}(1,0)) ==ₜ Rational{$T}(1,0)
+            @eval @test @inferred(twice($T, HalfInt(3))) ==ₜ $T(6)
+            @eval @test @inferred(twice($T, HalfInt(3/2))) ==ₜ $T(3)
+            @eval @test @inferred(twice($T, 3)) ==ₜ $T(6)
+            @eval @test @inferred(twice($T, Float16(2.5))) ==ₜ $T(5)
+            @eval @test @inferred(twice($T, Float32(2.5))) ==ₜ $T(5)
+            @eval @test @inferred(twice($T, Float64(2.5))) ==ₜ $T(5)
+            @eval @test @inferred(twice($T, BigFloat(2.5))) ==ₜ $T(5)
+            @eval @test @inferred(twice($T, 17//2)) ==ₜ $T(17)
+            @eval @test @inferred(twice($T, complex(HalfInt(3)))) ==ₜ $T(6)
+            @eval @test @inferred(twice($T, complex(HalfInt(3/2)))) ==ₜ $T(3)
+            @eval @test @inferred(twice($T, complex(3))) ==ₜ $T(6)
+            @eval @test @inferred(twice($T, complex(Float16(2.5)))) ==ₜ $T(5)
+            @eval @test @inferred(twice($T, complex(Float32(2.5)))) ==ₜ $T(5)
+            @eval @test @inferred(twice($T, complex(Float64(2.5)))) ==ₜ $T(5)
+            @eval @test @inferred(twice($T, complex(BigFloat(2.5)))) ==ₜ $T(5)
+            @eval @test @inferred(twice($T, complex(17//2))) ==ₜ $T(17)
             @eval @test_throws InexactError twice($T, Float16(2.3))
             @eval @test_throws InexactError twice($T, Float32(2.3))
             @eval @test_throws InexactError twice($T, Float64(2.3))
             @eval @test_throws InexactError twice($T, BigFloat(2.3))
+            @eval @test_throws InexactError twice($T, Inf)
+            @eval @test_throws InexactError twice($T, -Inf)
+            @eval @test_throws InexactError twice($T, NaN)
             @eval @test_throws InexactError twice($T, 1//5)
+            @eval @test_throws InexactError twice($T, 1//0)
             @eval @test_throws InexactError twice($T, Complex{HalfInt}(3, 1))
             @eval @test_throws InexactError twice($T, Complex{HalfInt}(0, 3/2))
             @eval @test_throws InexactError twice($T, Complex{Int}(3, 1))
@@ -275,12 +289,13 @@ end
             @eval @test_throws InexactError twice($T, Complex{BigFloat}(2.0, 0.5))
             @eval @test_throws InexactError twice($T, Complex{Rational{Int}}(17//2, 15//2))
         end
-        @test twice(BigInt(3)) ==ₜ BigInt(6)
         @test twice(Float16(2.3)) === Float16(4.6)
         @test twice(Float32(2.3)) === Float32(4.6)
         @test twice(Float64(2.3)) === Float64(4.6)
         @test twice(BigFloat(2.3)) ==ₜ BigFloat(4.6)
-        @test twice(2//3) === 4//3
+        @test twice(Inf) === Inf
+        @test twice(-Inf) === -Inf
+        @test twice(NaN) === NaN
     end
 
     @testset "Complex" begin
