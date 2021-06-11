@@ -522,9 +522,9 @@ end
 Half{T}(x::Real) where T<:Integer = half(Half{T}, twice(T,x))
 Half{T}(x::Half{T}) where T<:Integer = x
 function Half{T}(x::Rational) where T<:Integer
-    if x.den == one(x.den)
+    if x.den == 1
         tx = twice(T, x.num)
-    elseif x.den == one(x.den) + one(x.den)
+    elseif x.den == 2
         tx = convert(T, x.num)
     else
         tx = twice(T, x)
