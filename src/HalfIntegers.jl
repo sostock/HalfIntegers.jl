@@ -358,6 +358,38 @@ julia> twice(HalfInt32(3.0) + HalfInt32(2.5)*im)  # returns a Complex{Int32}
 twice(x) = x + x
 twice(x::Complex) = Complex(twice(real(x)), twice(imag(x)))
 
+@static if VERSION ≥ v"1.5.0-DEV.820"
+    function twice(x::Rational)
+        if iseven(x.den)
+            Base.unsafe_rational(oftype(x.num+x.num, x.num), x.den >> 1)
+        else
+            Base.unsafe_rational(Base.checked_add(x.num, x.num), oftype(x.den >> 1, x.den))
+        end
+    end
+    function twice(x::Rational{BigInt})
+        if iseven(x.den)
+            Base.unsafe_rational(x.num, x.den >> 1)
+        else
+            Base.unsafe_rational(twice(x.num), x.den)
+        end
+    end
+else
+    function twice(x::Rational)
+        if iseven(x.den)
+            Rational(oftype(x.num+x.num, x.num), x.den >> 1)
+        else
+            Rational(Base.checked_add(x.num, x.num), oftype(x.den >> 1, x.den))
+        end
+    end
+    function twice(x::Rational{BigInt})
+        if iseven(x.den)
+            Rational(x.num, x.den >> 1)
+        else
+            Rational(twice(x.num), x.den)
+        end
+    end
+end
+
 """
     twice(T<:Integer, x)
     twice(T<:Complex{<:Integer}, x)

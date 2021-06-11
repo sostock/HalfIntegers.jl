@@ -241,10 +241,20 @@ end
 
 @testset "twice" begin
     @testset "Real" begin
+        for T in (inttypes..., uinttypes...)
+            @eval @test_throws OverflowError twice(Rational{$T}(typemax($T),one($T)))
+        end
+        for T in inttypes
+            @eval @test_throws OverflowError twice(Rational{$T}(typemin($T),one($T)))
+        end
         for T in (inttypes..., uinttypes..., :BigInt)
-            @eval @test twice(Half{$T}(2)) ==ₜ $T(4)
+            @eval @test @inferred(twice(Half{$T}(2))) ==ₜ $T(4)
             @eval @test twice(Half{$T}(3/2)) ==ₜ $T(3)
-            @eval @test twice($T(3)) ==ₜ $T(6)
+            @eval @test @inferred(twice($T(3))) ==ₜ $T(6)
+            @eval @test @inferred(twice(Rational{$T}(3,8))) ==ₜ Rational{$T}(3,4)
+            @eval @test twice(Rational{$T}(5,2)) ==ₜ Rational{$T}(5,1)
+            @eval @test twice(Rational{$T}(7,1)) ==ₜ Rational{$T}(14,1)
+            @eval @test twice(Rational{$T}(1,0)) ==ₜ Rational{$T}(1,0)
             @eval @test twice($T, HalfInt(3)) ==ₜ $T(6)
             @eval @test twice($T, HalfInt(3/2)) ==ₜ $T(3)
             @eval @test twice($T, 3) ==ₜ $T(6)
