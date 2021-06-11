@@ -413,6 +413,16 @@ twice(T::Type{<:Integer}, x::Number) = T(twice(x))
 twice(T::Type{<:Integer}, x::Integer) = twice(T(x)) # convert to T first to reduce probability of overflow
 twice(::Type{Complex{T}}, x::Number) where T<:Integer = Complex(twice(T,real(x)), twice(T,imag(x)))
 
+function twice(T::Type{<:Integer}, x::Rational)
+    if x.den == 1
+        twice(T, x.num)
+    elseif x.den == 2
+        convert(T, x.num)
+    else
+        throw(InexactError(nameof(T), T, twice(x)))
+    end
+end
+
 @static if VERSION ≥ v"1.3"
     twice(::Type{T}, x) where T>:Missing = twice(Base.nonmissingtype_checked(T), x)
 else
@@ -553,16 +563,6 @@ struct Half{T<:Integer} <: HalfInteger
 end
 Half{T}(x::Real) where T<:Integer = half(Half{T}, twice(T,x))
 Half{T}(x::Half{T}) where T<:Integer = x
-function Half{T}(x::Rational) where T<:Integer
-    if x.den == 1
-        tx = twice(T, x.num)
-    elseif x.den == 2
-        tx = convert(T, x.num)
-    else
-        tx = twice(T, x)
-    end
-    return half(Half{T}, tx)
-end
 
 half(::Type{Half{T}}, x::Number) where T<:Integer = Half{T}(Val{:inner}(), x)
 
