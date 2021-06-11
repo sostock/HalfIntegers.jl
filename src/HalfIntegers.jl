@@ -558,13 +558,11 @@ that, e.g., `HalfInt` can be used instead of `Half{Int}`:
 """
 struct Half{T<:Integer} <: HalfInteger
     twice::T
-    # Inner constructor that is only used to define half(::Type{Half{T}}, x)
-    Half{T}(::Val{:inner}, twice) where T<:Integer = new(twice)
+
+    global half(::Type{Half{T}}, x::Number) where T<:Integer = new{T}(x)
 end
 Half{T}(x::Real) where T<:Integer = half(Half{T}, twice(T,x))
 Half{T}(x::Half{T}) where T<:Integer = x
-
-half(::Type{Half{T}}, x::Number) where T<:Integer = Half{T}(Val{:inner}(), x)
 
 twice(x::Half) = x.twice
 
