@@ -1,6 +1,6 @@
 @testset "Checked arithmetic" begin
 
-    using Base: checked_abs
+    using Base: checked_abs, checked_neg
 
     @testset "Base.checked_abs" begin
         for T in halfinttypes
@@ -11,8 +11,20 @@
         for T in halfuinttypes
             @eval @test checked_abs($T(5//2)) ==ₜ $T(5//2)
         end
-        @eval @test checked_abs(BigHalfInt(-3//2)) ==ₜ BigHalfInt(3//2)
-        @eval @test checked_abs(BigHalfInt(5//2)) ==ₜ BigHalfInt(5//2)
+        @test checked_abs(BigHalfInt(-3//2)) ==ₜ BigHalfInt(3//2)
+        @test checked_abs(BigHalfInt(5//2)) ==ₜ BigHalfInt(5//2)
+    end
+
+    @testset "Base.checked_neg" begin
+        for T in halfinttypes
+            @eval @test checked_neg(typemax($T)) ==ₜ typemin($T) + onehalf($T)
+            @eval @test_throws OverflowError checked_neg(typemin($T))
+        end
+        for T in halfuinttypes
+            @eval @test_throws OverflowError checked_neg(onehalf($T))
+        end
+        @test checked_neg(BigHalfInt(-3//2)) ==ₜ BigHalfInt(3//2)
+        @test checked_neg(BigHalfInt(5//2)) ==ₜ BigHalfInt(-5//2)
     end
 
     @static if VERSION ≥ v"1.1"

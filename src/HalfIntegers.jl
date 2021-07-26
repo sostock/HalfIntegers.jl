@@ -107,6 +107,7 @@ Base.fld1(x::T, y::T) where T<:HalfInteger = fld1(twice(x), twice(y))
 
 # Checked arithmetic
 Base.checked_abs(x::HalfInteger) = half(Base.checked_abs(twice(x)))
+Base.checked_neg(x::HalfInteger) = half(Base.checked_neg(twice(x)))
 
 # `lcm`/`gcd`/`gcdx` are only extended to `HalfInteger`s if they are defined for `Rational`s
 @static if VERSION ≥ v"1.4.0-DEV.699"
