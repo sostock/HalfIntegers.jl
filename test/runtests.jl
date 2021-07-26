@@ -1683,5 +1683,5 @@ end
 end
 
 include("ranges.jl")
-include("saferintegers.jl")
+include("checked.jl")
 include("customtypes.jl")
