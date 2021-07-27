@@ -27,6 +27,30 @@
         @test checked_neg(BigHalfInt(5//2)) ==ₜ BigHalfInt(-5//2)
     end
 
+    @testset "Base.Checked.add_with_overflow" begin
+        for T in halfinttypes
+            @eval @test Base.Checked.add_with_overflow($T(5//2), $T(-3//2)) ==ₜ ($T(1), false)
+            @eval @test Base.Checked.add_with_overflow(typemax($T), onehalf($T)) ==ₜ (typemin($T), true)
+        end
+        for T in halfuinttypes
+            @eval @test Base.Checked.add_with_overflow($T(5//2), $T(3//2)) ==ₜ ($T(4), false)
+            @eval @test Base.Checked.add_with_overflow(typemax($T), one($T)) ==ₜ (onehalf($T), true)
+        end
+        @test Base.Checked.add_with_overflow(BigHalfInt(5//2), BigHalfInt(-3//2)) ==ₜ (BigHalfInt(1), false)
+    end
+
+    @testset "Base.Checked.sub_with_overflow" begin
+        for T in halfinttypes
+            @eval @test Base.Checked.sub_with_overflow($T(5//2), $T(-3//2)) ==ₜ ($T(4), false)
+            @eval @test Base.Checked.sub_with_overflow(typemin($T), onehalf($T)) ==ₜ (typemax($T), true)
+        end
+        for T in halfuinttypes
+            @eval @test Base.Checked.sub_with_overflow($T(5//2), $T(3//2)) ==ₜ ($T(1), false)
+            @eval @test Base.Checked.sub_with_overflow(onehalf($T), one($T)) ==ₜ (typemax($T), true)
+        end
+        @test Base.Checked.sub_with_overflow(BigHalfInt(5//2), BigHalfInt(-3//2)) ==ₜ (BigHalfInt(4), false)
+    end
+
     @static if VERSION ≥ v"1.1"
         # In Julia < 1.1, zero(Half{T}) and one(Half{T}) do not work for
         # T ∈ [SafeInt8, SafeInt16, SafeUInt8, SafeUInt16] due to a bug in Julia, cf.

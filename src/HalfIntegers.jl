@@ -109,6 +109,13 @@ Base.fld1(x::T, y::T) where T<:HalfInteger = fld1(twice(x), twice(y))
 Base.checked_abs(x::HalfInteger) = half(Base.checked_abs(twice(x)))
 Base.checked_neg(x::HalfInteger) = half(Base.checked_neg(twice(x)))
 
+for f in (:add_with_overflow, :sub_with_overflow)
+    @eval function Base.Checked.$f(x::T, y::T) where T<:HalfInteger
+        r, flag = Base.Checked.$f(twice(x), twice(y))
+        half(r), flag
+    end
+end
+
 # `lcm`/`gcd`/`gcdx` are only extended to `HalfInteger`s if they are defined for `Rational`s
 @static if VERSION ≥ v"1.4.0-DEV.699"
     Base.gcd(x::HalfInteger) = x
