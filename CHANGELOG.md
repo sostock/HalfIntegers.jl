@@ -2,6 +2,8 @@
 
 ## master
 
+* ![Feature](https://img.shields.io/badge/-feature-green) Checked arithmetic functions (`Base.checked_add` etc.) now accept `HalfInteger` arguments. A `HalfIntegers.checked_twice` is added as well. ([#38](https://github.com/sostock/HalfIntegers.jl/pull/38))
+
 ## v1.3.3
 
 * ![Enhancement](https://img.shields.io/badge/-enhancement-blue) Added specialized `twice(::Rational)` and `twice(::Type{<:Integer}, ::Rational)` methods for better performance. This also speeds up the `Half{T}(::Rational) where T<:Integer` constructor. ([#33](https://github.com/sostock/HalfIntegers.jl/pull/33))
