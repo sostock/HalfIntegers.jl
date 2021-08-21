@@ -195,7 +195,18 @@ julia> HalfInt64(ans)  # 2 * 9223372036854775807 == -2
 -1
 ```
 
-If you prefer checked arithmetic, you can use the [SaferIntegers](https://github.com/JeffreySarnoff/SaferIntegers.jl) package:
+If you prefer checked arithmetic, you can use functions like `Base.checked_add`:
+
+```jldoctest
+julia> typemax(HalfInt64)
+9223372036854775807/2
+
+julia> Base.checked_add(ans, onehalf(HalfInt64))
+ERROR: OverflowError: 9223372036854775807 + 1 overflowed for type Int64
+```
+
+A `HalfIntegers.checked_twice` function exists as well.
+Alternatively, you can use the [SaferIntegers](https://github.com/JeffreySarnoff/SaferIntegers.jl) package:
 
 ```jldoctest
 julia> using SaferIntegers
@@ -211,7 +222,9 @@ ERROR: OverflowError: 9223372036854775807 + 1 overflowed for type Int64
 ```
 
 !!! compat
-    Due to a [bug](https://github.com/JuliaLang/julia/issues/32203), the `Half{SafeInt8}`, `Half{SafeInt16}`, `Half{SafeUInt8}` and `Half{SafeUInt16}` types require Julia ≥ 1.1 to work correctly.
+    Using `Base.checked_add` etc. with `HalfInteger`s requires HalfIntegers ≥ 1.4.
+    The SaferIntegers package can be used with every HalfIntegers version.
+    However, due to a [bug](https://github.com/JuliaLang/julia/issues/32203), the `Half{SafeInt8}`, `Half{SafeInt16}`, `Half{SafeUInt8}` and `Half{SafeUInt16}` types require Julia ≥ 1.1 to work correctly.
 
 ## Custom `HalfInteger` types
 

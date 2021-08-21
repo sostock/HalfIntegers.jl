@@ -105,6 +105,41 @@ Base.mod(x::T, y::T) where T<:HalfInteger = half(mod(twice(x), twice(y)))
 
 Base.fld1(x::T, y::T) where T<:HalfInteger = fld1(twice(x), twice(y))
 
+const HalfIntegerOrInteger = Union{HalfInteger, Integer}
+
+# Checked arithmetic
+Base.checked_abs(x::HalfInteger) = half(Base.checked_abs(twice(x)))
+Base.checked_neg(x::HalfInteger) = half(Base.checked_neg(twice(x)))
+
+# These methods are only called if at least one of the arguments is a `HalfInteger`,
+# otherwise the `Base.checked_$op(::Integer, ::Integer)` methods from `Base` are used
+for op in (:checked_add, :checked_sub, :checked_mod, :checked_rem)
+    @eval Base.$op(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger) =
+        half(Base.$op(checked_twice(x), checked_twice(y)))
+end
+for op in (:checked_cld, :checked_div, :checked_fld)
+    @eval Base.$op(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger) =
+        Base.$op(checked_twice(x), checked_twice(y))
+end
+
+Base.checked_mul(x::HalfInteger, y::HalfInteger) = x*y # uses float arithmetic
+Base.checked_mul(x::HalfInteger, y::Integer) = half(Base.checked_mul(twice(x), y))
+Base.checked_mul(x::Integer, y::HalfInteger) = Base.checked_mul(y, x)
+
+for f in (:add_with_overflow, :sub_with_overflow)
+    @eval function Base.Checked.$f(x::HalfInteger, y::HalfInteger)
+        r, flag = Base.Checked.$f(twice(x), twice(y))
+        half(r), flag
+    end
+end
+
+Base.Checked.mul_with_overflow(x::HalfInteger, y::HalfInteger) = (x*y, false) # uses float arithmetic
+function Base.Checked.mul_with_overflow(x::HalfInteger, y::Integer)
+    r, flag = Base.Checked.mul_with_overflow(twice(x), y)
+    half(r), flag
+end
+Base.Checked.mul_with_overflow(x::Integer, y::HalfInteger) = Base.Checked.mul_with_overflow(y, x)
+
 # `lcm`/`gcd`/`gcdx` are only extended to `HalfInteger`s if they are defined for `Rational`s
 @static if VERSION ≥ v"1.4.0-DEV.699"
     Base.gcd(x::HalfInteger) = x
@@ -433,6 +468,35 @@ twice(::Type{T}, ::Missing) where T =
     throw(MissingException("cannot convert a missing value to type $T: use Union{$T, Missing} instead"))
 
 """
+    checked_twice(x)
+
+Calculate `2x`, checking for overflow. (not exported)
+
+!!! compat "HalfIntegers 1.4"
+    This function requires at least HalfIntegers 1.4.
+
+# Examples
+
+```jldoctest
+julia> x = typemax(Int64)
+9223372036854775807
+
+julia> twice(x)
+-2
+
+julia> HalfIntegers.checked_twice(x)
+ERROR: OverflowError: 9223372036854775807 + 9223372036854775807 overflowed for type Int64
+Stacktrace:
+[...]
+```
+"""
+checked_twice(x) = _checked_twice(Base.ArithmeticStyle(x), x)
+checked_twice(x::HalfInteger) = twice(x)
+
+_checked_twice(::Base.ArithmeticStyle, x) = twice(x)
+_checked_twice(::Base.ArithmeticWraps, x) = Base.checked_add(x, x)
+
+"""
     onehalf(x)
 
 Return the value 1/2 in the type of `x` (`x` can also specify the type itself).
@@ -466,8 +530,6 @@ else
 end
 onehalf(::Type{Complex{T}}) where T = Complex{T}(onehalf(T), zero(T))
 onehalf(::Type{Missing}) = missing
-
-const HalfIntegerOrInteger = Union{HalfInteger, Integer}
 
 """
     ishalfinteger(x)

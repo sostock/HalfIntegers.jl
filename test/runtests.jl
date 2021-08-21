@@ -8,6 +8,7 @@ halfuinttypes = (:HalfUInt8, :HalfUInt16, :HalfUInt32, :HalfUInt64, :HalfUInt128
 ==ₜ(x, y) = x === y
 ==ₜ(x::T, y::T) where T<:Union{BigInt,BigFloat,BigHalfInt,Rational{BigInt},Complex{BigInt},Complex{BigFloat},Complex{BigHalfInt},Complex{Rational{BigInt}}} = x == y
 ==ₜ(x::AbstractArray, y::AbstractArray) = (x == y) && (typeof(x) == typeof(y))
+==ₜ(x::Tuple, y::Tuple) = all(x .==ₜ y)
 
 @test isempty(Test.detect_ambiguities(HalfIntegers, Base, Core))
 
@@ -1683,5 +1684,5 @@ end
 end
 
 include("ranges.jl")
-include("saferintegers.jl")
+include("checked.jl")
 include("customtypes.jl")
