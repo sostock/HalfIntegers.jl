@@ -1,6 +1,7 @@
 @testset "Checked arithmetic" begin
 
-    using Base: checked_abs, checked_neg, checked_add, checked_sub, checked_mul
+    using Base: checked_abs, checked_neg, checked_add, checked_sub, checked_mul,
+                checked_cld, checked_div, checked_fld, checked_mod, checked_rem
     using Base.Checked: add_with_overflow, sub_with_overflow, mul_with_overflow
     using HalfIntegers: checked_twice
 
@@ -100,6 +101,56 @@
         @test HalfInt8(50) * Int8(2) == HalfInt8(-28) # (100*2) % Int8 == -56
         @test_throws OverflowError checked_mul(Int8(100), HalfInt8(1))
         @test_throws OverflowError checked_mul(HalfInt8(50), Int8(2))
+    end
+
+    @testset "Base.$checked_op" for (op, checked_op) = ((:cld,:checked_cld), (:div,:checked_div), (:fld,:checked_fld))
+        for T in inttypes
+            @eval @test_throws DivideError $op(typemin(Half{$T}), Half{$T}(-1/2)) # op is already checked
+            @eval @test_throws DivideError $checked_op(typemin(Half{$T}), Half{$T}(-1/2))
+            @eval @test $checked_op(Half{$T}(6), Half{$T}(5/2)) ==ₜ $op(Half{$T}(6), Half{$T}(5/2))
+            @eval @test $checked_op(Half{$T}(-6), Half{$T}(5/2)) ==ₜ $op(Half{$T}(-6), Half{$T}(5/2))
+        end
+        for T in uinttypes
+            @eval @test $checked_op(Half{$T}(6), Half{$T}(5/2)) ==ₜ $op(Half{$T}(6), Half{$T}(5/2))
+        end
+        @eval @test $checked_op(BigHalfInt(6), BigHalfInt(5/2)) ==ₜ $op(BigHalfInt(6), BigHalfInt(5/2))
+        @eval @test $checked_op(-BigHalfInt(6), BigHalfInt(5/2)) ==ₜ $op(-BigHalfInt(6), BigHalfInt(5/2))
+        # Mixed HalfInteger/Integer
+        for T in (inttypes..., uinttypes...)
+            @eval @test $checked_op($T(6), Half{$T}(5/2)) ==ₜ $op($T(6), Half{$T}(5/2))
+            @eval @test $checked_op(Half{$T}(15/2), $T(5)) ==ₜ $op(Half{$T}(15/2), $T(5))
+            @eval @test_throws OverflowError $checked_op(typemax($T), Half{$T}(5/2))
+            @eval @test_throws OverflowError $checked_op(Half{$T}(15/2), typemax($T))
+            @eval @test_broken try; $op(typemax($T), Half{$T}(5/2)); catch e; e; end isa OverflowError
+            @eval @test_broken try; $op(Half{$T}(15/2), typemax($T)); catch e; e; end isa OverflowError
+        end
+        @eval @test $checked_op(BigInt(6), BigHalfInt(5/2)) ==ₜ $op(BigInt(6), BigHalfInt(5/2))
+        @eval @test $checked_op(-BigInt(6), BigHalfInt(5/2)) ==ₜ $op(-BigInt(6), BigHalfInt(5/2))
+        @eval @test $checked_op(BigHalfInt(15/2), BigInt(5)) ==ₜ $op(BigHalfInt(15/2), BigInt(5))
+        @eval @test $checked_op(-BigHalfInt(15/2), BigInt(5)) ==ₜ $op(-BigHalfInt(15/2), BigInt(5))
+    end
+
+    @testset "Base.$checked_op" for (op, checked_op) = ((:mod,:checked_mod), (:rem,:checked_rem))
+        for T in (inttypes..., :BigInt)
+            @eval @test $checked_op(Half{$T}(6), Half{$T}(5/2)) ==ₜ $op(Half{$T}(6), Half{$T}(5/2))
+            @eval @test $checked_op(Half{$T}(-6), Half{$T}(5/2)) ==ₜ $op(Half{$T}(-6), Half{$T}(5/2))
+        end
+        for T in uinttypes
+            @eval @test $checked_op(Half{$T}(6), Half{$T}(5/2)) ==ₜ $op(Half{$T}(6), Half{$T}(5/2))
+        end
+        # Mixed HalfInteger/Integer
+        for T in (inttypes..., uinttypes...)
+            @eval @test $checked_op($T(6), Half{$T}(5/2)) ==ₜ $op($T(6), Half{$T}(5/2))
+            @eval @test $checked_op(Half{$T}(15/2), $T(5)) ==ₜ $op(Half{$T}(15/2), $T(5))
+            @eval @test_throws OverflowError $checked_op(typemax($T), Half{$T}(5/2))
+            @eval @test_throws OverflowError $checked_op(Half{$T}(15/2), typemax($T))
+            @eval @test_broken try; $op(typemax($T), Half{$T}(5/2)); catch e; e; end isa OverflowError
+            @eval @test_broken try; $op(Half{$T}(15/2), typemax($T)); catch e; e; end isa OverflowError
+        end
+        @eval @test $checked_op(BigInt(6), BigHalfInt(5/2)) ==ₜ $op(BigInt(6), BigHalfInt(5/2))
+        @eval @test $checked_op(-BigInt(6), BigHalfInt(5/2)) ==ₜ $op(-BigInt(6), BigHalfInt(5/2))
+        @eval @test $checked_op(BigHalfInt(15/2), BigInt(5)) ==ₜ $op(BigHalfInt(15/2), BigInt(5))
+        @eval @test $checked_op(-BigHalfInt(15/2), BigInt(5)) ==ₜ $op(-BigHalfInt(15/2), BigInt(5))
     end
 
     @testset "Base.Checked.add_with_overflow" begin

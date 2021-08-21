@@ -112,11 +112,15 @@ Base.checked_abs(x::HalfInteger) = half(Base.checked_abs(twice(x)))
 Base.checked_neg(x::HalfInteger) = half(Base.checked_neg(twice(x)))
 
 # These methods are only called if at least one of the arguments is a `HalfInteger`,
-# otherwise the `Base.checked_{add,sub}(::Integer, ::Integer)` methods from `Base` are used
-Base.checked_add(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger) =
-    half(Base.checked_add(checked_twice(x), checked_twice(y)))
-Base.checked_sub(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger) =
-    half(Base.checked_sub(checked_twice(x), checked_twice(y)))
+# otherwise the `Base.checked_$op(::Integer, ::Integer)` methods from `Base` are used
+for op in (:checked_add, :checked_sub, :checked_mod, :checked_rem)
+    @eval Base.$op(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger) =
+        half(Base.$op(checked_twice(x), checked_twice(y)))
+end
+for op in (:checked_cld, :checked_div, :checked_fld)
+    @eval Base.$op(x::HalfIntegerOrInteger, y::HalfIntegerOrInteger) =
+        Base.$op(checked_twice(x), checked_twice(y))
+end
 
 Base.checked_mul(x::HalfInteger, y::HalfInteger) = x*y # uses float arithmetic
 Base.checked_mul(x::HalfInteger, y::Integer) = half(Base.checked_mul(twice(x), y))
