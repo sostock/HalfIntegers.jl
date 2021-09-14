@@ -2,6 +2,8 @@
 
 ## master
 
+* ![Maintenance](https://img.shields.io/badge/-maintenance-grey) Compatibility with SaferIntegers v3. ([#40](https://github.com/sostock/HalfIntegers.jl/pull/40))
+
 ## v1.4.0
 
 * ![Feature](https://img.shields.io/badge/-feature-green) Checked arithmetic functions (`Base.checked_add` etc.) now accept `HalfInteger` arguments. A `HalfIntegers.checked_twice` is added as well. ([#38](https://github.com/sostock/HalfIntegers.jl/pull/38))
