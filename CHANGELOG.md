@@ -2,6 +2,8 @@
 
 ## master
 
+## v1.4.2
+
 * ![Bugfix](https://img.shields.io/badge/-bugfix-purple) Added specialized `Base.hastypemax` method because the generic fallback doesn’t work correctly for `BigHalfInt`. ([#42](https://github.com/sostock/HalfIntegers.jl/pull/42))
 
 ## v1.4.1
