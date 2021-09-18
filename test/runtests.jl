@@ -413,7 +413,9 @@ end
         for T in (inttypes..., uinttypes...)
             @eval @test typemin(Half{$T}) === half(Half{$T}, typemin($T))
             @eval @test typemax(Half{$T}) === half(Half{$T}, typemax($T))
+            @eval @test Base.hastypemax(Half{$T})
         end
+        @test !Base.hastypemax(BigHalfInt)
     end
 
     @testset "one/zero/isone/iszero" begin

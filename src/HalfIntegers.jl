@@ -646,6 +646,7 @@ function Base.tryparse(::Type{Half{T}}, s::AbstractString) where T<:Integer
     return isempty(matched.captures[2]) ? Half{T}(num) : half(num)
 end
 
+Base.hastypemax(::Type{Half{T}}) where T<:Integer = Base.hastypemax(T)
 Base.typemax(::Type{Half{T}}) where T<:Integer = half(typemax(T))
 Base.typemin(::Type{Half{T}}) where T<:Integer = half(typemin(T))
 
