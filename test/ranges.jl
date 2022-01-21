@@ -162,11 +162,19 @@ const StepRangeOrStepRangeLen{T} = Union{StepRange{T}, StepRangeLen{T}}
             @eval @test range($T(1/2), stop=big(5)) == BigHalfInt[1/2, 3/2, 5/2, 7/2, 9/2]
             @eval @test range(big(1), stop=$T(7/2)) == BigHalfInt[1, 2, 3]
 
-            @eval @test @inferred(range($T(1/2), length=5)) isa UnitRange{$T}
-            @eval @test range($T(1/2), length=5) == $T[1/2, 3/2, 5/2, 7/2, 9/2]
+            if VERSION ≥ v"1.8.0-DEV"
+                @eval @test @inferred(range($T(1/2), length=Int8(5))) isa StepRangeLen{$T,$T,$T}
+            else
+                @eval @test @inferred(range($T(1/2), length=Int8(5))) isa UnitRange{$T}
+            end
+            @eval @test range($T(1/2), length=Int8(5)) == $T[1/2, 3/2, 5/2, 7/2, 9/2]
             @static if VERSION ≥ v"1.7"
-                @eval @test @inferred(range(stop=$T(11/2), length=5)) isa UnitRange{$T}
-                @eval @test range(stop=$T(11/2), length=5) == $T[3/2, 5/2, 7/2, 9/2, 11/2]
+                if VERSION ≥ v"1.8.0-DEV"
+                    @eval @test @inferred(range(stop=$T(11/2), length=Int8(5))) isa StepRangeLen{$T,$T,$T}
+                else
+                    @eval @test @inferred(range(stop=$T(11/2), length=Int8(5))) isa UnitRange{$T}
+                end
+                @eval @test range(stop=$T(11/2), length=Int8(5)) == $T[3/2, 5/2, 7/2, 9/2, 11/2]
             end
 
             @eval @test @inferred(range($T(2), step=$T(1/2), stop=$T(5))) isa StepRange{$T,$T}
