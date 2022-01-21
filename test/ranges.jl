@@ -1,3 +1,4 @@
+const StepRangeOrStepRangeLen{T,S} = Union{StepRange{T,S}, StepRangeLen{T,T,S}}
 @testset "Ranges" begin
     # @test range(half(1), half(2), length=3)[2]
 
@@ -309,22 +310,17 @@
         end
 
         @static if VERSION ≥ v"1.7.0-DEV.263"
-            for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
-                if T in (:HalfUInt64, :HalfUInt128) || (Int === Int32 && T === :HalfUInt32)
-                    @eval @test_broken @inferred(range(stop=$T(23/2), step=Int8(2), length=5)) isa StepRange{$T,Int8}
-                    @eval @test_broken range(stop=$T(23/2), step=Int8(2), length=5) == $T[7/2, 11/2, 15/2, 19/2, 23/2]
-                else
-                    @eval @test @inferred(range(stop=$T(23/2), step=Int8(2), length=5)) isa StepRange{$T,Int8}
-                    @eval @test range(stop=$T(23/2), step=Int8(2), length=5) == $T[7/2, 11/2, 15/2, 19/2, 23/2]
-                end
-                @eval @test @inferred(range(stop=$T(23/2), step=big(2), length=5)) isa StepRange{BigHalfInt,BigInt}
-                @eval @test range(stop=$T(23/2), step=big(2), length=5) == BigHalfInt[7/2, 11/2, 15/2, 19/2, 23/2]
+            for T in (inttypes..., uinttypes..., :BigInt)
+                @eval @test @inferred(range(stop=Half{$T}(23/2), step=Int8(2), length=$T(5))) isa StepRangeOrStepRangeLen{Half{$T},Int8} broken = VERSION < v"1.8-DEV" && sizeof($T) ≥ sizeof(Int)
+                @eval @test range(stop=Half{$T}(23/2), step=Int8(2), length=$T(5)) == Half{$T}[7/2, 11/2, 15/2, 19/2, 23/2]              broken = VERSION < v"1.8-DEV" && sizeof($T) ≥ sizeof(Int)
+                @eval @test @inferred(range(stop=Half{$T}(23/2), step=big(2), length=5)) isa StepRangeOrStepRangeLen{BigHalfInt,BigInt}
+                @eval @test range(stop=Half{$T}(23/2), step=big(2), length=5) == BigHalfInt[7/2, 11/2, 15/2, 19/2, 23/2]
             end
-            for T in (halfinttypes..., :BigHalfInt)
-                @eval @test @inferred(range(stop=$T(2), step=$T(1/2), length=6)) isa StepRange{$T,$T}
-                @eval @test @inferred(range(stop=Int8(2), step=$T(1/2), length=6)) isa StepRange{$T,$T}
-                @eval @test range(stop=$T(2), step=$T(1/2), length=6) == $T[-1/2, 0, 1/2, 1, 3/2, 2]
-                @eval @test range(stop=Int8(2), step=$T(1/2), length=6) == $T[-1/2, 0, 1/2, 1, 3/2, 2]
+            for T in (inttypes..., :BigInt)
+                @eval @test @inferred(range(stop=Half{$T}(2), step=Half{$T}(1/2), length=$T(6))) isa StepRangeOrStepRangeLen{Half{$T},Half{$T}}
+                @eval @test @inferred(range(stop=Int8(2), step=Half{$T}(1/2), length=Int8(6))) isa StepRangeOrStepRangeLen{Half{$T},Half{$T}}
+                @eval @test range(stop=Half{$T}(2), step=Half{$T}(1/2), length=$T(6)) == Half{$T}[-1/2, 0, 1/2, 1, 3/2, 2]
+                @eval @test range(stop=Int8(2), step=Half{$T}(1/2), length=Int8(6)) == Half{$T}[-1/2, 0, 1/2, 1, 3/2, 2]
             end
         end
     end
