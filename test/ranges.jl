@@ -183,31 +183,21 @@ const StepRangeOrStepRangeLen{T} = Union{StepRange{T}, StepRangeLen{T}}
                 @eval @test @inferred(range($T(2), stop=Int8(10), length=5)) isa LinRange{BigFloat}
                 @eval @test range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
                 @eval @test range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
-            elseif T === :HalfUInt64
-                @eval @test_broken @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
-                @eval @test_broken range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
-                if Int === Int32
-                    @eval @test_broken @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
-                    @eval @test_broken range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
-                else
-                    @eval @test @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
-                    @eval @test range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
-                end
-            elseif T === :HalfUInt128
-                @eval @test_broken @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
-                @eval @test_broken @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
-                @eval @test_broken range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
-                @eval @test_broken range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
             else
-                if Int === Int32 && T ∈ (:HalfUInt32, :HalfUInt64, :HalfUInt128)
+                if @eval($T) <: Half{<:Unsigned} && sizeof(@eval $T) ≥ sizeof(Int)
                     @eval @test_broken @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
                     @eval @test_broken range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
                 else
                     @eval @test @inferred(range($T(1/2), stop=$T(9/2), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
                     @eval @test range($T(1/2), stop=$T(9/2), length=5) == [0.5, 1.5, 2.5, 3.5, 4.5]
                 end
-                @eval @test @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
-                @eval @test range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
+                if @eval($T) <: Half{<:Unsigned} && sizeof(@eval $T) > sizeof(Int)
+                    @eval @test_broken @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
+                    @eval @test_broken range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
+                else
+                    @eval @test @inferred(range($T(2), stop=Int8(10), length=5)) isa StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}
+                    @eval @test range($T(2), stop=Int8(10), length=5) == [2, 4, 6, 8, 10]
+                end
             end
             @eval @test @inferred(range(big(10), stop=$T(2), length=5)) isa LinRange{BigFloat}
             @eval @test range(big(10), stop=$T(2), length=5) == [10, 8, 6, 4, 2]
@@ -233,8 +223,8 @@ const StepRangeOrStepRangeLen{T} = Union{StepRange{T}, StepRangeLen{T}}
 
         @static if VERSION ≥ v"1.7.0-DEV.263"
             for T in (inttypes..., uinttypes..., :BigInt)
-                @eval @test @inferred(range(stop=Half{$T}(23/2), step=Int8(2), length=$T(5))) isa StepRangeOrStepRangeLen{Half{$T}} broken = VERSION < v"1.8-DEV" && sizeof($T) ≥ sizeof(Int)
-                @eval @test range(stop=Half{$T}(23/2), step=Int8(2), length=$T(5)) == Half{$T}[7/2, 11/2, 15/2, 19/2, 23/2]         broken = VERSION < v"1.8-DEV" && sizeof($T) ≥ sizeof(Int)
+                @eval @test @inferred(range(stop=Half{$T}(23/2), step=Int8(2), length=$T(5))) isa StepRangeOrStepRangeLen{Half{$T}}
+                @eval @test range(stop=Half{$T}(23/2), step=Int8(2), length=$T(5)) == Half{$T}[7/2, 11/2, 15/2, 19/2, 23/2]
                 @eval @test @inferred(range(stop=Half{$T}(23/2), step=big(2), length=5)) isa StepRangeOrStepRangeLen{BigHalfInt}
                 @eval @test range(stop=Half{$T}(23/2), step=big(2), length=5) == BigHalfInt[7/2, 11/2, 15/2, 19/2, 23/2]
             end
