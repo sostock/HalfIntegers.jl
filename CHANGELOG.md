@@ -2,6 +2,8 @@
 
 ## master
 
+* ![Maintenance](https://img.shields.io/badge/-maintenance-grey) Fix tests on Julia ≥ 1.8. ([#44](https://github.com/sostock/HalfIntegers.jl/pull/44))
+
 ## v1.4.2
 
 * ![Bugfix](https://img.shields.io/badge/-bugfix-purple) Added specialized `Base.hastypemax` method because the generic fallback doesn’t work correctly for `BigHalfInt`. ([#42](https://github.com/sostock/HalfIntegers.jl/pull/42))
