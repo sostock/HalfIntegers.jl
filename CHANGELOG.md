@@ -2,6 +2,8 @@
 
 ## master
 
+## v1.4.3
+
 * ![Maintenance](https://img.shields.io/badge/-maintenance-grey) Fix tests on Julia ≥ 1.8. ([#44](https://github.com/sostock/HalfIntegers.jl/pull/44))
 
 ## v1.4.2
