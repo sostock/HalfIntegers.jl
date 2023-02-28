@@ -58,7 +58,7 @@ HalfInteger(x::BigFloat) = BigHalfInt(x)
         if isinteger(x)
             Base.unsafe_rational(T, tx >> 1, one(tx))
         else
-            Base.unsafe_rational(T, promote(tx, T(2))...)
+            Base.unsafe_rational(T, tx, twice(one(tx)))
         end
     end
 else
