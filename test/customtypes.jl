@@ -10,18 +10,11 @@ HalfIntegers.half(::Type{MyHalfInt}, x) = MyHalfInt(half(HalfInt, x))
 HalfIntegers.twice(x::MyHalfInt) = twice(x.val)
 
 struct One <: Integer end
-Base.promote_type(::Type{One}, ::Type{One}) = Int
-Base.promote_rule(::Type{One}, ::Type{T}) where {T<:Number} = promote_type(Int, T)
-Base.convert(::Type{One}, x::Integer) = isone(x) ? One() : error("can't convert $x to One")
-Base.iszero(::One) = false
-Base.isone(::One) = true
-Base.Int(::One) = oneunit(Int)
-Base.oneunit(::One) = One()
-Base.one(::One) = one(Int)
-Base.zero(::One) = false
-Base.:(*)(y::One, ::One) = y
-Base.:(*)(::One, y::Integer) = y
-Base.:(*)(y::Integer, ::One) = y
+Base.promote_rule(::Type{One}, ::Type{T}) where {T<:Number} = promote_type(Bool, T)
+Base.Int(::One) = 1
+Base.iseven(::One) = false
+Base.one(::One) = One()
+Base.:+(x::One, y::One) = 2
 
 @testset "Custom types" begin
     @testset "Construction" begin
