@@ -9,6 +9,13 @@ MyHalfInt(x::MyHalfInt) = x
 HalfIntegers.half(::Type{MyHalfInt}, x) = MyHalfInt(half(HalfInt, x))
 HalfIntegers.twice(x::MyHalfInt) = twice(x.val)
 
+struct One <: Integer end
+Base.promote_rule(::Type{One}, ::Type{T}) where {T<:Number} = promote_type(Bool, T)
+Base.Int(::One) = 1
+Base.iseven(::One) = false
+Base.one(::One) = One()
+Base.:+(x::One, y::One) = 2
+
 @testset "Custom types" begin
     @testset "Construction" begin
         @test MyHalfInt(2.5) isa MyHalfInt
@@ -35,6 +42,9 @@ HalfIntegers.twice(x::MyHalfInt) = twice(x.val)
         @test_throws InexactError Integer(MyHalfInt(3/2))
         @test_throws InexactError Int(MyHalfInt(3/2))
         @test_throws InexactError UInt(MyHalfInt(-1))
+
+        @test Rational(half(One())) == 1//2
+        @test Rational{Int}(half(One())) == 1//2
     end
 
     @testset "Properties" begin

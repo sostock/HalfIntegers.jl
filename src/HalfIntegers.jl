@@ -50,7 +50,7 @@ HalfInteger(x::BigFloat) = BigHalfInt(x)
         if isinteger(x)
             Base.unsafe_rational(tx >> 1, one(tx))
         else
-            Base.unsafe_rational(tx, oftype(tx, 2))
+            Base.unsafe_rational(tx, twice(one(tx)))
         end
     end
     function (::Type{Rational{T}})(x::HalfInteger) where T
@@ -58,11 +58,11 @@ HalfInteger(x::BigFloat) = BigHalfInt(x)
         if isinteger(x)
             Base.unsafe_rational(T, tx >> 1, one(tx))
         else
-            Base.unsafe_rational(T, tx, oftype(tx,2))
+            Base.unsafe_rational(T, tx, twice(one(tx)))
         end
     end
 else
-    (T::Type{<:Rational})(x::HalfInteger) = (tx=twice(x); T(tx,oftype(tx,2)))
+    (T::Type{<:Rational})(x::HalfInteger) = (tx=twice(x); T(tx,twice(one(tx))))
 end
 
 Base.ArithmeticStyle(::Type{<:HalfInteger}) = Base.ArithmeticWraps()
