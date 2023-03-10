@@ -193,9 +193,9 @@ end
 Base.show(io::IO, x::HalfInteger) =
     isinteger(x) ? print(io, twice(x) >> 1) : print(io, twice(x), "/2")
 
-Base.sign(x::HalfInteger) = oftype(x, sign(twice(x)))
+Base.sign(x::HalfInteger) = half(twice(sign(twice(x))))
 
-Base.denominator(x::HalfInteger) = (t=twice(x); isinteger(x) ? one(t) : oftype(t,2))
+Base.denominator(x::HalfInteger) = (t=twice(x); isinteger(x) ? one(t) : twice(one(t))) # type-unstable for Half{Bool}
 Base.numerator(x::HalfInteger)   = (t=twice(x); isinteger(x) ? t >> 1 : t)
 
 Base.sinpi(x::HalfInteger) = sinpihalf(twice(x))
