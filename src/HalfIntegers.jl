@@ -195,7 +195,7 @@ Base.show(io::IO, x::HalfInteger) =
 
 Base.sign(x::HalfInteger) = half(twice(sign(twice(x))))
 
-Base.denominator(x::HalfInteger) = (t=twice(x); isinteger(x) ? one(t) : twice(one(t))) # type-unstable for Half{Bool}
+Base.denominator(x::HalfInteger) = (t=twice(x); isinteger(x) ? one(t) : twice(one(t)))
 Base.numerator(x::HalfInteger)   = (t=twice(x); isinteger(x) ? t >> 1 : t)
 
 Base.sinpi(x::HalfInteger) = sinpihalf(twice(x))
@@ -651,6 +651,9 @@ Base.typemax(::Type{Half{T}}) where T<:Integer = half(typemax(T))
 Base.typemin(::Type{Half{T}}) where T<:Integer = half(typemin(T))
 
 Base.widen(::Type{Half{T}}) where T<:Integer = Half{widen(T)}
+
+Base.denominator(x::Half{Bool}) = twice(x) ? 2 : 1
+Base.numerator(x::Half{Bool}) = Int(twice(x))
 
 const HalfInt = Half{Int}
 const HalfInt8 = Half{Int8}
