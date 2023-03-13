@@ -14,6 +14,7 @@ Base.promote_rule(::Type{One}, ::Type{T}) where {T<:Number} = promote_type(Bool,
 Base.Int(::One) = 1
 Base.iseven(::One) = false
 Base.one(::One) = One()
+Base.sign(::One) = One()
 Base.:+(x::One, y::One) = 2
 
 @testset "Custom types" begin
@@ -43,8 +44,12 @@ Base.:+(x::One, y::One) = 2
         @test_throws InexactError Int(MyHalfInt(3/2))
         @test_throws InexactError UInt(MyHalfInt(-1))
 
-        @test Rational(half(One())) == 1//2
-        @test Rational{Int}(half(One())) == 1//2
+        @test @inferred(half(One())) isa Half{One}
+        @test @inferred(sign(half(One()))) == 1
+        @test @inferred(numerator(half(One()))) == 1
+        @test @inferred(denominator(half(One()))) == 2
+        @test @inferred(Rational(half(One()))) == 1//2
+        @test @inferred(Rational{Int}(half(One()))) == 1//2
     end
 
     @testset "Properties" begin
