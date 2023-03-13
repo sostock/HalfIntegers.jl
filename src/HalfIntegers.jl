@@ -195,7 +195,7 @@ Base.show(io::IO, x::HalfInteger) =
 
 Base.sign(x::HalfInteger) = half(twice(sign(twice(x))))
 
-Base.denominator(x::HalfInteger) = (t=twice(x); isinteger(x) ? one(t) : twice(one(t))) # type-unstable for Half{Bool}
+Base.denominator(x::HalfInteger) = (t=twice(x); isinteger(x) ? one(t) : twice(one(t)))
 Base.numerator(x::HalfInteger)   = (t=twice(x); isinteger(x) ? t >> 1 : t)
 
 Base.sinpi(x::HalfInteger) = sinpihalf(twice(x))
