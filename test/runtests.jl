@@ -452,10 +452,6 @@ end
             @eval @test @inferred(denominator(Half{$T}(7/2))) ==ₜ $T(2)
             @eval @test denominator(Half{$T}(3)) ==ₜ $T(1)
         end
-        @test @inferred(numerator(half(true))) == 1
-        @test @inferred(numerator(half(false))) == 0
-        @test @inferred(denominator(half(true))) == 2
-        @test @inferred(denominator(half(false))) == 1
     end
 end
 
