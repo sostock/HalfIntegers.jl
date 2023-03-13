@@ -444,8 +444,8 @@ julia> twice(Complex{BigInt}, HalfInt(5/2) + HalfInt(3)*im)
 5 + 6im
 ```
 """
-twice(T::Type{<:Integer}, x::Number) = T(twice(x))
-twice(T::Type{<:Integer}, x::Integer) = twice(T(x)) # convert to T first to reduce probability of overflow
+twice(T::Type{<:Integer}, x::Number) = convert(T, twice(x))::T
+twice(T::Type{<:Integer}, x::Integer) = twice(convert(T, x)::T) # convert to T first to reduce probability of overflow
 twice(::Type{Complex{T}}, x::Number) where T<:Integer = Complex(twice(T,real(x)), twice(T,imag(x)))
 
 function twice(T::Type{<:Integer}, x::Rational)
