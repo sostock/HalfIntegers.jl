@@ -16,14 +16,7 @@ Base.iseven(::One) = false
 Base.one(::One) = One()
 Base.sign(::One) = One()
 Base.:+(x::One, y::One) = 2
-
-struct Two <: Integer end
-Base.promote_type(::Type{Two}, ::Type{Two}) = Int
-Base.promote_rule(::Type{Two}, ::Type{T}) where {T<:Number} = promote_type(Bool, T)
-Base.Int(::Two) = 2
-HalfIntegers.twice(::Type{Two}, x::Int) = isone(x) ? Two() : error("can't evaluate twice(Two, $x)")
-Base.:(>>)(::Two, n::UInt64) = 2 >> n # needed for displaying the result
-Base.convert(::Type{Two}, x::Int) = isone(half(x)) ? Two() : error("can't convert $x to Two")
+Base.convert(::Type{One}, x::Int) = x == 1 ? One() : error("can't convert $x to One")
 
 @testset "Custom types" begin
     @testset "Construction" begin
@@ -59,11 +52,8 @@ Base.convert(::Type{Two}, x::Int) = isone(half(x)) ? Two() : error("can't conver
         @test @inferred(Rational(half(One()))) == 1//2
         @test @inferred(Rational{Int}(half(One()))) == 1//2
 
-        one_halftwo = @inferred(one(half(Two())))
-        @test isone(one_halftwo)
-        one_halftwo_typed = @inferred(oneunit(half(Two())))
-        @test isone(one_halftwo_typed)
-        @test typeof(one_halftwo_typed) == typeof(half(Two()))
+        @test Half{One}(half(One())) === half(One())
+        @test Half{One}(half(1)) === half(One())
     end
 
     @testset "Properties" begin
