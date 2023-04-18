@@ -54,6 +54,9 @@ Base.convert(::Type{One}, x::Int) = x == 1 ? One() : error("can't convert $x to 
 
         @test Half{One}(half(One())) === half(One())
         @test Half{One}(half(1)) === half(One())
+
+        @test one(half(One())) == 1
+        @test one(half(One())) * half(One()) == half(One())
     end
 
     @testset "Properties" begin

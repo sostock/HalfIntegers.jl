@@ -668,4 +668,6 @@ const HalfUInt128 = Half{UInt128}
 
 Base.float(::Type{BigHalfInt}) = BigFloat
 
+Base.one(::Type{Half{T}}) where T = half(twice(one(T)))
+
 end # module
