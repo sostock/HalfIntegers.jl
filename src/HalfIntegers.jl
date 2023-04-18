@@ -40,9 +40,9 @@ HalfInteger(x::HalfInteger) = x
 HalfInteger(x::Rational{T}) where T = Half{T}(x)
 HalfInteger(x::BigFloat) = BigHalfInt(x)
 
-(T::Type{<:AbstractFloat})(x::HalfInteger) = T(float(x))
+(T::Type{<:AbstractFloat})(x::HalfInteger) = convert(T, float(x))
 (T::Type{<:Integer})(x::HalfInteger) =
-    isinteger(x) ? T(twice(x) >> 1) : throw(InexactError(Symbol(T), T, x))
+    isinteger(x) ? convert(T, twice(x) >> 1) : throw(InexactError(Symbol(T), T, x))
 (::Type{Bool})(x::HalfInteger) = invoke(Bool, Tuple{Real}, x)
 @static if VERSION ≥ v"1.5.0-DEV.820"
     function (::Type{Rational})(x::HalfInteger)
@@ -159,8 +159,8 @@ Base.floor(T::Type{<:Integer}, x::HalfInteger) = round(T, x, RoundDown)
 Base.trunc(T::Type{<:Integer}, x::HalfInteger) = round(T, x, RoundToZero)
 
 Base.round(T::Type{<:Integer}, x::HalfInteger, r::RoundingMode=RoundNearest) =
-    T(twice(round(x, r)) >> 1)
-Base.round(T::Type{<:Integer}, x::HalfInteger, ::typeof(RoundDown)) = T(twice(x) >> 1)
+    convert(T, twice(round(x, r)) >> 1)
+Base.round(T::Type{<:Integer}, x::HalfInteger, ::typeof(RoundDown)) = convert(T, twice(x) >> 1)
 
 Base.round(x::HalfInteger, ::typeof(RoundNearest)) =
     isinteger(x)             ? +x           :
@@ -245,11 +245,11 @@ function coschalf(x::Integer)
     if xm4 == 0
         2*x⁻¹
     elseif xm4 == 1
-        (-4/T(π))*x⁻¹*x⁻¹
+        (-4/convert(T, π))*x⁻¹*x⁻¹
     elseif xm4 == 2
         -2*x⁻¹
     else
-        (4/T(π))*x⁻¹*x⁻¹
+        (4/convert(T, π))*x⁻¹*x⁻¹
     end
 end
 
@@ -519,9 +519,9 @@ julia> onehalf(HalfInt)
 """
 onehalf(x::Union{Number,Missing}) = onehalf(typeof(x))
 
-onehalf(T::Type{<:Number}) = T(onehalf(HalfInteger))
+onehalf(T::Type{<:Number}) = convert(T, onehalf(HalfInteger))
 onehalf(T::Type{<:HalfInteger}) = half(T, 1)
-onehalf(T::Type{<:AbstractFloat}) = T(0.5)
+onehalf(T::Type{<:AbstractFloat}) = convert(T, 0.5)
 @static if VERSION ≥ v"1.5.0-DEV.820"
     onehalf(::Type{Rational}) = Base.unsafe_rational(1, 2)
     onehalf(::Type{Rational{T}}) where T = Base.unsafe_rational(T, 1, 2)
