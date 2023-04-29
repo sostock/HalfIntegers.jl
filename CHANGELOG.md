@@ -2,6 +2,10 @@
 
 ## master
 
+## v1.5.0
+
+* ![Feature](https://img.shields.io/badge/-feature-green) Better support for `Half{T}` where `T` is an integer type that cannot represent the number 2. ([#49](https://github.com/sostock/HalfIntegers.jl/pull/49), [#51](https://github.com/sostock/HalfIntegers.jl/pull/51), [#52](https://github.com/sostock/HalfIntegers.jl/pull/52))
+
 ## v1.4.3
 
 * ![Maintenance](https://img.shields.io/badge/-maintenance-grey) Fix tests on Julia ≥ 1.8. ([#44](https://github.com/sostock/HalfIntegers.jl/pull/44))
