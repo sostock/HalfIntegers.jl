@@ -297,7 +297,9 @@ function hashhalf(x::Base.BitInteger64, h::UInt)
     if Base.uabs(x) < UInt64(maxintfloat(Float64))
         return hash(ldexp(Float64(x),-1),h)
     end
-    h = Base.hash_integer(1, h)
+    @static if VERSION < v"1.10.0-DEV.1448"
+        h = Base.hash_integer(1, h)
+    end
     h = Base.hash_integer(-1, h)
     h = Base.hash_integer(x, h)
     return h
