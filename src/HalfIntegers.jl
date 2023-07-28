@@ -205,6 +205,8 @@ Base.sinc(x::HalfInteger) = sinchalf(twice(x))
 Base.cosc(x::HalfInteger) = coschalf(twice(x))
 
 # Compute sin(x*π/2)
+# The behavior re: signed zeros follows IEEE754-2019:
+# > sinPi(+n) is +0 and sinPi(-n) is -0 for positive integers n.
 function sinpihalf(x::Integer)
     xm4 = mod(x,4)
     T = float(typeof(x))
@@ -217,6 +219,8 @@ function sinpihalf(x::Integer)
     end
 end
 # Compute cos(x*π/2)
+# The behavior re: signed zeros follows IEEE754-2019:
+# > cosPi(n + 1/2) is +0 for any integer n when n + 1/2 is representable.
 function cospihalf(x::Integer)
     xm4 = mod(x,4)
     T = float(typeof(x))
