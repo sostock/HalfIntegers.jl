@@ -2,6 +2,8 @@
 
 ## master
 
+* ![Maintenance](https://img.shields.io/badge/-maintenance-grey) Implement new `hash` behavior on Julia ≥ 1.10. ([#55](https://github.com/sostock/HalfIntegers.jl/pull/55))
+
 ## v1.5.0
 
 * ![Feature](https://img.shields.io/badge/-feature-green) Better support for `Half{T}` where `T` is an integer type that cannot represent the number 2. ([#49](https://github.com/sostock/HalfIntegers.jl/pull/49), [#51](https://github.com/sostock/HalfIntegers.jl/pull/51), [#52](https://github.com/sostock/HalfIntegers.jl/pull/52))
