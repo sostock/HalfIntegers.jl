@@ -294,10 +294,12 @@ hashhalf(x::Integer, h::UInt) = invoke(hash, Tuple{Real,UInt}, half(x), h)
 # Version for integers with ≤ 64 bits, adapted from hash(::Rational{<:Base.BitInteger64}, ::UInt)
 function hashhalf(x::Base.BitInteger64, h::UInt)
     iseven(x) && return hash(x >> 1, h)
-    if abs(x) < 9007199254740992
+    if Base.uabs(x) < UInt64(maxintfloat(Float64))
         return hash(ldexp(Float64(x),-1),h)
     end
-    h = Base.hash_integer(1, h)
+    @static if VERSION < v"1.10.0-DEV.1448"
+        h = Base.hash_integer(1, h)
+    end
     h = Base.hash_integer(-1, h)
     h = Base.hash_integer(x, h)
     return h
