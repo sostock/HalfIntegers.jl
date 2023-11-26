@@ -589,8 +589,9 @@ ishalfoddinteger(::Missing) = missing
 if VERSION ≥ v"1.7"
     _isodd(x) = isodd(x)
 else
-    _isodd(x) = isodd(x)
-    _isodd(x::AbstractFloat) = isinteger(x) && abs(x) ≤ maxintfloat(x) && isodd(Integer(x))
+    _isodd(x::Real) = isodd(x)
+    _isodd(n::Number) = isreal(n) && _isodd(real(n))
+    _isodd(x::AbstractFloat) = isinteger(x) && abs(x) ≤ maxintfloat(x) && _isodd(Integer(x))
 end
 
 @static if VERSION ≥ v"1.7.0-DEV.263"
