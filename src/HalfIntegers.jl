@@ -23,6 +23,7 @@ export
     # Functions
     half,
     ishalfinteger,
+    ishalfoddinteger,
     onehalf,
     twice
 
@@ -560,6 +561,30 @@ ishalfinteger(x::Rational) = (denominator(x) == 1) | (denominator(x) == 2)
 ishalfinteger(::HalfIntegerOrInteger) = true
 ishalfinteger(::AbstractIrrational) = false
 ishalfinteger(::Missing) = missing
+
+"""
+    ishalfoddinteger(x)
+
+Test whether `x` is numerically equal to some half-odd-integer.
+
+# Examples
+
+```jldoctest
+julia> ishalfoddinteger(3.5)
+true
+
+julia> ishalfoddinteger(2)
+false
+
+julia> ishalfoddinteger(1//3)
+false
+```
+"""
+ishalfoddinteger(x) = isodd(twice(x))
+ishalfoddinteger(x::Rational) = denominator(x) == 2
+ishalfoddinteger(::Integer) = false
+ishalfoddinteger(::AbstractIrrational) = false
+ishalfoddinteger(::Missing) = missing
 
 @static if VERSION ≥ v"1.7.0-DEV.263"
     Base.range_start_stop_length(start::T, stop::T, len::Integer) where T<:HalfInteger =
