@@ -62,7 +62,7 @@ Base.convert(::Type{One}, x::Int) = x == 1 ? One() : error("can't convert $x to 
     @testset "Properties" begin
         @test isfinite(MyHalfInt(2))
         @test ishalfinteger(MyHalfInt(3/2))
-        @test ishalfoddinteger(MyHalfInt(3/2))
+        @test ishalfodd(MyHalfInt(3/2))
         @test isinteger(MyHalfInt(3))
         @test !isinteger(MyHalfInt(3/2))
         @test iszero(MyHalfInt(0))

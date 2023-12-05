@@ -23,7 +23,7 @@ export
     # Functions
     half,
     ishalfinteger,
-    ishalfoddinteger,
+    ishalfodd,
     onehalf,
     twice
 
@@ -563,27 +563,27 @@ ishalfinteger(::AbstractIrrational) = false
 ishalfinteger(::Missing) = missing
 
 """
-    ishalfoddinteger(x)
+    ishalfodd(x)
 
 Test whether `x` is numerically equal to some half-odd-integer.
 
 # Examples
 
 ```jldoctest
-julia> ishalfoddinteger(3.5)
+julia> ishalfodd(3.5)
 true
 
-julia> ishalfoddinteger(2)
+julia> ishalfodd(2)
 false
 
-julia> ishalfoddinteger(1//3)
+julia> ishalfodd(1//3)
 false
 ```
 """
-ishalfoddinteger(x::Number) = _isodd(twice(x))
-ishalfoddinteger(x::Rational) = denominator(x) == 2
-ishalfoddinteger(::Integer) = false
-ishalfoddinteger(::Missing) = missing
+ishalfodd(x::Number) = _isodd(twice(x))
+ishalfodd(x::Rational) = denominator(x) == 2
+ishalfodd(::Integer) = false
+ishalfodd(::Missing) = missing
 
 if VERSION ≥ v"1.7"
     _isodd(x) = isodd(x)
