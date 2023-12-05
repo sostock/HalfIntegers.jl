@@ -583,7 +583,6 @@ false
 ishalfoddinteger(x::Number) = _isodd(twice(x))
 ishalfoddinteger(x::Rational) = denominator(x) == 2
 ishalfoddinteger(::Integer) = false
-ishalfoddinteger(::AbstractIrrational) = false
 ishalfoddinteger(::Missing) = missing
 
 if VERSION ≥ v"1.7"
