@@ -580,7 +580,7 @@ julia> ishalfoddinteger(1//3)
 false
 ```
 """
-ishalfoddinteger(x) = _isodd(twice(x))
+ishalfoddinteger(x::Number) = _isodd(twice(x))
 ishalfoddinteger(x::Rational) = denominator(x) == 2
 ishalfoddinteger(::Integer) = false
 ishalfoddinteger(::AbstractIrrational) = false
