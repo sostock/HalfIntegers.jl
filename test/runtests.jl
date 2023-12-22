@@ -387,7 +387,7 @@ end
         end
     end
 
-    @static if VERSION ≥ v"1.6.0-DEV.999"
+    if VERSION ≥ v"1.6.0-DEV.999"
         @testset "ispow2" begin
             for T in (halfinttypes..., :BigHalfInt)
                 @eval @test ispow2($T(1/2))
@@ -812,7 +812,7 @@ end
             @eval @test @inferred(rem(big(4), BigHalfInt(3/2), $r)) isa BigHalfInt
             @eval @test @inferred(rem(big(4), HalfInt(3/2), $r)) isa BigHalfInt
         end
-        @static if VERSION ≥ v"1.4.0-DEV.208"
+        if VERSION ≥ v"1.4.0-DEV.208"
             for r in (:RoundNearest, :RoundNearestTiesAway, :RoundNearestTiesUp, :RoundToZero, :RoundUp, :RoundDown)
                 for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
                     @eval @test @inferred(div($T(7/2), $T(3/2), $r)) == div(7//2, 3//2, $r)
@@ -868,7 +868,7 @@ end
                 @eval @test @inferred(divrem(big(4), HalfInt(3/2), $r)) isa Tuple{BigInt,BigHalfInt}
             end
         end
-        @static if VERSION ≥ v"1.5.0-DEV.471"
+        if VERSION ≥ v"1.5.0-DEV.471"
             for (f,bigreturntype) in ((:rem, :BigHalfInt), (:divrem, :(Tuple{BigInt,BigHalfInt})))
                 for T in (halfinttypes..., :BigHalfInt)
                     @eval @test @inferred($f($T(7/2), $T(3/2), RoundNearest)) == $f(7//2, 3//2, RoundNearest)
@@ -1046,7 +1046,7 @@ end
         @test complex(BigHalfInt(-2))^HalfInt(5/2) ≈ √32*im
     end
 
-    @static if VERSION ≥ v"1.4.0-DEV.699"
+    if VERSION ≥ v"1.4.0-DEV.699"
         @testset "lcm/gcd/gcdx" begin
             @testset "Scalar-argument gcd/lcm" begin
                 for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
@@ -1532,7 +1532,7 @@ end
     for T = (inttypes..., uinttypes..., :BigInt)
         @eval @test typeof(@inferred(sinpi(zero(Half{$T})))) == float(Half{$T})
         @eval @test typeof(@inferred(cospi(zero(Half{$T})))) == float(Half{$T})
-        @static if isdefined(Base, :sincospi)
+        if isdefined(Base, :sincospi)
             @eval @test typeof(@inferred(sincospi(zero(Half{$T})))) == NTuple{2, float(Half{$T})}
         end
     end
