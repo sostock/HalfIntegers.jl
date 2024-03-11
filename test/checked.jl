@@ -183,7 +183,7 @@
         @test mul_with_overflow(HalfInt8(101/2), Int8(2)) ==ₜ (HalfInt8(-27), true)
     end
 
-    @static if VERSION ≥ v"1.1"
+    if VERSION ≥ v"1.1"
         # In Julia < 1.1, zero(Half{T}) and one(Half{T}) do not work for
         # T ∈ [SafeInt8, SafeInt16, SafeUInt8, SafeUInt16] due to a bug in Julia, cf.
         # https://github.com/JuliaLang/julia/issues/32203

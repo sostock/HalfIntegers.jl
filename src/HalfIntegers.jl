@@ -45,7 +45,7 @@ HalfInteger(x::BigFloat) = BigHalfInt(x)
 (T::Type{<:Integer})(x::HalfInteger) =
     isinteger(x) ? convert(T, twice(x) >> 1) : throw(InexactError(Symbol(T), T, x))
 (::Type{Bool})(x::HalfInteger) = invoke(Bool, Tuple{Real}, x)
-@static if VERSION ≥ v"1.5.0-DEV.820"
+if VERSION ≥ v"1.5.0-DEV.820"
     function (::Type{Rational})(x::HalfInteger)
         tx = twice(x)
         if isinteger(x)
@@ -94,7 +94,7 @@ Base.://(x::Real, y::HalfInteger) = twice(x)//twice(y)
 Base.:^(x::Real, y::HalfInteger) = x^float(y)
 Base.:^(::Irrational{:ℯ}, x::HalfInteger) = exp(x)
 
-@static if VERSION < v"1.4.0-DEV.208"
+if VERSION < v"1.4.0-DEV.208"
     Base.div(x::T, y::T) where T<:HalfInteger = div(twice(x), twice(y))
 else
     Base.div(x::T, y::T, r::RoundingMode) where T<:HalfInteger = div(twice(x), twice(y), r)
@@ -142,7 +142,7 @@ end
 Base.Checked.mul_with_overflow(x::Integer, y::HalfInteger) = Base.Checked.mul_with_overflow(y, x)
 
 # `lcm`/`gcd`/`gcdx` are only extended to `HalfInteger`s if they are defined for `Rational`s
-@static if VERSION ≥ v"1.4.0-DEV.699"
+if VERSION ≥ v"1.4.0-DEV.699"
     Base.gcd(x::HalfInteger) = x
     Base.lcm(x::HalfInteger) = x
 
@@ -187,7 +187,7 @@ Base.isfinite(x::HalfInteger) = isfinite(twice(x))
 
 Base.isinteger(x::HalfInteger) = iseven(twice(x))
 
-@static if VERSION ≥ v"1.6.0-DEV.999"
+if VERSION ≥ v"1.6.0-DEV.999"
     Base.ispow2(x::HalfInteger) = ispow2(twice(x))
 end
 
@@ -258,7 +258,7 @@ function coschalf(x::Integer)
     end
 end
 
-@static if VERSION ≥ v"1.6.0-DEV.292"
+if VERSION ≥ v"1.6.0-DEV.292"
     Base.sincospi(x::HalfInteger) = sincospihalf(twice(x))
 
     # Compute sincos(x*π/2)
@@ -363,7 +363,7 @@ half(::Type{Complex{T}}, x::Number) where T<:HalfInteger = Complex(half(T,real(x
 half(::Type{Complex}, x::Number) = Complex(half(real(x)), half(imag(x)))
 
 half(::Missing) = missing
-@static if VERSION ≥ v"1.3"
+if VERSION ≥ v"1.3"
     half(::Type{T}, x) where T>:Missing = half(Base.nonmissingtype_checked(T), x)
 else
     half(::Type{T}, x) where T>:Missing = half(Base.nonmissingtype(T), x)
@@ -400,7 +400,7 @@ julia> twice(HalfInt32(3.0) + HalfInt32(2.5)*im)  # returns a Complex{Int32}
 twice(x) = x + x
 twice(x::Complex) = Complex(twice(real(x)), twice(imag(x)))
 
-@static if VERSION ≥ v"1.5.0-DEV.820"
+if VERSION ≥ v"1.5.0-DEV.820"
     function twice(x::Rational)
         if iseven(x.den)
             Base.unsafe_rational(oftype(x.num+x.num, x.num), x.den >> 1)
@@ -465,7 +465,7 @@ function twice(T::Type{<:Integer}, x::Rational)
     end
 end
 
-@static if VERSION ≥ v"1.3"
+if VERSION ≥ v"1.3"
     twice(::Type{T}, x) where T>:Missing = twice(Base.nonmissingtype_checked(T), x)
 else
     twice(::Type{T}, x) where T>:Missing = twice(Base.nonmissingtype(T), x)
@@ -529,7 +529,7 @@ onehalf(x::Union{Number,Missing}) = onehalf(typeof(x))
 onehalf(T::Type{<:Number}) = convert(T, onehalf(HalfInteger))
 onehalf(T::Type{<:HalfInteger}) = half(T, 1)
 onehalf(T::Type{<:AbstractFloat}) = convert(T, 0.5)
-@static if VERSION ≥ v"1.5.0-DEV.820"
+if VERSION ≥ v"1.5.0-DEV.820"
     onehalf(::Type{Rational}) = Base.unsafe_rational(1, 2)
     onehalf(::Type{Rational{T}}) where T = Base.unsafe_rational(T, 1, 2)
 else
@@ -593,7 +593,7 @@ else
     _isodd(x::AbstractFloat) = isinteger(x) && abs(x) ≤ maxintfloat(x) && _isodd(Integer(x))
 end
 
-@static if VERSION ≥ v"1.7.0-DEV.263"
+if VERSION ≥ v"1.7.0-DEV.263"
     Base.range_start_stop_length(start::T, stop::T, len::Integer) where T<:HalfInteger =
         Base._linspace(float(T), start, stop, len)
 else

@@ -94,7 +94,7 @@ Base.convert(::Type{One}, x::Int) = x == 1 ? One() : error("can't convert $x to 
                  typemin(HalfInt)+HalfInt(1), typemin(HalfInt)+HalfInt(3/2)]
             @test sinpi(MyHalfInt(x)) === sinpi(x)
             @test cospi(MyHalfInt(x)) === cospi(x)
-            @static if VERSION ≥ v"1.6.0-DEV.292"
+            if VERSION ≥ v"1.6.0-DEV.292"
                 @test sincospi(MyHalfInt(x)) === sincospi(x)
             end
         end

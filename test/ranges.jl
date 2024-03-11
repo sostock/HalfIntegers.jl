@@ -168,7 +168,7 @@ const StepRangeOrStepRangeLen{T} = Union{StepRange{T}, StepRangeLen{T}}
                 @eval @test @inferred(range($T(1/2), length=Int8(5))) isa UnitRange{$T}
             end
             @eval @test range($T(1/2), length=Int8(5)) == $T[1/2, 3/2, 5/2, 7/2, 9/2]
-            @static if VERSION ≥ v"1.7"
+            if VERSION ≥ v"1.7"
                 if VERSION ≥ v"1.8.0-DEV"
                     @eval @test @inferred(range(stop=$T(11/2), length=Int8(5))) isa StepRangeLen{$T,$T,$T}
                 else
@@ -220,7 +220,7 @@ const StepRangeOrStepRangeLen{T} = Union{StepRange{T}, StepRangeLen{T}}
             else
                 @eval @test_broken @inferred(range($T(1/2), step=big(2), length=Int8(5))) isa StepRangeOrStepRangeLen{BigHalfInt}
             end
-            @static if VERSION ≥ v"1.7.0-DEV.16"
+            if VERSION ≥ v"1.7.0-DEV.16"
                 @eval @test @inferred(range(Int8(2), step=$T(1/2), length=Int8(5))) isa StepRangeOrStepRangeLen{$T}
                 @eval @test range(Int8(2), step=$T(1/2), length=Int8(5)) == $T[2, 5/2, 3, 7/2, 4]
             else
@@ -229,7 +229,7 @@ const StepRangeOrStepRangeLen{T} = Union{StepRange{T}, StepRangeLen{T}}
             end
         end
 
-        @static if VERSION ≥ v"1.7.0-DEV.263"
+        if VERSION ≥ v"1.7.0-DEV.263"
             for T in (inttypes..., uinttypes..., :BigInt)
                 @eval @test @inferred(range(stop=Half{$T}(23/2), step=Int8(2), length=$T(5))) isa StepRangeOrStepRangeLen{Half{$T}}
                 @eval @test range(stop=Half{$T}(23/2), step=Int8(2), length=$T(5)) == Half{$T}[7/2, 11/2, 15/2, 19/2, 23/2]
@@ -335,7 +335,7 @@ const StepRangeOrStepRangeLen{T} = Union{StepRange{T}, StepRangeLen{T}}
             @eval @test (1:3:7) ∩ ($T(3):$T(5)) == 4:3:4
             @eval @test ($T(3):$T(5)) ∩ (1:3:7) == 4:3:4
         end
-        @static if Sys.WORD_SIZE == 64
+        if Sys.WORD_SIZE == 64
             @test isempty((1:3:7) ∩ (HalfUInt32(3/2):HalfUInt32(5)))
             @test isempty((HalfUInt32(3/2):HalfUInt32(5)) ∩ (1:3:7))
             @test (1:3:7) ∩ (HalfUInt32(3):HalfUInt32(5)) == 4:3:4
