@@ -4,4 +4,4 @@ HalfIntegers = "f0d1745a-41c9-11e9-1dd9-e5d34d218721"
 SaferIntegers = "88634af6-177f-5301-88b8-7819386cfa38"
 
 [compat]
-Documenter = "1"
+Documenter = "1.3"
