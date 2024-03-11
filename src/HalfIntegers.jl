@@ -565,7 +565,8 @@ ishalfinteger(::Missing) = missing
 """
     ishalfodd(x)
 
-Test whether `x` is numerically equal to some half-odd-integer.
+Test whether `x` is numerically equal to some half-odd-integer, i.e., a number ``n/2`` where
+``n`` is an odd integer.
 
 # Examples
 

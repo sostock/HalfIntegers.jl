@@ -171,6 +171,16 @@ ishalfinteger(4)
 ishalfinteger(1//3)
 ```
 
+### `ishalfodd`
+
+The function `ishalfodd` can be used to check whether a number is equal to some odd-half-integer, i.e., a number ``\frac{n}{2}`` where ``n`` is an odd integer:
+
+```@repl halfintegers
+ishalfodd(0.5)
+ishalfodd(4)
+ishalfodd(1//3)
+```
+
 ## Wraparound behavior
 
 Since the implementation of the `HalfInteger` type is based on the underlying integers (e.g., standard `Int` arithmetic in the case of the `HalfInt` type), `HalfInteger`s may be subject to [integer overflow](https://docs.julialang.org/en/v1/manual/integers-and-floating-point-numbers/#Overflow-behavior-1):
