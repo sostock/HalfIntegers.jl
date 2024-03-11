@@ -374,6 +374,24 @@ end
         @test !ishalfinteger(im)
     end
 
+    @testset "ishalfodd" begin
+        for T in (halfinttypes..., halfuinttypes..., :BigHalfInt)
+            @eval @test !ishalfodd($T(3))
+            @eval @test ishalfodd($T(5/2))
+        end
+        @test !ishalfodd(5)
+        @test !ishalfodd(big(-5))
+        @test ishalfodd(5//2)
+        @test ishalfodd(-3//2)
+        @test !ishalfodd(4//3)
+        @test !ishalfodd(2.0)
+        @test ishalfodd(-7.5)
+        @test !ishalfodd(2.3)
+        @test !ishalfodd(π)
+        @test !ishalfodd(ℯ)
+        @test !ishalfodd(im)
+    end
+
     @testset "isinteger" begin
         for T in (halfinttypes..., :BigHalfInt)
             @eval @test isinteger($T(3))
@@ -1690,6 +1708,7 @@ end
     @test onehalf(missing) === onehalf(Missing) === missing
 
     @test ishalfinteger(missing) === missing
+    @test ishalfodd(missing) === missing
 end
 
 include("ranges.jl")
