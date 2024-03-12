@@ -2,6 +2,10 @@
 
 ## master
 
+## v1.6.0
+
+* ![Feature](https://img.shields.io/badge/-feature-green) Added the `ishalfodd` function. ([#59](https://github.com/sostock/HalfIntegers.jl/pull/59))
+
 ## v1.5.1
 
 * ![Maintenance](https://img.shields.io/badge/-maintenance-grey) Implement new `hash` behavior on Julia ≥ 1.10. ([#55](https://github.com/sostock/HalfIntegers.jl/pull/55))
