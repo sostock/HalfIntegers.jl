@@ -59,21 +59,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v2
-        with:
-          version: '1'
-      - run: |
-          julia --project=docs -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
-      - run: |
-          julia --project=docs -e '
-            using Documenter: DocMeta, doctest
-            using HalfIntegers
-            DocMeta.setdocmeta!(HalfIntegers, :DocTestSetup, :(using HalfIntegers); recursive=true)
-            doctest(HalfIntegers)'
-      - run: julia --project=docs docs/make.jl
+      - uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
